@@ -1,0 +1,47 @@
+@model Mega.WebService.GraphQL.Tests.Models.IndexModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<script src="~/Scripts/js/index.js" type="text/javascript"></script>
+<div class="jumbotron">
+    <h1>Tests selection</h1>
+    <div class="row">
+        <div class="col-md-7">
+            <p class="lead">
+                Select a test to run: @Html.DropDownList("SelectTest", Model.TestSelectionList, new { onchange = "OnSelectedTestChanged()" })
+                <img id="ImageState" style="cursor: pointer;" src="~/Resources/Images/play.png" height="30" width="30" onclick="OnButtonRunClicked()" />
+            </p>
+            <div id="TextTestDescription"></div>
+        </div>
+        <div class="col-md-2">
+            Environment:<br />
+            Repository source:<br />
+            Repository target:<br />
+            Profile:
+        </div>
+        <div class="col-md-2">
+            <input id="InputEnvironmentId"      type="text" maxlength="12" style="max-height:18px" value="fBw0YE0kTDpL" /> <br />
+            <input id="InputRepositoryIdSource" type="text" maxlength="12" style="max-height:18px" value="vkHHuCujTLM9" /> <br />
+            <input id="InputRepositoryIdTarget" type="text" maxlength="12" style="max-height:18px" value="UlO1aN0kTHFN" /> <br />
+            <input id="InputProfileId"          type="text" maxlength="12" style="max-height:18px" value="I9iCqGJg)u00" />
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <h2 id="TestFinished"></h2>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <h2>Test duration</h2>
+        <div id="TestMessageDuration"></div>
+    </div>
+    <div class="col-md-4">
+        <h2>Test summary</h2>
+        <div id="TestMessageCounts"></div>
+    </div>
+    <div class="col-md-4">
+        <h2>Test details</h2>
+        <div id="TestMessageDetails"></div>
+    </div>
+</div>
