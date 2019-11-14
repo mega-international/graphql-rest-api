@@ -1,5 +1,3 @@
-[TOC]
-
 # Project Title
 
 This add-on expose a catalog of REST API that can be queried following the GraphQL specification framework. The call to the API are made using JSON that contains the query to execute (query or mutation). The result of the call to the REST API is a JSON containing the data requested. With this add-on you can read and write data in the HOPEX repository.
@@ -18,7 +16,7 @@ See installation instruction on how to install the project on a live system.
 
 This add-on runs on the HOPEX Platform. Minimum platform level is V3 CP2.
 
-###Installation
+### Installation
 
 Follow the step of the installation wizard : [Video of the installation](https://youtu.be/80BNrmm64gc "Video of the installation")
 
@@ -83,10 +81,36 @@ You can use GraphiQL to build your query. Example of how to use it here : [How t
 You can use tool like postman to make test call to the API. [How to build Postman HTTP request](https://youtu.be/3xgesyYCXsw "How to build Postman HTTP request")
 
 
+## Build instruction
+
+Remember that you** do not have to build this source** to start on your project. Just use the ready to use setup MSI.
+
+Should you want to build the solution from source code you will need to follow the steps below. All the instructions are done for a Visual Studio 2019 IDE.
+
+### Steps to perform
+
+1. First respect the hierarchy
+> ParentFolder / AddonsFolder / HOPEXGraphQL
+
+2. Copy from your HOPEX platform installation the following files
+> 
+   C:\inetpub\wwwroot\HOPEXAPI\bin\Mega.Bridge.dll
+    C:\Program Files (x86)\MEGA\HOPEX V3\System\Hopex.ApplicationServer.WebServices.dll
+    C:\Program Files (x86)\MEGA\HOPEX V3\System\Mega.Macro.Executor.dll
+    C:\Program Files (x86)\MEGA\HOPEX V3\System\Mega.Macro.Wrapper.dll
+
+3. Paste them in the folder :
+> ParentFolder / ExeRelease / Assemblies /
+
+### Wix toolset
+
+It is **not mandatory** to build the setup when you customize the source code. Should you want to do it, you will need to enable wix extension in Visual Studio 2019. If you don't Visual Studio will disable this part of the project.
+
+More information here : [wix tool set](https://wixtoolset.org "wix tool set")
+
 ## Built With
 
 * [Microsoft Visual Studio 2019](https://visualstudio.microsoft.com/ "Microsoft Visual Studio 2019")
-
 
 ## Versioning
 
