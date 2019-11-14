@@ -93,11 +93,10 @@ Should you want to build the solution from source code you will need to follow t
 > ParentFolder / AddonsFolder / HOPEXGraphQL
 
 2. Copy from your HOPEX platform installation the following files
-> 
-   C:\inetpub\wwwroot\HOPEXAPI\bin\Mega.Bridge.dll
-    C:\Program Files (x86)\MEGA\HOPEX V3\System\Hopex.ApplicationServer.WebServices.dll
-    C:\Program Files (x86)\MEGA\HOPEX V3\System\Mega.Macro.Executor.dll
-    C:\Program Files (x86)\MEGA\HOPEX V3\System\Mega.Macro.Wrapper.dll
+> C:\inetpub\wwwroot\HOPEXAPI\bin\Mega.Bridge.dll
+> C:\Program Files (x86)\MEGA\HOPEX V3\System\Hopex.ApplicationServer.WebServices.dll    
+> C:\Program Files (x86)\MEGA\HOPEX V3\System\Mega.Macro.Executor.dll
+> C:\Program Files (x86)\MEGA\HOPEX V3\System\Mega.Macro.Wrapper.dll
 
 3. Paste them in the folder :
 > ParentFolder / ExeRelease / Assemblies /
