@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProductName>HOPEX</ProductName>
+    <CompanyName>MEGA International</CompanyName>
+    <FileVersion Condition=" '$(FileVersion)' == '' ">0.0.0.0</FileVersion>
+    <Use64BitIISExpress />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyVersionFiles Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Target Name="AssemblyVersionMAIN" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles">
+    <Attrib Files="%(AssemblyVersionFiles.FullPath)" Normal="" />
+    <AssemblyInfo CodeLanguage="CS" AssemblyDescription="Hopex.ApplicationServer.WebServices" AssemblyCompany="$(CompanyName)" AssemblyProduct="HOPEX" ComVisible="false" CLSCompliant="true" OutputFile="%(AssemblyVersionFiles.FullPath)" AssemblyTitle="$(ProductName)" AssemblyCopyright="Copyright $(CompanyName), All rights reserved." AssemblyVersion="$(FileVersion)" AssemblyFileVersion="$(FileVersion)" AssemblyInformationalVersion="$(FileVersion)">
+      <Output TaskParameter="OutputFile" ItemName="UpdatedAssemblyVersionFiles" />
+    </AssemblyInfo>
+  </Target>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{20580587-1C19-45B9-9AE6-806751B4371E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Hopex.Model</RootNamespace>
+    <AssemblyName>Hopex.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mega.Macro.Wrapper, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\DataModel\CollectionSetter.cs" />
+    <Compile Include="Abstractions\DataModel\IHopexDataModel.cs" />
+    <Compile Include="Abstractions\DataModel\IModelCollection.cs" />
+    <Compile Include="Abstractions\DataModel\IModelElement.cs" />
+    <Compile Include="Abstractions\DataModel\ISetter.cs" />
+    <Compile Include="Abstractions\DataModel\NameIdentifier.cs" />
+    <Compile Include="Abstractions\DataModel\PropertySetter.cs" />
+    <Compile Include="Abstractions\IPivotSchemaConvertor.cs" />
+    <Compile Include="Abstractions\IPivotSchemaLoader.cs" />
+    <Compile Include="Abstractions\MetaModel\IClassDescription.cs" />
+    <Compile Include="Abstractions\MetaModel\IConstraintDescription.cs" />
+    <Compile Include="Abstractions\MetaModel\IEnumDescription.cs" />
+    <Compile Include="Abstractions\MetaModel\IHopexMetaModel.cs" />
+    <Compile Include="Abstractions\MetaModel\IHopexMetaModelManager.cs" />
+    <Compile Include="Abstractions\MetaModel\IPathDescription.cs" />
+    <Compile Include="Abstractions\MetaModel\IPropertyDescription.cs" />
+    <Compile Include="Abstractions\MetaModel\IRelationshipDescription.cs" />
+    <Compile Include="Abstractions\MetaModel\PropertyType.cs" />
+    <Compile Include="DataModel\HopexDataModel.cs" />
+    <Compile Include="DataModel\HopexModelCollection.cs" />
+    <Compile Include="DataModel\HopexModelElement.cs" />
+    <Compile Include="MetaModel\ClassDescription.cs" />
+    <Compile Include="MetaModel\EnumDescription.cs" />
+    <Compile Include="MetaModel\HopexMetaModelManager.cs" />
+    <Compile Include="MetaModel\MetaModel.cs" />
+    <Compile Include="MetaModel\PathDescription.cs" />
+    <Compile Include="MetaModel\PropertyDescription.cs" />
+    <Compile Include="MetaModel\RelationshipDescription.cs" />
+    <Compile Include="Mocks\DataGenerator.cs" />
+    <Compile Include="Mocks\MockDataElement.cs" />
+    <Compile Include="Mocks\MockDataModel.cs" />
+    <Compile Include="Mocks\MockModelCollection.cs" />
+    <Compile Include="PivotSchema\Convertors\PivotSchemaValidationException.cs" />
+    <Compile Include="PivotSchema\Convertors\SchemaPivotConvertor.cs" />
+    <Compile Include="PivotSchema\Convertors\ValidationContext.cs" />
+    <Compile Include="PivotSchema\Convertors\ValidationException.cs" />
+    <Compile Include="PivotSchema\Loaders\FileSystemLoader.cs" />
+    <Compile Include="PivotSchema\Loaders\RessourcesLoader.cs" />
+    <Compile Include="PivotSchema\Models\ClassDescription.cs" />
+    <Compile Include="PivotSchema\Models\ConstraintsDescription.cs" />
+    <Compile Include="PivotSchema\Models\EnumDescription.cs" />
+    <Compile Include="PivotSchema\Models\PathDescription.cs" />
+    <Compile Include="PivotSchema\Models\PivotSchema.cs" />
+    <Compile Include="PivotSchema\Models\PropertyDescription.cs" />
+    <Compile Include="PivotSchema\Models\RelationshipDescription.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildDependsOn>
+      AssemblyVersionMAIN;
+      $(BuildDependsOn);
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
+  </Target>
+  <Import Project="..\..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
+</Project>
