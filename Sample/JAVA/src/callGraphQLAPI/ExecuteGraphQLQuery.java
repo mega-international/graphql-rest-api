@@ -73,7 +73,7 @@ public ExecuteGraphQLQuery(String graphQLQuery, String urlGraphQL, String bearer
 		connection.setDoOutput(true);
 		connection.setConnectTimeout(5000);
 		connection.setReadTimeout(5000);		
-		connection.setRequestProperty("X-HopexContext", hopexContext);
+		connection.setRequestProperty("X-Hopex-Context", hopexContext);
 		connection.setRequestProperty("Authorization", "Bearer " + bearer);
 		
 
