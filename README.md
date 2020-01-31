@@ -1,4 +1,4 @@
-# Project Title
+# REST API based on GraphQL
 
 This add-on expose a catalog of REST API that can be queried following the GraphQL specification framework. The call to the API are made using JSON that contains the query to execute (query or mutation). The result of the call to the REST API is a JSON containing the data requested. With this add-on you can read and write data in the HOPEX repository.
 
