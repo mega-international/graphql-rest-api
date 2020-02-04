@@ -11,22 +11,50 @@ namespace Hopex.Model.DataModel
     internal class HopexModelCollection : IModelCollection, IDisposable
     {
         private HopexDataModel _dataModel;
-        private readonly MegaObject _source;
+        private readonly MegaRoot _root;
+        private readonly string _erql;
+        private readonly List<Tuple<string, int>> _orderByClauses;
 
-        public HopexModelCollection(HopexDataModel domainModel, IRelationshipDescription schema, MegaObject source)
+        public HopexModelCollection(HopexDataModel domainModel, IRelationshipDescription schema, MegaRoot source, string erql, List<Tuple<string, int>> orderByClauses)
         {
             _dataModel = domainModel;
             RelationshipDescription = schema;
-            _source = source;
+            _root = source;
+            _erql = erql;
+            _orderByClauses = orderByClauses;
         }
 
         public IRelationshipDescription RelationshipDescription { get; }
 
         public IEnumerator<IModelElement> GetEnumerator()
         {
-            foreach (var item in ResolveByPath(_source))
+            var target = RelationshipDescription.Path.Last();
+            var schemaElement = RelationshipDescription.ClassDescription.MetaModel.GetClassDescription(target.TargetSchemaName);
+            MegaCollection items;
+            switch (_orderByClauses.Count)
             {
-                yield return item;
+                case 0:
+                    items = _root.GetSelection(_erql);
+                    break;
+                case 1:
+                    items = _root.GetSelection(_erql,
+                        _orderByClauses[0].Item2, _orderByClauses[0].Item1);
+                    break;
+                case 2:
+                    items = _root.GetSelection(_erql,
+                        _orderByClauses[0].Item2, _orderByClauses[0].Item1,
+                        _orderByClauses[1].Item2, _orderByClauses[1].Item1);
+                    break;
+                default:
+                    items = _root.GetSelection(_erql,
+                        _orderByClauses[0].Item2, _orderByClauses[0].Item1,
+                        _orderByClauses[1].Item2, _orderByClauses[1].Item1,
+                        _orderByClauses[2].Item2, _orderByClauses[2].Item1);
+                    break;
+            }
+            foreach (MegaObject item in items)
+            {
+                yield return new HopexModelElement(_dataModel, schemaElement, item);
             }
         }
 
@@ -37,9 +65,40 @@ namespace Hopex.Model.DataModel
 
         private IEnumerable<IModelElement> ResolveByPath(MegaObject current, int level = 0, HashSet<MegaId> distinctItemsIds = null)
         {
+            MegaCollection megaCollection;
             var hop = RelationshipDescription.Path[level];
-            //TODO: replace by: var items = current.GetCollection(hop.RoleId).Filter(hop.TargetSchemaId.ToString())
-            var items = MegaWrapperObject.Cast<MegaCollection>(current.GetCollection(hop.RoleId).NativeObject.GetType(hop.TargetSchemaId.ToString()));
+
+            if (_orderByClauses != null)
+            {
+                switch (_orderByClauses.Count)
+                {
+                    case 0:
+                        megaCollection = current.GetCollection(hop.RoleId);
+                        break;
+                    case 1:
+                        megaCollection = current.GetCollection(hop.RoleId,
+                            _orderByClauses[0].Item2, _orderByClauses[0].Item1);
+                        break;
+                    case 2:
+                        megaCollection = current.GetCollection(hop.RoleId,
+                            _orderByClauses[0].Item2, _orderByClauses[0].Item1,
+                            _orderByClauses[1].Item2, _orderByClauses[1].Item1);
+                        break;
+                    default:
+                        megaCollection = current.NativeObject.GetCollection(
+                            hop.RoleId,
+                            _orderByClauses[0].Item2, _orderByClauses[0].Item1,
+                            _orderByClauses[1].Item2, _orderByClauses[1].Item1,
+                            _orderByClauses[2].Item2, _orderByClauses[2].Item1);
+                        break;
+                }
+            }
+            else
+            {
+                megaCollection = current.GetCollection(hop.RoleId);
+            }
+
+            var items = MegaWrapperObject.Cast<MegaCollection>(megaCollection.NativeObject.GetType(hop.TargetSchemaId.ToString()));
             if(distinctItemsIds == null)
             {
                 distinctItemsIds = new HashSet<MegaId>();
@@ -51,9 +110,12 @@ namespace Hopex.Model.DataModel
                 {
                     foreach (MegaObject item in items)
                     {
-                        if(distinctItemsIds.Add(item.Id))
+                        if(MetaAssociationConditionFilter(item, hop))
                         {
-                            yield return new HopexModelElement(_dataModel, schemaElement, item);
+                            if(distinctItemsIds.Add(item.Id))
+                            {
+                                yield return new HopexModelElement(_dataModel, schemaElement, item);
+                            }
                         }
                     }
                 }
@@ -61,9 +123,12 @@ namespace Hopex.Model.DataModel
                 {
                     foreach (MegaObject item in items)
                     {
-                        foreach (var item2 in ResolveByPath(item, level + 1, distinctItemsIds))
+                        if(MetaAssociationConditionFilter(item, hop))
                         {
-                            yield return item2;
+                            foreach(var item2 in ResolveByPath(item, level + 1, distinctItemsIds))
+                            {
+                                yield return item2;
+                            }
                         }
                     }
                 }
@@ -78,10 +143,18 @@ namespace Hopex.Model.DataModel
             }
         }
 
+        private static bool MetaAssociationConditionFilter(MegaObject item, IPathDescription hop)
+        {
+            if(hop.Condition == null || string.IsNullOrEmpty(hop.Condition.RoleId) || string.IsNullOrEmpty(hop.Condition.ObjectFilterId))
+            {
+                return true;
+            }
+            return item.GetPropertyValue(Utils.NormalizeHopexId(hop.Condition.RoleId)) == hop.Condition.ObjectFilterId;
+        }
+
         public void Dispose()
         {
             _dataModel = null;
-            (_source as IDisposable)?.Dispose();
         }
     }
 }

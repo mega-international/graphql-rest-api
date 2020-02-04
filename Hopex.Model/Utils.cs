@@ -25,6 +25,15 @@ namespace Hopex.Model
             return id;
         }
 
+        internal static string NormalizeHopexId(string id)
+        {
+            if (id != null && id.ToString().Length > 1 && id.ToString()[0] != '~')
+            {
+                id = '~' + id.ToString();
+            }
+            return id;
+        }
+
         internal static bool CheckName(string name)
         {
             return _namePattern.IsMatch(name);

@@ -13,7 +13,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
         internal static FilterValue Create(IPropertyDescription propertyDescription, string operation, object value)
         {
-            if(Equals(propertyDescription.Id, MegaId.Create("~310000000D00")))
+            if(Equals(propertyDescription.Id, "~310000000D00"))
             {
                 return new IdFilterValue
                 {

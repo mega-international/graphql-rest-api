@@ -15,14 +15,14 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                     case "_not":
                         return valueToCompare != Value.ToString();
                     case "_in":
-                        return ((List<object>)Value).Contains(valueToCompare);
+                        return ((List<string>)Value).Contains(valueToCompare);
                     case "_not_in":
-                        return !((List<object>)Value).Contains(valueToCompare);
+                        return !((List<string>)Value).Contains(valueToCompare);
                     default:
                         return false;
                 }
             }
-            return false;
+            return Operation.Contains("_not");
         }
     }
 }

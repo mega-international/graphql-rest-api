@@ -4,6 +4,8 @@ namespace Hopex.Model.PivotSchema.Models
 {
     public class PivotPathDescription
     {
+        [JsonProperty("id")]
+        public string Id { get; set; }
         [JsonProperty("maeName")]
         public string RoleName { get; set; }
         [JsonProperty("maeID")]
@@ -14,6 +16,7 @@ namespace Hopex.Model.PivotSchema.Models
         public string MetaClassId { get; set; }
         [JsonProperty("multiplicity")]
         public string Multiplicity { get; set; }
+        [JsonProperty("condition")]
+        public PivotPathConditionDescription Condition { get; set; }
     }
 }
-

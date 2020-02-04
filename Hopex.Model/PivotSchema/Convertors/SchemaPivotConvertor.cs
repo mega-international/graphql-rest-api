@@ -59,7 +59,7 @@ namespace Hopex.Model.PivotSchema.Convertors
 
                 if (!(schema.GetClassDescription(clazz.Name, false) is ClassDescription existing))
                 {
-                    existing = new ClassDescription(schema, clazz.Name, clazz.Id, clazz.Description, clazz.IsEntryPoint == true);
+                    existing = new ClassDescription(schema, clazz.Name, clazz.Id, clazz.Description, clazz.Constraints.IsEntryPoint == true);
                     schema.AddClass(existing);
                 }
                 else
@@ -89,7 +89,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                 string roleId = rel.Path[0].RoleId;
                 if (!(cd.GetRelationshipDescription(rel.Name, false) is RelationshipDescription existing))
                 {
-                    existing = new RelationshipDescription(cd, rel.Name, roleId, rel.Description);
+                    existing = new RelationshipDescription(rel.Id, cd, rel.Name, roleId, rel.Description);
                     cd.AddRelationship(existing);
                 }
                 else
@@ -99,7 +99,7 @@ namespace Hopex.Model.PivotSchema.Convertors
 
                 if (rel.Path != null)
                 {
-                    existing.SetPath(rel.Path.Select(p => new PathDescription(p.RoleName, p.RoleId, p.MetaClassId, p.MetaClassName)));
+                    existing.SetPath(rel.Path.Select(p => new PathDescription(p.Id, p.RoleName, p.RoleId, p.MetaClassId, p.MetaClassName, p.Multiplicity, p.Condition)));
                 }
             }
         }
@@ -121,7 +121,9 @@ namespace Hopex.Model.PivotSchema.Convertors
                                                        property.Constraints?.PropertyType,
                                                        property.Constraints?.IsRequired,
                                                        property.Constraints?.IsReadOnly,
-                                                       property.Constraints?.IsFilter)
+                                                       property.Constraints?.IsTranslatable,
+                                                       property.Constraints?.IsFormattedText,
+                                                       property.Constraints?.MaxLength)
                     {
                         SetterFormat = property.SetterFormat ?? PropertyDescription.DefaultSetterFormat,
                         GetterFormat = property.GetterFormat ?? PropertyDescription.DefaultGetterFormat
@@ -136,7 +138,8 @@ namespace Hopex.Model.PivotSchema.Convertors
                     existing.GetterFormat = property.GetterFormat ?? existing.GetterFormat ?? PropertyDescription.DefaultGetterFormat;
                     existing.IsRequired = property.Constraints?.IsRequired ?? existing.IsRequired;
                     existing.IsReadOnly = property.Constraints?.IsReadOnly ?? existing.IsReadOnly;
-                    existing.IsFilterable = property.Constraints?.IsFilter ?? existing.IsFilterable;
+                    existing.IsTranslatable = property.Constraints?.IsTranslatable ?? existing.IsTranslatable;
+                    existing.IsFormattedText = property.Constraints?.IsFormattedText ?? existing.IsFormattedText;
                 }
 
                 if (property.EnumValues != null)

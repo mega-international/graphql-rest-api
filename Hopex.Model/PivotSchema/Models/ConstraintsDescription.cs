@@ -10,11 +10,13 @@ namespace Hopex.Model.PivotSchema.Models
         [JsonProperty("mandatory")]
         public bool? IsRequired { get; set; }
         [JsonProperty("maxLength")]
-        public string MaxLength { get; set; }
+        public int? MaxLength { get; set; }
         [JsonProperty("readOnly")]
         public bool? IsReadOnly { get; set; }
-        [JsonProperty("filter")]
-        public bool? IsFilter { get; set; }
+        [JsonProperty("translatable")]
+        public bool? IsTranslatable { get; set; }
+        [JsonProperty("formattedText")]
+        public bool? IsFormattedText { get; set; }
     }
 }
 

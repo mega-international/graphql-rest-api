@@ -14,7 +14,7 @@ namespace Hopex.Model.MetaModel
         private List<IEnumDescription> _enumValues;
         private string _propertyTypeName;
 
-        public PropertyDescription(IClassDescription classDescription, string name, MegaId id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isFilter)
+        public PropertyDescription(IClassDescription classDescription, string name, string id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isTranslatable = false, bool? isFormattedText = false, int? maxLength = null)
         {
             ClassDescription = classDescription;
             Name = name;
@@ -23,7 +23,9 @@ namespace Hopex.Model.MetaModel
             PropertyTypeName = propertyType;
             IsRequired = isRequired == true;
             IsReadOnly = isReadOnly == true;
-            IsFilterable = isFilter == true;
+            IsTranslatable = isTranslatable == true;
+            IsFormattedText = isFormattedText == true;
+            MaxLength = maxLength;
             Constraints = new List<IConstraintDescription>();
         }
 
@@ -38,13 +40,15 @@ namespace Hopex.Model.MetaModel
         }
 
         public string Name { get; }
-        public MegaId Id { get; }
+        public string Id { get; }
         public string Description { get; internal set; }
         public IEnumerable<IConstraintDescription> Constraints { get; }
         public IEnumerable<IEnumDescription> EnumValues => _enumValues;
         public bool IsReadOnly { get; internal set; }
-        public bool IsFilterable { get; internal set; }
         public bool IsRequired { get; internal set; }
+        public bool IsTranslatable { get; internal set; }
+        public bool IsFormattedText { get; internal set; }
+        public int? MaxLength { get; internal set; }
         public IClassDescription ClassDescription { get; }
         public string SetterFormat { get; internal set; }
         public string GetterFormat { get; internal set; }
@@ -83,7 +87,7 @@ namespace Hopex.Model.MetaModel
                         PropertyType = PropertyType.Date;
                         break;
                     case "double":
-                        NativeType = typeof(Double);
+                        NativeType = typeof(double);
                         PropertyType = PropertyType.Double;
                         break;
                     case "binary":

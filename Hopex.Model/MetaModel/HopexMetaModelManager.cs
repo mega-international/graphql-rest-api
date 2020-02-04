@@ -38,9 +38,13 @@ namespace Hopex.Model.MetaModel
             }
 
             var convertor = _convertorFactory(ctx ?? new ValidationContext());
-            schema = await convertor.ConvertAsync(this, json);
-            _schemas[schemaName] = schema;
-            _resolvedSchemas.Add(schemaName);
+            if (convertor != null)
+            {
+                schema = await convertor.ConvertAsync(this, json);
+                _schemas[schemaName] = schema;
+                _resolvedSchemas.Add(schemaName);
+            }
+
             return schema;
         }
     }

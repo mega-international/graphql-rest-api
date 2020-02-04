@@ -20,11 +20,10 @@ namespace Hopex.Model.Mocks
 
         public MockModelCollection(MockDataModel dataModel, IClassDescription targetSchema)
         {
-            _count = DataGenerator.Instance.Next(0, 20);
-
+            _count = MockDataModel.MaxCollectionSize;
             for (var ix = 0; ix < _count; ix++)
             {
-                var elem = dataModel.CreateElement(targetSchema);
+                var elem = dataModel.CreateElement(targetSchema, 100+ix);
                 _elements.Add(elem);
             }
         }

@@ -53,7 +53,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                         return false;
                 }
             }
-            return false;
+            return Operation.Contains("_not");
         }
     }
 }

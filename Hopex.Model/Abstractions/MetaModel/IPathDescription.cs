@@ -1,3 +1,4 @@
+using Hopex.Model.MetaModel;
 using Mega.Macro.API;
 
 namespace Hopex.Model.Abstractions.MetaModel
@@ -5,10 +6,10 @@ namespace Hopex.Model.Abstractions.MetaModel
     public interface IPathDescription
     {
         string RoleName { get; }
-        MegaId RoleId { get; }
+        string RoleId { get; }
         string TargetSchemaName { get; }
-        MegaId TargetSchemaId { get; }
+        string TargetSchemaId { get; }
         string Multiplicity { get; }
-        bool IsVisible { get; }
+        PathConditionDescription Condition { get; }
     }
 }

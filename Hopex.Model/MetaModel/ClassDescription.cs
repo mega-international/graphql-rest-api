@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Hopex.Model.Abstractions.MetaModel;
 using Mega.Macro.API;
+using Mega.Macro.API.Library;
 
 namespace Hopex.Model.MetaModel
 {
@@ -11,7 +12,7 @@ namespace Hopex.Model.MetaModel
         private readonly Dictionary<string, IPropertyDescription> _properties;
         private readonly Dictionary<string, IRelationshipDescription> _relationships;
 
-        public ClassDescription(IHopexMetaModel schema, string name, MegaId id, string description, bool isEntryPoint)
+        public ClassDescription(IHopexMetaModel schema, string name, string id, string description, bool isEntryPoint)
         {
             IsEntryPoint = isEntryPoint;
             MetaModel = schema;
@@ -23,7 +24,7 @@ namespace Hopex.Model.MetaModel
         }
 
         public string Name { get; }
-        public MegaId Id { get; }
+        public string Id { get; }
         public string Description { get; internal set; }
 
         internal IClassDescription Clone(IHopexMetaModel schema)
@@ -31,7 +32,7 @@ namespace Hopex.Model.MetaModel
             ClassDescription clone = new ClassDescription(schema, Name, Id, Description, IsEntryPoint);
             foreach (PropertyDescription prop in _properties.Values)
             {
-                PropertyDescription p = new PropertyDescription(this, prop.Name, prop.Id, prop.Description, prop.PropertyTypeName, prop.IsRequired, prop.IsReadOnly, prop.IsFilterable);
+                PropertyDescription p = new PropertyDescription(this, prop.Name, prop.Id, prop.Description, prop.PropertyTypeName, prop.IsRequired, prop.IsReadOnly, prop.IsTranslatable, prop.IsFormattedText);
                 foreach (IEnumDescription e in p.EnumValues)
                 {
                     p.AddEnumValue(new EnumDescription(e.Name, e.Id, e.Description, e.InternalValue));
@@ -41,7 +42,7 @@ namespace Hopex.Model.MetaModel
 
             foreach (RelationshipDescription rel in _relationships.Values)
             {
-                RelationshipDescription r = new RelationshipDescription(this, rel.Name, rel.RoleId, rel.Description);
+                RelationshipDescription r = new RelationshipDescription(rel.Id, this, rel.Name, rel.RoleId, rel.Description);
                 r.SetPath(rel.Path);
                 clone.AddRelationship(r);
             }
@@ -56,6 +57,11 @@ namespace Hopex.Model.MetaModel
 
         public IPropertyDescription GetPropertyDescription(string propertyName, bool throwExceptionIfNotExists = true)
         {
+            if (propertyName == "id")
+            {
+                return new PropertyDescription(this, "id", MetaAttributeLibrary.AbsoluteIdentifier, "id", "string", true, true);
+            }
+
             if (_properties.TryGetValue(propertyName, out IPropertyDescription cd))
             {
                 return cd;
@@ -65,6 +71,7 @@ namespace Hopex.Model.MetaModel
             {
                 throw new Exception($"{propertyName} not found");
             }
+
             return null;
         }
 

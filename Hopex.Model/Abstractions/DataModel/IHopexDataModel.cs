@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hopex.Model.Abstractions.MetaModel;
@@ -6,7 +7,7 @@ namespace Hopex.Model.Abstractions.DataModel
 {
     public interface IHasCollection
     {
-        Task<IModelCollection> GetCollectionAsync(string name);
+        Task<IModelCollection> GetCollectionAsync(string name, string erql = null, List<Tuple<string, int>> orderByClauses = null, string relationshipName = null);
         IHopexMetaModel MetaModel { get; }
     }
 

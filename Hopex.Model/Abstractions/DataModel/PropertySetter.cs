@@ -1,3 +1,4 @@
+using GraphQL;
 using Hopex.Model.Abstractions.MetaModel;
 
 namespace Hopex.Model.Abstractions.DataModel
@@ -10,6 +11,12 @@ namespace Hopex.Model.Abstractions.DataModel
 
         public static PropertySetter Create<T>(IPropertyDescription property, T value, string setterFormat = null)
         {
+            if (property.MaxLength != null)
+            {
+                var valueString = value as string;
+                if (valueString != null && valueString.Length > property.MaxLength)
+                    throw new ExecutionError($"Value {value} for {property.Name} exceeds maximum length of {property.MaxLength}");
+            }
             return new PropertySetter
             {
                 PropertyDescription = property,

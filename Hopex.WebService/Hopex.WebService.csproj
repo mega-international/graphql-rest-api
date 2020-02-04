@@ -11,7 +11,7 @@
   <ItemGroup>
     <AssemblyVersionFiles Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Target Name="AssemblyVersionMAIN" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles">
+  <Target Name="AssemblyVersionMAIN" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles" Condition="'$(BuildingForLiveUnitTesting)' != 'true'">
     <Attrib Files="%(AssemblyVersionFiles.FullPath)" Normal="" />
     <AssemblyInfo CodeLanguage="CS" AssemblyDescription="Hopex.Macro.GraphQL" AssemblyCompany="$(CompanyName)" AssemblyProduct="HOPEX" ComVisible="false" CLSCompliant="true" OutputFile="%(AssemblyVersionFiles.FullPath)" AssemblyTitle="$(ProductName)" AssemblyCopyright="Copyright $(CompanyName), All rights reserved." AssemblyVersion="$(FileVersion)" AssemblyFileVersion="$(FileVersion)" AssemblyInformationalVersion="$(FileVersion)">
       <Output TaskParameter="OutputFile" ItemName="UpdatedAssemblyVersionFiles" />
@@ -92,6 +92,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -103,10 +104,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttachmentEntryPoint.cs" />
+    <Compile Include="BaseSatelliteEntryPoint.cs" />
+    <Compile Include="DiagramEntryPoint.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="EntryPointOData.cs" />
+    <Compile Include="IFileSource.cs" />
     <Compile Include="InputArguments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchemaPathExtractor.cs" />
+    <Compile Include="Schema\CompatibilityList.cs" />
+    <Compile Include="SchemaEntryPoint.cs" />
     <Compile Include="Schema\Directives\FormatDirective.cs" />
     <Compile Include="Schema\Filters\BooleanFilterValue.cs" />
     <Compile Include="Schema\Filters\DateTimeFilterValue.cs" />
@@ -118,32 +126,45 @@
     <Compile Include="Schema\Filters\IdFilterValue.cs" />
     <Compile Include="Schema\Filters\StringFilterValue.cs" />
     <Compile Include="Schema\HopexEnumerationGraphType.cs" />
+    <Compile Include="Schema\QueryFilter\ArrayRequiredException.cs" />
+    <Compile Include="Schema\QueryFilter\FilterArgumentBuilder.cs" />
+    <Compile Include="Schema\QueryFilter\FilterCompiler.cs" />
+    <Compile Include="Schema\QueryFilter\HopexOperator.cs" />
     <Compile Include="Schema\SchemaBuilder.cs" />
     <Compile Include="Schema\SchemaManager.cs" />
     <Compile Include="Schema\Formats\StringFormat.cs" />
     <Compile Include="Schema\Formats\StringFormatEnum.cs" />
+    <Compile Include="Schema\ISchemaManagerProvider.cs" />
     <Compile Include="Schema\TypeExtensions.cs" />
+    <Compile Include="Schema\Types\ContextType.cs" />
+    <Compile Include="UserContext.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CONFIG\Audit.json">
+    <None Include="CONFIG\compatibility_list.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CONFIG\BPA.json">
+    <None Include="CONFIG\V3\Standard\Assessment.JSON">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CONFIG\Data.json">
+    <None Include="CONFIG\V3\Standard\Audit.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CONFIG\GDPR.json">
+    <None Include="CONFIG\V3\Standard\BPA.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CONFIG\Incident.json">
+    <None Include="CONFIG\V3\Standard\Data.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CONFIG\ITPM.json">
+    <None Include="CONFIG\V3\Standard\GDPR.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CONFIG\MetaModel.json">
+    <None Include="CONFIG\V3\Standard\Incident.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="CONFIG\V3\Standard\ITPM.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="CONFIG\V3\Standard\MetaModel.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="hopexmanifest.json" />
@@ -153,12 +174,20 @@
     <Content Include="Macro GraphQL.mgr" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj">
+      <Project>{43369561-0052-477a-b23f-61fc57b8466f}</Project>
+      <Name>Hopex.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Hopex.Model\Hopex.Model.csproj">
       <Project>{20580587-1c19-45b9-9ae6-806751b4371e}</Project>
       <Name>Hopex.Model</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CONFIG\V3\Custom\" />
+    <Folder Include="CONFIG\V4\Custom\" />
+    <Folder Include="CONFIG\V4\Standard\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

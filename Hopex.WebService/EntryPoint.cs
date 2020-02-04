@@ -1,19 +1,16 @@
-using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
 using Hopex.ApplicationServer.WebServices;
-using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
-using Hopex.Model.MetaModel;
-using Hopex.Model.PivotSchema.Convertors;
-using Hopex.Model.PivotSchema.Loaders;
+using Hopex.Model.Mocks;
 using Hopex.Modules.GraphQL.Schema;
 using Mega.Macro.API;
+using Newtonsoft.Json;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Hopex.Modules.GraphQL
 {
@@ -25,29 +22,38 @@ namespace Hopex.Modules.GraphQL
     public class EntryPoint : HopexWebService<InputArguments>
     {
         private const string WebServiceRoute = "graphql";
-        private static GraphQLSchemaManager _schemaManager;
+
+        private ISchemaManagerProvider _schemaManagerProvider;
+
+        public EntryPoint()
+            :this(new SchemaManagerProvider())
+        {}
+
+        public EntryPoint(ISchemaManagerProvider schemaManagerSingleton)
+        {
+            _schemaManagerProvider = schemaManagerSingleton;
+        }
 
         public override async Task<HopexResponse> Execute(InputArguments args)
         {
             try
             {
-                if (_schemaManager == null)
+                var schemaManager = _schemaManagerProvider.GetInstance(Logger, HopexContext);
+                var environmentId = GetEnvironmentId();
+                var schemaPath = ExtractSchemaPath(GetMegaRoot(), HopexContext.Request.Path, environmentId);
+                if (string.IsNullOrEmpty(schemaPath))
                 {
-                    Logger.LogInformation("Initializing schemas.");
-                    var hopexSchemaManager = new HopexMetaModelManager(CreateSchemaLoader(), ctx => new PivotConvertor(ctx));
-                    _schemaManager = new GraphQLSchemaManager(hopexSchemaManager);
-                    Logger.LogInformation("Schemas initialized.");
+                    var ex = new Exception($"Unknown route: {HopexContext.Request.Path}");
+                    Logger?.LogError(ex);
+                    return HopexResponse.Error((int)HttpStatusCode.BadRequest, JsonConvert.SerializeObject(new { HttpStatusCode = HttpStatusCode.BadRequest, Error = ex.Message }));
                 }
-
-                var schemaName = ExtractSchemaName();
-                var (graphQlSchema, hopexSchema) = await _schemaManager.GetSchemaAsync(schemaName);
+                var (graphQlSchema, hopexSchema) = await schemaManager.GetSchemaAsync(schemaPath);
 
                 var executer = new DocumentExecuter();
-                var query = args.query;
                 Inputs variables = null;
-                if (args.variables != null)
+                if(args.Variables != null)
                 {
-                    variables = new Inputs(args.variables);
+                    variables = new Inputs(args.Variables);
                 }
 
                 Logger.LogInformation("Executing query");
@@ -56,52 +62,80 @@ namespace Hopex.Modules.GraphQL
                 {
                     var result = await executer.ExecuteAsync(_ =>
                     {
-                        _.UserContext = HopexContext.Request;
                         _.Schema = graphQlSchema;
                         _.Root = root;
-                        _.Query = query;
+                        _.UserContext = new UserContext
+                        {
+                            MegaRoot = GetNativeMegaRoot(),
+                            IRoot = GetMegaRoot(),
+                            WebServiceUrl = args.WebServiceUrl
+                        };
+                        _.OperationName = args.OperationName;
+                        _.Query = args.Query;
                         _.Inputs = variables;
+                        _.ThrowOnUnhandledException = true;
                     });
 
-                    Logger.LogInformation("Query terminated.");
+                    Logger.LogInformation($"Query terminated: {args.Query.Replace("\n", " ")}");
 
                     var writer = new DocumentWriter(true);
-                    return HopexResponse.Text(writer.Write(result), "application/json");
+                    return HopexResponse.Json(JsonConvert.SerializeObject(new { HttpStatusCode = HttpStatusCode.OK, Result = writer.Write(result) }));
                 }
                 finally
                 {
-                    var result =((dynamic) HopexContext.NativeRoot).CallFunction(
-                        "~lcE6jbH9G5cK[PublishStayInSessionWizard Command Launcher]",
-                        "{\"instruction\":\"PUBLISHINSESSION\"}");
-                    if (!result.ToString().Contains("SESSION_PUBLISH"))
-                    {
-                        Logger.LogError(new Exception("Session wasn't published"));
-                    }
-                    Logger.LogInformation("Session published");
+                    //PublishSession();
                     (root as IDisposable)?.Dispose();
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Logger?.LogError(ex);
-                return HopexResponse.Text(ex.Message, statusCode: 500);
+                return HopexResponse.Error((int)HttpStatusCode.InternalServerError, JsonConvert.SerializeObject(new { HttpStatusCode = HttpStatusCode.InternalServerError, Error = ex.Message }));
             }
         }
 
-        protected virtual IPivotSchemaLoader CreateSchemaLoader()
+        protected virtual void PublishSession()
         {
-            return new FileSystemLoader($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\CONFIG");
+            var result = GetMegaRoot().CallFunctionString("~lcE6jbH9G5cK", "{\"instruction\":\"PUBLISHINSESSION\"}");
+            if (result == null || !result.Contains("SESSION_PUBLISH"))
+            {
+                throw new Exception("Session wasn't published");
+            }
+
+            Logger.LogInformation("Session published");
+        }
+
+        protected virtual MegaRoot GetNativeMegaRoot()
+        {
+            return MegaWrapperObject.Cast<MegaRoot>(HopexContext.NativeRoot);
+        }
+
+        public virtual IMegaRoot GetMegaRoot()
+        {
+            return RealMegaRootFactory.FromNativeRoot(HopexContext.NativeRoot);
         }
 
         protected virtual IHopexDataModel CreateDataModel(IHopexMetaModel metaModel)
         {
             var wrapper = MegaWrapperObject.Cast<MegaRoot>(HopexContext.NativeRoot);
-            return new HopexDataModel(metaModel, wrapper);
+            return new HopexDataModel(metaModel, wrapper, Logger);
         }
 
-        private string ExtractSchemaName()
+        protected virtual string GetEnvironmentId()
         {
-            return HopexContext.Request.Path.Substring($"/api/{WebServiceRoute}/".Length);
+            if (HopexContext.Request.Headers.ContainsKey("EnvironmentId"))
+            {
+                if (HopexContext.Request.Headers["EnvironmentId"].Length > 0)
+                {
+                    return HopexContext.Request.Headers["EnvironmentId"][0];
+                }
+            }
+            return "";
+        }
+
+        private string ExtractSchemaPath(IMegaRoot iRoot, string requestPath, string environmentId)
+        {
+            return new SchemaPathExtractor().Extract(iRoot, requestPath, environmentId, WebServiceRoute, Logger);            
         }
     }
 }

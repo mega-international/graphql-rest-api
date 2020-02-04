@@ -9,7 +9,7 @@ namespace Hopex.Model.Abstractions.MetaModel
     {
         IHopexMetaModel MetaModel { get; }
         string Name { get; }
-        MegaId Id { get; }
+        string Id { get; }
         string Description { get; }
         bool IsEntryPoint { get; }
         IEnumerable<IPropertyDescription> Properties { get; }

@@ -10,8 +10,8 @@ namespace Hopex.Model.PivotSchema.Models
         public string Id { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
-        [JsonProperty("queryNode")]
-        public bool? IsEntryPoint { get; set; }
+        [JsonProperty("constraints")]
+        public PivotClassConstraintsDescription Constraints { get; set; }
         [JsonProperty("properties")]
         public PivotPropertyDescription[] Properties { get; set; }
         [JsonProperty("relationships")]
