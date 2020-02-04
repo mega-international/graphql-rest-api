@@ -9,7 +9,7 @@
   <ItemGroup>
     <AssemblyVersionFiles Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Target Name="AssemblyVersionMAIN" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles">
+  <Target Name="AssemblyVersionMAIN" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles" Condition="'$(BuildingForLiveUnitTesting)' != 'true'">
     <Attrib Files="%(AssemblyVersionFiles.FullPath)" Normal="" />
     <AssemblyInfo CodeLanguage="CS" AssemblyDescription="Mega.WebService.GraphQL" AssemblyCompany="$(CompanyName)" AssemblyProduct="HOPEX" ComVisible="false" CLSCompliant="true" OutputFile="%(AssemblyVersionFiles.FullPath)" AssemblyTitle="$(ProductName)" AssemblyCopyright="Copyright $(CompanyName), All rights reserved." AssemblyVersion="$(FileVersion)" AssemblyFileVersion="$(FileVersion)" AssemblyInformationalVersion="$(FileVersion)">
       <Output TaskParameter="OutputFile" ItemName="UpdatedAssemblyVersionFiles" />
@@ -29,7 +29,7 @@
     <AssemblyName>Mega.WebService.GraphQL</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44339</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
@@ -152,11 +152,18 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\AttachmentController.cs" />
     <Compile Include="Controllers\GraphQlController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\DiagramController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CallMacroArguments.cs" />
+    <Compile Include="Models\ErrorContent.cs" />
+    <Compile Include="Models\GraphQlResponse.cs" />
+    <Compile Include="Utils\FileDownloadHttpResponse.cs" />
+    <Compile Include="Utils\GreedyStreamReader.cs" />
     <Compile Include="Models\HopexInfo.cs" />
     <Compile Include="Models\InputArguments.cs" />
     <Compile Include="Models\UasToken.cs" />
@@ -177,12 +184,20 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
+    <Content Include="Views\Home\ServicesDisabled.cshtml" />
+    <None Include="Web.Local.Config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Voyager.cshtml" />
     <None Include="Properties\PublishProfiles\Exploit.pubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj">
+      <Project>{43369561-0052-477a-b23f-61fc57b8466f}</Project>
+      <Name>Hopex.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -218,7 +233,6 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>

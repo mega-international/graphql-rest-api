@@ -9,28 +9,40 @@ namespace Mega.WebService.GraphQL.Controllers
     {
         public ActionResult Index(string id = "")
         {
-            var schemas = ConfigurationManager.AppSettings ["GraphQLSchemas"].Split(',').Select(x => x.Trim()).ToList();
-            if(string.IsNullOrEmpty(id))
+            if (!bool.Parse(ConfigurationManager.AppSettings["EnableTestingWebService"]))
             {
-                id = schemas [0];
+                return View("ServicesDisabled");
+            }
+
+            var schemas = ConfigurationManager.AppSettings["GraphQLSchemas"].Split(',').Select(x => x.Trim())
+                .ToList();
+            if (string.IsNullOrEmpty(id))
+            {
+                id = schemas[0];
             }
 
             var hopexInfo = new HopexInfo
             {
-                UasUrl = ConfigurationManager.AppSettings ["AuthenticationUrl"].TrimEnd('/') + "/connect/token/",
+                UasUrl = ConfigurationManager.AppSettings["AuthenticationUrl"].TrimEnd('/') + "/connect/token/",
                 Schemas = new SelectList(schemas, id),
-                EnvironmentId = ConfigurationManager.AppSettings ["EnvironmentId"],
-                RepositoryId = ConfigurationManager.AppSettings ["RepositoryId"],
-                ProfileId = ConfigurationManager.AppSettings ["ProfileId"],
-                Login = ConfigurationManager.AppSettings ["Login"],
-                Password = ConfigurationManager.AppSettings ["Password"]
+                EnvironmentId = ConfigurationManager.AppSettings["EnvironmentId"],
+                RepositoryId = ConfigurationManager.AppSettings["RepositoryId"],
+                ProfileId = ConfigurationManager.AppSettings["ProfileId"],
+                Login = ConfigurationManager.AppSettings["Login"],
+                Password = ConfigurationManager.AppSettings["Password"]
             };
 
             return View(hopexInfo);
+
         }
 
         public ActionResult Voyager(string id = "")
         {
+            if (!bool.Parse(ConfigurationManager.AppSettings["EnableTestingWebService"]))
+            {
+                return View("ServicesDisabled");
+            }
+
             var schemas = ConfigurationManager.AppSettings ["GraphQLSchemas"].Split(',').Select(x => x.Trim()).ToList();
             if(string.IsNullOrEmpty(id))
             {

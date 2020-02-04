@@ -14,15 +14,17 @@ using System.Net.Http;
 using System.Threading;
 using System.Web.Configuration;
 using System.Web.Http;
+using Hopex.Common.JsonMessages;
 
 namespace Mega.WebService.GraphQL.Controllers
 {
     [HopexAuthenticationFilter]
     public class BaseController : ApiController
     {
+        protected const string GraphQlMacro = "AAC8AB1E5D25678E";
         protected static readonly ILog Logger = LogManager.GetLogger(typeof(BaseController));
 
-        protected WebServiceResult CallMacro(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
+        protected virtual WebServiceResult CallMacro(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
         {
             // Get UserInfo
             var userInfo = (UserInfo)Request.Properties ["UserInfo"];
@@ -40,7 +42,7 @@ namespace Mega.WebService.GraphQL.Controllers
             // Find the Hopex session
             var sspUrl = ConfigurationManager.AppSettings ["MegaSiteProvider"];
             var securityKey = ((NameValueCollection)WebConfigurationManager.GetSection("secureAppSettings")) ["SecurityKey"];
-            var mwasUrl = HopexService.FindSession(sspUrl, securityKey, hopexContext.EnvironmentId, hopexContext.DataLanguageId, hopexContext.GuiLanguageId, hopexContext.ProfileId, userInfo.HopexAuthPerson);
+            var mwasUrl = HopexService.FindSession(sspUrl, securityKey, hopexContext.EnvironmentId, hopexContext.DataLanguageId, hopexContext.GuiLanguageId, hopexContext.ProfileId, userInfo.HopexAuthPerson, true);
             if(mwasUrl == null)
             {
                 const string message = "Unable to get MWAS url. Please retry later and check your configuration if it doesn't work.";
@@ -61,7 +63,15 @@ namespace Mega.WebService.GraphQL.Controllers
             }
 
             // Call the macro
-            var macroResult = hopexService.CallMacro(macroId, data);
+            string macroResult = "";
+            try
+            {
+                macroResult = hopexService.CallMacro(macroId, data);
+            }
+            catch(Exception)
+            {
+
+            }
 
             // Close the Hopex session
             if(closeSession)
@@ -94,7 +104,7 @@ namespace Mega.WebService.GraphQL.Controllers
             // Find the Hopex session
             var sspUrl = ConfigurationManager.AppSettings ["MegaSiteProvider"];
             var securityKey = ((NameValueCollection)WebConfigurationManager.GetSection("secureAppSettings")) ["SecurityKey"];
-            var mwasUrl = HopexService.FindSession(sspUrl, securityKey, hopexContext.EnvironmentId, hopexContext.DataLanguageId, hopexContext.GuiLanguageId, hopexContext.ProfileId, userInfo.HopexAuthPerson);
+            var mwasUrl = HopexService.FindSession(sspUrl, securityKey, hopexContext.EnvironmentId, hopexContext.DataLanguageId, hopexContext.GuiLanguageId, hopexContext.ProfileId, userInfo.HopexAuthPerson, true);
             if(mwasUrl == null)
             {
                 const string message = "Unable to get MWAS url. Please retry later and check your configuration if it doesn't work.";
@@ -195,12 +205,23 @@ namespace Mega.WebService.GraphQL.Controllers
                         hopexService.CloseUpdateSession();
                     }
 
-                    if(asyncMacroResult.Status == "Terminate")
+                    switch (asyncMacroResult.Status)
                     {
-                        return Ok(JsonConvert.DeserializeObject(asyncMacroResult.Result));
+                        case "Terminate":
+                        {
+                            var response = JsonConvert.DeserializeObject<GraphQlResponse>(asyncMacroResult.Result);
+                            if(response.HttpStatusCode != HttpStatusCode.OK)
+                            {
+                                return Content(response.HttpStatusCode, new { response.Error });
+                            }
+                            return Ok(JsonConvert.DeserializeObject(response.Result));
+                        }
+                            //return Ok(JsonConvert.DeserializeObject(asyncMacroResult.Result));
+                        case "UnknownActionId":
+                            return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, asyncMacroResult));
+                        default:
+                            return ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, asyncMacroResult));
                     }
-
-                    return Ok(asyncMacroResult);
                 }
 
                 // Wait and decrement wait time
@@ -248,6 +269,53 @@ namespace Mega.WebService.GraphQL.Controllers
                 AccessMode = accessMode
             };
             return mwasSessionConnectionParameters;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
+        protected IHttpActionResult ProcessMacroResult(WebServiceResult result, Func<IHttpActionResult> process)
+        {
+            if (result.ErrorType == "None")
+            {
+                try
+                {
+                    if (TryParseErrorMacroResponse(result, out ErrorMacroResponse errorMacroResponse))
+                        return Content(errorMacroResponse.HttpStatusCode, new ErrorContent(errorMacroResponse.Error));
+                    return process();
+                }
+                catch
+                {
+                    return InternalServerError(new Exception(result.Content));
+                }
+            }
+
+            return FormatResult(result);
+        }
+
+        private bool TryParseErrorMacroResponse(WebServiceResult result, out ErrorMacroResponse errorMacroResponse)
+        {
+            errorMacroResponse = null;
+            if (result.Content == null) return false;
+            bool isErrorMacroResponse = true;
+            var settings = new JsonSerializerSettings
+            {
+                Error = (sender, args) => { isErrorMacroResponse = false; args.ErrorContext.Handled = true; },
+                MissingMemberHandling = MissingMemberHandling.Error
+            };
+            errorMacroResponse = JsonConvert.DeserializeObject<ErrorMacroResponse>(result.Content, settings);
+            return isErrorMacroResponse;
+        }
+
+        protected IHttpActionResult FormatResult(WebServiceResult result)
+        {
+            switch (result.ErrorType)
+            {
+                case "None":
+                    return Ok(result.Content);
+                case "BadRequest":
+                    return BadRequest(result.Content);
+                default:
+                    return InternalServerError(new Exception($"{result.ErrorType}: {result.Content}"));
+            }
         }
     }
 }

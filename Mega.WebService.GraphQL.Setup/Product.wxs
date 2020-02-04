@@ -42,6 +42,7 @@
         </Feature>
         <Feature Id="MacroFeature" Title="Mega Macro GraphQL" Level="1">
             <ComponentGroupRef Id="MacroConfigFiles" />
+            <ComponentGroupRef Id="MacroConfigV3StandardFiles" />
             <ComponentGroupRef Id="MacroFiles" />
         </Feature>
 
@@ -70,6 +71,18 @@
                             <Directory Id="Macro" Name="hopex.graphql">
                                 <Directory Id="MacroVersion" Name="1.0.0.0">
                                     <Directory Id="MacroConfig" Name="CONFIG">
+                                        <Directory Id="MacroConfigV3" Name="V3">
+                                            <Directory Id="MacroConfigV3Custom" Name="Custom">
+                                            </Directory>
+                                            <Directory Id="MacroConfigV3Standard" Name="Standard">
+                                            </Directory>
+                                        </Directory>
+                                        <Directory Id="MacroConfigV4" Name="V4">
+                                            <Directory Id="MacroConfigV4Custom" Name="Custom">
+                                            </Directory>
+                                            <Directory Id="MacroConfigV4Standard" Name="Standard">
+                                            </Directory>
+                                        </Directory>
                                     </Directory>
                                 </Directory>
                             </Directory>
@@ -117,6 +130,9 @@
         </ComponentGroup>
 
         <ComponentGroup Id="WebServiceBinFiles" Directory="BinFolder">
+            <Component Id="Hopex.Common.dll" Guid="{8FC0AA80-DAD5-43C9-BB2E-8A3900E6C920}">
+                <File Id="Hopex.Common.dll" Name="Hopex.Common.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Hopex.Common.dll" />
+            </Component>
             <Component Id="log4net.dll" Guid="{8E7D9C9F-78FC-4EFA-8694-AF6324C46756}">
                 <File Id="log4net.dll" Name="log4net.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)log4net.dll" />
             </Component>
@@ -227,28 +243,36 @@
     </Fragment>
 
     <Fragment>
-
         <ComponentGroup Id="MacroConfigFiles" Directory="MacroConfig">
+            <Component Id="Config_compatibility_list.json" Guid="{CB9F643F-2F93-4717-B341-FC670007DD3B}">
+                <File Id="Config_compatibility_list.json" Name="compatibility_list.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\compatibility_list.json" />
+            </Component>
+        </ComponentGroup>
+        
+        <ComponentGroup Id="MacroConfigV3StandardFiles" Directory="MacroConfigV3Standard">
+            <Component Id="Config_Assessment.json" Guid="{2093D550-1035-4F47-BEBA-628AD58572F0}">
+                <File Id="Config_Assessment.json" Name="Assessment.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Assessment.json" />
+            </Component>
             <Component Id="Config_Audit.json" Guid="{0BB2AB4E-4ECE-42B9-9518-A1E8ADE0B72F}">
-                <File Id="Config_Audit.json" Name="Audit.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\Audit.json" />
+                <File Id="Config_Audit.json" Name="Audit.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Audit.json" />
             </Component>
             <Component Id="Config_BPA.json" Guid="{C243546F-0CE1-48DE-AAA4-1DD63CEB2FF3}">
-                <File Id="Config_BPA.json" Name="BPA.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\BPA.json" />
+                <File Id="Config_BPA.json" Name="BPA.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\BPA.json" />
             </Component>
             <Component Id="Config_Data.json" Guid="{6B2E4FEA-47E4-4963-BDC3-D29A86BEC9BD}">
-                <File Id="Config_Data.json" Name="Data.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\Data.json" />
+                <File Id="Config_Data.json" Name="Data.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Data.json" />
             </Component>
             <Component Id="Config_GDPR.json" Guid="{4ACA6800-4DB5-4B0F-B484-9D0C6F0EC088}">
-                <File Id="Config_GDPR.json" Name="GDPR.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\GDPR.json" />
+                <File Id="Config_GDPR.json" Name="GDPR.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\GDPR.json" />
             </Component>
             <Component Id="Config_Incident.json" Guid="{BE48BC01-A696-44EE-B6CB-E5C0C49514A8}">
-                <File Id="Config_Incident.json" Name="Incident.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\Incident.json" />
+                <File Id="Config_Incident.json" Name="Incident.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Incident.json" />
             </Component>
             <Component Id="Config_ITPM.json" Guid="{8C1ECD8D-0B96-48D1-87EF-7CF3F41A43FA}">
-                <File Id="Config_ITPM.json" Name="ITPM.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\ITPM.json" />
+                <File Id="Config_ITPM.json" Name="ITPM.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\ITPM.json" />
             </Component>
             <Component Id="Config_MetaModel.json" Guid="{E12AD817-11F4-4EE0-801B-1228CF61C4D3}">
-                <File Id="Config_MetaModel.json" Name="MetaModel.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\MetaModel.json" />
+                <File Id="Config_MetaModel.json" Name="MetaModel.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\MetaModel.json" />
             </Component>
         </ComponentGroup>
 
@@ -261,6 +285,9 @@
             </Component>
             <Component Id="Macro.Hopex.ApplicationServer.WebServices.dll" Guid="{04FCB3F3-B01A-4622-9792-5671356C4D82}">
                 <File Id="Macro.Hopex.ApplicationServer.WebServices.dll" Name="Hopex.ApplicationServer.WebServices.dll" Source="$(var.Hopex.WebService_TargetDir)Hopex.ApplicationServer.WebServices.dll" />
+            </Component>
+            <Component Id="Macro.Hopex.Common.dll" Guid="{DAB8E5A9-E168-42FF-AD5B-A92FD72434A2}">
+                <File Id="Macro.Hopex.Common.dll" Name="Hopex.Common.dll" Source="$(var.Hopex.WebService_TargetDir)Hopex.Common.dll" />
             </Component>
             <Component Id="Macro.Hopex.Model.dll" Guid="{4EF9ECCA-97F2-4EC9-9E28-57FEFD60BDFA}">
                 <File Id="Macro.Hopex.Model.dll" Name="Hopex.Model.dll" Source="$(var.Hopex.WebService_TargetDir)Hopex.Model.dll" />
