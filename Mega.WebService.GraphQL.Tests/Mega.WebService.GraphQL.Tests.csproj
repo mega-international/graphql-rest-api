@@ -145,43 +145,65 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProgressController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Tests\AbstractTest.cs" />
-    <Compile Include="Models\FakeDatas\Container.cs" />
-    <Compile Include="Models\FieldModels\EnumField.cs" />
-    <Compile Include="Models\FieldModels\Field.cs" />
-    <Compile Include="Models\FieldModels\ListField.cs" />
-    <Compile Include="Models\FieldModels\ObjectField.cs" />
-    <Compile Include="Models\FieldModels\ScalarField.cs" />
-    <Compile Include="Models\GraphQLRequester.cs" />
+    <Compile Include="Models\ProgressionModel.cs" />
+    <Compile Include="Models\TestModel.cs" />
+    <Compile Include="Sources\Filters\BasicFilterOperator.cs" />
+    <Compile Include="Sources\Filters\FilterOperator.cs" />
+    <Compile Include="Sources\Filters\FilterOperators.cs" />
+    <Compile Include="Sources\Filters\ListableFilterOperator.cs" />
+    <Compile Include="Sources\Filters\SegmentableFilterOperator.cs" />
+    <Compile Include="Sources\Filters\SortableFilterOperator.cs" />
+    <Compile Include="Models\SessionDatas\SessionEnvironment.cs" />
+    <Compile Include="Sources\Metaclasses\AnswerAudit.cs" />
+    <Compile Include="Sources\Metaclasses\Audit.cs" />
+    <Compile Include="Sources\Metaclasses\AuditActivity.cs" />
+    <Compile Include="Sources\Metaclasses\AuditTheme.cs" />
+    <Compile Include="Sources\Metaclasses\Finding.cs" />
+    <Compile Include="Sources\Metaclasses\QuestionAudit.cs" />
+    <Compile Include="Sources\Metaclasses\Recommendation.cs" />
+    <Compile Include="Sources\Metaclasses\TestSheet.cs" />
+    <Compile Include="Sources\Metaclasses\TreeMetaClasses.cs" />
+    <Compile Include="Sources\Metaclasses\WorkPaper.cs" />
+    <Compile Include="Models\SessionDatas\SessionRepository.cs" />
+    <Compile Include="Models\SessionDatas\SessionData.cs" />
+    <Compile Include="Sources\Tests\AbstractTest.cs" />
+    <Compile Include="Sources\FieldModels\EnumField.cs" />
+    <Compile Include="Sources\FieldModels\Field.cs" />
+    <Compile Include="Sources\FieldModels\ListField.cs" />
+    <Compile Include="Sources\FieldModels\ObjectField.cs" />
+    <Compile Include="Sources\FieldModels\ScalarField.cs" />
+    <Compile Include="Sources\GraphQLRequester.cs" />
     <Compile Include="Models\IndexModel.cs" />
-    <Compile Include="Models\ITestParam.cs" />
-    <Compile Include="Models\Metaclasses\Application.cs" />
-    <Compile Include="Models\Metaclasses\BusinessCapability.cs" />
-    <Compile Include="Models\Metaclasses\BusinessProcess.cs" />
-    <Compile Include="Models\Metaclasses\MetaClass.cs" />
-    <Compile Include="Models\Metaclasses\SoftwareTechnology.cs" />
-    <Compile Include="Models\Tests\Test0.cs" />
-    <Compile Include="Models\Tests\Test1.cs" />
-    <Compile Include="Models\Tests\Test10.cs" />
-    <Compile Include="Models\Tests\Test11.cs" />
-    <Compile Include="Models\Tests\Test12.cs" />
-    <Compile Include="Models\Tests\Test13.cs" />
-    <Compile Include="Models\Tests\Test14.cs" />
-    <Compile Include="Models\Tests\Test15.cs" />
-    <Compile Include="Models\Tests\Test16.cs" />
-    <Compile Include="Models\Tests\Test2.cs" />
-    <Compile Include="Models\Tests\Test3.cs" />
-    <Compile Include="Models\Tests\Test4.cs" />
-    <Compile Include="Models\Tests\Test5.cs" />
-    <Compile Include="Models\Tests\Test6.cs" />
-    <Compile Include="Models\Tests\Test7.cs" />
-    <Compile Include="Models\Tests\Test8.cs" />
-    <Compile Include="Models\Tests\Test9.cs" />
-    <Compile Include="Models\TimeMessageManager.cs" />
-    <Compile Include="Models\WSModels\TokenModel.cs" />
+    <Compile Include="Sources\ITestParam.cs" />
+    <Compile Include="Sources\Metaclasses\Application.cs" />
+    <Compile Include="Sources\Metaclasses\BusinessCapability.cs" />
+    <Compile Include="Sources\Metaclasses\BusinessProcess.cs" />
+    <Compile Include="Sources\Metaclasses\MetaClass.cs" />
+    <Compile Include="Sources\Metaclasses\SoftwareTechnology.cs" />
+    <Compile Include="Sources\Tests\Test0.cs" />
+    <Compile Include="Sources\Tests\Test1.cs" />
+    <Compile Include="Sources\Tests\Test10.cs" />
+    <Compile Include="Sources\Tests\Test11.cs" />
+    <Compile Include="Sources\Tests\Test12.cs" />
+    <Compile Include="Sources\Tests\Test13.cs" />
+    <Compile Include="Sources\Tests\Test14.cs" />
+    <Compile Include="Sources\Tests\Test15.cs" />
+    <Compile Include="Sources\Tests\Test16.cs" />
+    <Compile Include="Sources\Tests\Test17.cs" />
+    <Compile Include="Sources\Tests\Test18.cs" />
+    <Compile Include="Sources\Tests\Test2.cs" />
+    <Compile Include="Sources\Tests\Test3.cs" />
+    <Compile Include="Sources\Tests\Test4.cs" />
+    <Compile Include="Sources\Tests\Test5.cs" />
+    <Compile Include="Sources\Tests\Test6.cs" />
+    <Compile Include="Sources\Tests\Test7.cs" />
+    <Compile Include="Sources\Tests\Test8.cs" />
+    <Compile Include="Sources\Tests\Test9.cs" />
+    <Compile Include="Sources\TimeMessageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -201,9 +223,10 @@
     <None Include=".dockerignore">
       <DependentUpon>Dockerfile</DependentUpon>
     </None>
+    <Content Include="Resources\Images\failure.png" />
     <Content Include="Resources\Images\play.png" />
     <Content Include="Resources\Animations\running.gif" />
-    <Content Include="Resources\test.png" />
+    <Content Include="Resources\Images\success.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\esm\popper-utils.js" />
@@ -218,7 +241,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="App_Data\FakeDatas.json" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -263,8 +285,11 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <None Include="Web.Local.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Progress\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
