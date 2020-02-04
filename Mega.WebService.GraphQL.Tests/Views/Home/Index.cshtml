@@ -21,15 +21,15 @@
             Profile:
         </div>
         <div class="col-md-2">
-            <input id="InputEnvironmentId"      type="text" maxlength="12" style="max-height:18px" value="fBw0YE0kTDpL" /> <br />
-            <input id="InputRepositoryIdSource" type="text" maxlength="12" style="max-height:18px" value="vkHHuCujTLM9" /> <br />
-            <input id="InputRepositoryIdTarget" type="text" maxlength="12" style="max-height:18px" value="UlO1aN0kTHFN" /> <br />
-            <input id="InputProfileId"          type="text" maxlength="12" style="max-height:18px" value="I9iCqGJg)u00" />
+            @Html.DropDownList("SelectEnv", Model.EnvironmentSelectionList, new { onchange = "OnSelectedEnvChanged()" }) <br />
+            @Html.DropDownList("SelectSrcBase", Model.RepositorySelectionList) <br />
+            @Html.DropDownList("SelectDstBase", Model.RepositorySelectionList) <br />
+            @Html.DropDownList("SelectProfile", Model.ProfileSelectionList) <br />
         </div>
     </div>
 </div>
 <div class="text-center">
-    <h2 id="TestFinished"></h2>
+    <h2><span id="TestCurrent"></span> <img id="ImageResult" src="~/Resources/Images/success.png" height="30" width="30" hidden/></h2>
 </div>
 <div class="row">
     <div class="col-md-4">
