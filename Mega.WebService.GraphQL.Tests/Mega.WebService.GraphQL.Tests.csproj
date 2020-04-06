@@ -29,7 +29,7 @@
     </NuGetPackageImportStamp>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerLaunchUrl>http://{ServiceIPAddress}</DockerLaunchUrl>
-    <TypeScriptToolsVersion>3.3</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -65,7 +65,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -149,7 +149,25 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Crud\Crud.cs" />
+    <Compile Include="Models\Crud\CrudFragment.cs" />
+    <Compile Include="Models\Crud\CrudOutputFragment.cs" />
+    <Compile Include="Models\Crud\CrudInput.cs" />
+    <Compile Include="Models\Crud\CrudOutput.cs" />
+    <Compile Include="Models\Crud\CrudResult.cs" />
+    <Compile Include="Models\ExceptionContent.cs" />
+    <Compile Include="Models\Interfaces\Crud\ICrud.cs" />
+    <Compile Include="Models\Interfaces\Crud\ICrudFragment.cs" />
+    <Compile Include="Models\Interfaces\Crud\ICrudInput.cs" />
+    <Compile Include="Models\Interfaces\Crud\ICrudOutput.cs" />
+    <Compile Include="Models\Interfaces\Crud\ICrudResult.cs" />
+    <Compile Include="Models\Interfaces\Crud\ICrudSerializable.cs" />
+    <Compile Include="Models\Interfaces\Safety\ISafeClass.cs" />
+    <Compile Include="Models\Interfaces\Safety\ISafeField.cs" />
     <Compile Include="Models\ProgressionModel.cs" />
+    <Compile Include="Models\Safety\SafeField.cs" />
+    <Compile Include="Models\Safety\SafeFieldJsonConverter.cs" />
+    <Compile Include="Models\Safety\StringSafeField.cs" />
     <Compile Include="Models\TestModel.cs" />
     <Compile Include="Sources\Filters\BasicFilterOperator.cs" />
     <Compile Include="Sources\Filters\FilterOperator.cs" />
@@ -195,6 +213,7 @@
     <Compile Include="Sources\Tests\Test16.cs" />
     <Compile Include="Sources\Tests\Test17.cs" />
     <Compile Include="Sources\Tests\Test18.cs" />
+    <Compile Include="Sources\Tests\Test19.cs" />
     <Compile Include="Sources\Tests\Test2.cs" />
     <Compile Include="Sources\Tests\Test3.cs" />
     <Compile Include="Sources\Tests\Test4.cs" />
