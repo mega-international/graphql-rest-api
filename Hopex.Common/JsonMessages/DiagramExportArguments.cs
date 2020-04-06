@@ -7,7 +7,6 @@ namespace Hopex.Common.JsonMessages
 {
     public class DiagramExportArguments
     {
-        [CLSCompliant(false)]
         [JsonProperty("format")]
         [JsonConverter(typeof(StringEnumConverter), converterParameters: typeof(CamelCaseNamingStrategy))]
         public ImageFormat Format { get; set; }

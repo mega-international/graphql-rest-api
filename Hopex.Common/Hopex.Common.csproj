@@ -13,6 +13,20 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
+  <PropertyGroup>
+    <ProductName>HOPEX</ProductName>
+    <CompanyName>MEGA International</CompanyName>
+    <FileVersion Condition=" '$(FileVersion)' == '' ">0.0.0.0</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyVersionFiles Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Target Name="AssemblyVersionMAIN" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles" Condition="'$(BuildingForLiveUnitTesting)' != 'true'">
+    <Attrib Files="%(AssemblyVersionFiles.FullPath)" Normal="" />
+    <AssemblyInfo CodeLanguage="CS" AssemblyDescription="Hopex.Common" AssemblyCompany="$(CompanyName)" AssemblyProduct="HOPEX" ComVisible="false" CLSCompliant="false" OutputFile="%(AssemblyVersionFiles.FullPath)" AssemblyTitle="$(ProductName)" AssemblyCopyright="Copyright $(CompanyName), All rights reserved." AssemblyVersion="$(FileVersion)" AssemblyFileVersion="$(FileVersion)" AssemblyInformationalVersion="$(FileVersion)">
+      <Output TaskParameter="OutputFile" ItemName="UpdatedAssemblyVersionFiles" />
+    </AssemblyInfo>
+  </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -32,9 +46,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InputArguments.cs" />
     <Compile Include="JsonMessages\AttachmentArguments.cs" />
     <Compile Include="JsonMessages\DiagramExportArguments.cs" />
     <Compile Include="JsonMessages\ErrorMacroResponse.cs" />
@@ -55,4 +71,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <BuildDependsOn>
+      AssemblyVersionMAIN;
+      $(BuildDependsOn);
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Import Project="..\..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
 </Project>
