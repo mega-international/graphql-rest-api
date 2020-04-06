@@ -2,7 +2,7 @@ using FluentAssertions;
 using FluentAssertions.Json;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common.JsonMessages;
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 using Hopex.Modules.GraphQL;
 using Hopex.WebService.Tests.Assertions;
 using Hopex.WebService.Tests.Mocks;
@@ -41,7 +41,7 @@ namespace Hopex.WebService.Tests
         [InlineData("~aMRn)bUIGjX3[System Business Document]", "~U7CuchkAJ9iB[Last Version of the System Business Document]")]
         public async void Save_business_document_in_last_version(string documentClassId, string expectedCalledQuery)
         {
-            var spyVersion = new Mock<MockMegaObject>();
+            var spyVersion = new Mock<MockMegaObject>("000000000001") { CallBase = true };
             var mockRoot = new MockMegaRoot.Builder(spyRoot)
                 .WithObject(new MockMegaObject(DOCUMENT_ID, documentClassId)
                     .WithRelation(new MockMegaCollection(expectedCalledQuery)

@@ -1,4 +1,4 @@
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 using Mega.Macro.API.Enums;
 
 namespace Hopex.WebService.Tests.Mocks.Drawings

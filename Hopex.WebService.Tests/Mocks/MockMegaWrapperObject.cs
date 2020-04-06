@@ -1,4 +1,4 @@
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 using System;
 
 namespace Hopex.WebService.Tests.Mocks

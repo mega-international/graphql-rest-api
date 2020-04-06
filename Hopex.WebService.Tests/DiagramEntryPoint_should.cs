@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common.JsonMessages;
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 using Hopex.Modules.GraphQL;
 using Hopex.WebService.Tests.Assertions;
 using Hopex.WebService.Tests.Mocks;
@@ -27,8 +27,7 @@ namespace Hopex.WebService.Tests
         [Theory]
         [InlineData(ImageFormat.Png, MegaFilePictureFormat.Png, "image/png", "png")]
         [InlineData(ImageFormat.Jpeg, MegaFilePictureFormat.Jpg, "image/jpeg", "jpeg")]
-        [InlineData(ImageFormat.Svg, MegaFilePictureFormat.Svg, "image/svg+xml", "svg")]
-        public async void Returns_a_diagram_bitmap_in_several_format(ImageFormat format, MegaFilePictureFormat expectedMegaFormat, string expectedMimeType, string expectedExtension)
+        public async void Returns_a_bitmap(ImageFormat format, MegaFilePictureFormat expectedMegaFormat, string expectedMimeType, string expectedExtension)
         {
             var root = new MockMegaRoot.Builder()
                 .WithObject(new MockMegaObject("BGZ4uPrgG(Up")
@@ -46,6 +45,22 @@ namespace Hopex.WebService.Tests
             spyDrawing.Verify();
             spyFileSource.Verify(f => f.Delete(fileName.Matcher()), Times.Once);
             actual.Should().BeJson($@"{{""fileName"":""Library diagram.{expectedExtension}"", ""contentType"":""{expectedMimeType}"", ""content"":""AQIDBA==""}}");
+        }
+
+        [Fact]
+        public async void Returns_a_svg()
+        {
+            var root = new MockMegaRoot.Builder()
+                .WithObject(new MockMegaObject("BGZ4uPrgG(Up")
+                    .WithDrawing(spyDrawing.Object))
+                .Build();
+            spyDrawing.Setup(d => d.InvokeFunction<string>("SaveAsSvg")).Returns("<svg>");
+            var entryPoint = new TestableDiagramEntryPoint(root, "image");
+
+            var actual = await entryPoint.Execute(new DiagramExportArguments { Format = ImageFormat.Svg });
+
+            spyDrawing.Verify();
+            actual.Should().BeJson($@"{{""fileName"":""Library diagram.svg"", ""contentType"":""image/svg+xml"", ""content"":""PHN2Zz4=""}}");
         }
 
         [Fact]

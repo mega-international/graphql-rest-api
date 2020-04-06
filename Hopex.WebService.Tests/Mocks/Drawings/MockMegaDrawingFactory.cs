@@ -1,9 +1,4 @@
-using Hopex.Model.Mocks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Hopex.Model.Abstractions;
 
 namespace Hopex.WebService.Tests.Mocks.Drawings
 {

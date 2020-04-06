@@ -4,8 +4,6 @@ using FluentAssertions.Json;
 using Hopex.ApplicationServer.WebServices;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
-using System;
-using Newtonsoft.Json;
 using Hopex.Common.JsonMessages;
 
 namespace Hopex.WebService.Tests.Assertions
@@ -53,10 +51,10 @@ namespace Hopex.WebService.Tests.Assertions
 
         private JToken ParseJsonBody()
         {
-            Subject.StatusCode.Should().Be(200);
-            Subject.ContentType.Should().Be("application/json");
             var property = Subject.GetType().GetProperty("Value", BindingFlags.NonPublic | BindingFlags.Instance);
             var actual = (string)property.GetValue(Subject);
+            Subject.StatusCode.Should().Be(200, $"no error should be in {actual}");
+            Subject.ContentType.Should().Be("application/json", $"JSON expected in {actual}");            
             return JToken.Parse(actual);
         }
 
@@ -74,7 +72,10 @@ namespace Hopex.WebService.Tests.Assertions
 
         public AndConstraint<HopexResponseAssertions> MatchGraphQL(string path, string wildcardPattern)
         {
-            ParseGraphQLResponse().SelectToken(path).ToString().Should().Match(wildcardPattern);
+            var response = ParseGraphQLResponse();
+            var selectedToken = response.SelectToken(path);
+            selectedToken.Should().NotBeNull($"data expected for path {path} in JSON {response.ToString()}");
+            selectedToken.ToString().Should().Match(wildcardPattern);
             return new AndConstraint<HopexResponseAssertions>(this);
         }
 

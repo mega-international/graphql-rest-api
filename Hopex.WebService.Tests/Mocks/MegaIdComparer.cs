@@ -29,9 +29,10 @@ namespace Hopex.WebService.Tests.Mocks
         {
             if (id.Value is string idString)
             {
+                if (idString[0] == '~') return idString.Substring(1, 12);
                 if (idString.Length == 12) return idString;
                 if (idString.Length == 16) return Convert16To64(idString);
-                return idString.Substring(1, 12);
+                throw new Exception("Malformed idabs"); ;
             }
             var idDouble = (double)id.Value;
             return Convert16To64(ConvertDoubleTo16(idDouble));

@@ -3,7 +3,7 @@ using Hopex.WebService.Tests.Assertions;
 using Xunit;
 using Hopex.WebService.Tests.Mocks;
 using Hopex.ApplicationServer.WebServices;
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 
 namespace Hopex.WebService.Tests
 {
@@ -16,7 +16,7 @@ namespace Hopex.WebService.Tests
 
             var result = await entryPoint.Execute(null);
 
-            result.Should().MatchJson("schema", "*type Application {*");
+            result.Should().MatchJson("schema", "*type Application *");
         }
 
         [Fact]
@@ -26,14 +26,14 @@ namespace Hopex.WebService.Tests
 
             var result = await entryPoint.Execute(null);
 
-            result.Should().MatchJson("schema", "*type Application {*");
+            result.Should().MatchJson("schema", "*type Application *");
         }
     }
 
     public class TestableSchemaEntryPoint : SchemaEntryPoint
     {
         public TestableSchemaEntryPoint(string schema)
-            :base(new TestableSchemaManagerProvider())
+            :base(new TestableSchemaManagerProvider(), new TestableLanguageProvider())
         {
             var _request = new FakeSchemaRequest(schema);
             (this as IHopexWebService).SetHopexContext(new MockMegaRoot(), _request, new Logger());

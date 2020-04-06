@@ -1,15 +1,13 @@
 using Mega.Macro.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hopex.WebService.Tests.Mocks
 {
     public class MockCollectionDescription : MockMegaObject
     {
         static MegaIdComparer idComparer = new MegaIdComparer();
+
+        public MockCollectionDescription(string collectionId)
+            : this(MegaId.Create(collectionId)) { }
 
         public MockCollectionDescription(MegaId collectionId)
             : base(collectionId) { }

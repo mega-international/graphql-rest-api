@@ -46,5 +46,12 @@ namespace Hopex.WebService.Tests.Mocks
         {
             tk.IsSameId(MegaId.Create(idDouble), "759B777F4FF11543").Should().Be(expected);
         }
+
+        [Fact]
+        public void Compare_with_a_field_of_length_16()
+        {
+            tk.IsSameId("~B0SNPuLckCQ3[X]", "B0SNPuLckCQ3").Should().BeTrue();
+        }
+        
     }
 }

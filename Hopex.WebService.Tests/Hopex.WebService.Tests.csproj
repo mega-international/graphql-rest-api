@@ -45,11 +45,11 @@
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Castle.Core.4.4.0\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentAssertions.5.9.0\lib\net45\FluentAssertions.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=5.10.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.5.10.2\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
-    <Reference Include="FluentAssertions.Json, Version=5.3.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentAssertions.Json.5.3.0\lib\net451\FluentAssertions.Json.dll</HintPath>
+    <Reference Include="FluentAssertions.Json, Version=5.4.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.Json.5.4.1\lib\net451\FluentAssertions.Json.dll</HintPath>
     </Reference>
     <Reference Include="GraphQL, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\GraphQL.2.4.0\lib\net45\GraphQL.dll</HintPath>
@@ -75,7 +75,7 @@
       <HintPath>..\..\..\packages\Moq.4.13.1\lib\net45\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -95,8 +95,8 @@
     <Reference Include="System.Reactive.Linq, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Reactive.Linq.4.2.0\lib\net46\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -126,13 +126,17 @@
     <Compile Include="Assertions\HopexResponseAssertions.cs" />
     <Compile Include="Assertions\MegaIdMatchers.cs" />
     <Compile Include="AttachmentEntryPoint_should.cs" />
+    <Compile Include="CustomRelationship_should.cs" />
     <Compile Include="DiagramEntryPoint_should.cs" />
     <Compile Include="EntryPoint_should.cs" />
+    <Compile Include="CustomField_should.cs" />
     <Compile Include="Mocks\Drawings\MockMegaDrawing.cs" />
     <Compile Include="Mocks\Drawings\MockMegaDrawingFactory.cs" />
     <Compile Include="Mocks\MegaIdComparer.cs" />
+    <Compile Include="Mocks\MegaIdUtils.cs" />
     <Compile Include="Mocks\MockCollectionDescription.cs" />
     <Compile Include="Mocks\MockCurrentEnvironment.cs" />
+    <Compile Include="Mocks\MockMegaAttribute.cs" />
     <Compile Include="Mocks\MockMegaCollection.cs" />
     <Compile Include="Mocks\MockMegaItem.cs" />
     <Compile Include="Mocks\MockMegaObject.cs" />
@@ -147,16 +151,21 @@
     <Compile Include="Mocks\MockToolkit_should.cs" />
     <Compile Include="Mocks\MockMegaVersionInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchemaBuilder_should.cs" />
     <Compile Include="SchemaEntryPoint_should.cs" />
+    <Compile Include="Mocks\XUnitLogger.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Hopex.WebService\CONFIG\compatibility_list.json">
+      <Link>CONFIG\compatibility_list.json</Link>
+    </None>
+    <None Include="..\Hopex.WebService\CONFIG\V3\Standard\ITPM.json">
+      <Link>CONFIG\V3\ITPM.json</Link>
+    </None>
+    <None Include="..\Hopex.WebService\CONFIG\V3\Standard\MetaModel.json">
+      <Link>CONFIG\V3\MetaModel.json</Link>
+    </None>
     <None Include="app.config" />
-    <None Include="CONFIG\compatibility_list.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CONFIG\V3\Standard\ITPM.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
