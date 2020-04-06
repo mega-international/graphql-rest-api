@@ -11,6 +11,7 @@ namespace Mega.WebService.GraphQL
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            log4net.Config.XmlConfigurator.Configure();
         }
     }
 }

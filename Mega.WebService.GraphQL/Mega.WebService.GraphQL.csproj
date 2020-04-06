@@ -11,7 +11,7 @@
   </ItemGroup>
   <Target Name="AssemblyVersionMAIN" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles" Condition="'$(BuildingForLiveUnitTesting)' != 'true'">
     <Attrib Files="%(AssemblyVersionFiles.FullPath)" Normal="" />
-    <AssemblyInfo CodeLanguage="CS" AssemblyDescription="Mega.WebService.GraphQL" AssemblyCompany="$(CompanyName)" AssemblyProduct="HOPEX" ComVisible="false" CLSCompliant="true" OutputFile="%(AssemblyVersionFiles.FullPath)" AssemblyTitle="$(ProductName)" AssemblyCopyright="Copyright $(CompanyName), All rights reserved." AssemblyVersion="$(FileVersion)" AssemblyFileVersion="$(FileVersion)" AssemblyInformationalVersion="$(FileVersion)">
+    <AssemblyInfo CodeLanguage="CS" AssemblyDescription="Mega.WebService.GraphQL" AssemblyCompany="$(CompanyName)" AssemblyProduct="HOPEX" ComVisible="false" CLSCompliant="false" OutputFile="%(AssemblyVersionFiles.FullPath)" AssemblyTitle="$(ProductName)" AssemblyCopyright="Copyright $(CompanyName), All rights reserved." AssemblyVersion="$(FileVersion)" AssemblyFileVersion="$(FileVersion)" AssemblyInformationalVersion="$(FileVersion)">
       <Output TaskParameter="OutputFile" ItemName="UpdatedAssemblyVersionFiles" />
     </AssemblyInfo>
   </Target>
@@ -29,7 +29,7 @@
     <AssemblyName>Mega.WebService.GraphQL</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44339</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
@@ -66,7 +66,7 @@
       <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Bridge.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>True</Private>
@@ -162,13 +162,16 @@
     <Compile Include="Models\CallMacroArguments.cs" />
     <Compile Include="Models\ErrorContent.cs" />
     <Compile Include="Models\GraphQlResponse.cs" />
+    <Compile Include="Models\HopexSessionType.cs" />
     <Compile Include="Utils\FileDownloadHttpResponse.cs" />
     <Compile Include="Utils\GreedyStreamReader.cs" />
     <Compile Include="Models\HopexInfo.cs" />
-    <Compile Include="Models\InputArguments.cs" />
     <Compile Include="Models\UasToken.cs" />
     <Compile Include="Models\WebServiceResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\IConfigurationManager.cs" />
+    <Compile Include="Utils\IHopexService.cs" />
+    <Compile Include="Utils\IHopexServiceFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\graphiql.css" />

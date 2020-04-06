@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web.Http;
+using Hopex.Common;
 
 namespace Mega.WebService.GraphQL.Controllers
 {
@@ -29,50 +30,29 @@ namespace Mega.WebService.GraphQL.Controllers
         [Route("{version}/{schemaName}")]
         public IHttpActionResult Execute(string schemaName, [FromBody] InputArguments args, string version)
         {
-            args.WebServiceUrl = Request.RequestUri.AbsoluteUri.Substring(0, Request.RequestUri.AbsoluteUri.IndexOf("/api/", StringComparison.Ordinal));
+            return ProcessQueryRequest(schemaName, args, version, data =>
+            {
+                var result = CallMacro(GraphQlMacro, data);
 
-            HopexContext hopexContext = null;
-            if (!TryParseHopexContext(ref hopexContext))
-            {
-                return BadRequest("Parameter \"x-hopex-context\" must be set in the header of your request. Example: HopexContext:{\"EnvironmentId\":\"IdAbs\",\"RepositoryId\":\"IdAbs\",\"ProfileId\":\"IdAbs\",\"DataLanguageId\":\"IdAbs\",,\"GuiLanguageId\":\"IdAbs\"}");
-            }
-            var headers = new Dictionary<string, string []>
-            {
+                if (result.ErrorType == "None")
                 {
-                    "EnvironmentId", new[] {hopexContext.EnvironmentId}
-                }
-            };
-            var path = BuildMacroPath("graphql", schemaName, version);
-            var data = JsonConvert.SerializeObject(new
-            {
-                UserData = JsonConvert.SerializeObject(args),
-                Request = new
-                {
-                    Headers = headers,
-                    Path = path
-                }
-            });
-
-            var result = CallMacro(GraphQlMacro, data);
-
-            if(result.ErrorType == "None")
-            {
-                try
-                {
-                    var response = JsonConvert.DeserializeObject<GraphQlResponse>(result.Content);
-                    if(response.HttpStatusCode != HttpStatusCode.OK)
+                    try
                     {
-                        return Content(response.HttpStatusCode, new { response.Error });
+                        var response = JsonConvert.DeserializeObject<GraphQlResponse>(result.Content);
+                        if (response.HttpStatusCode != HttpStatusCode.OK)
+                        {
+                            return Content(response.HttpStatusCode, new { response.Error });
+                        }
+                        return Ok(JsonConvert.DeserializeObject(response.Result));
                     }
-                    return Ok(JsonConvert.DeserializeObject(response.Result));
+                    catch
+                    {
+                        return InternalServerError(new Exception(result.Content));
+                    }
                 }
-                catch
-                {
-                    return InternalServerError(new Exception(result.Content));
-                }
-            }
 
-            return FormatResult(result);
+                return FormatResult(result);
+            });
         }
 
         [HttpPost]
@@ -86,47 +66,45 @@ namespace Mega.WebService.GraphQL.Controllers
         [Route("async/{version}/{schemaName}")]
         public IHttpActionResult AsyncExecute(string schemaName, [FromBody] InputArguments args, string version)
         {
-            // Get values from x-hopex-wait
-            var wait = TimeSpan.Zero;
-            if(Request.Headers.TryGetValues("x-hopex-wait", out var hopexWait) && int.TryParse(hopexWait.FirstOrDefault(), out var hopexWaitMilliseconds))
-            {
-                wait = TimeSpan.FromMilliseconds(hopexWaitMilliseconds);
-            }
-
             // Start job
             if(!Request.Headers.TryGetValues("x-hopex-task", out var hopexTask))
             {
-                args.WebServiceUrl = Request.RequestUri.AbsoluteUri.Substring(0, Request.RequestUri.AbsoluteUri.IndexOf("/api/", StringComparison.Ordinal));
+                return ProcessQueryRequest(schemaName, args, version, data => CallAsyncMacroExecute(GraphQlMacro, data));
+            }
 
-                HopexContext hopexContext = null;
-                if (!TryParseHopexContext(ref hopexContext))
-                {
-                    return BadRequest("Parameter \"x-hopex-context\" must be set in the header of your request. Example: HopexContext:{\"EnvironmentId\":\"IdAbs\",\"RepositoryId\":\"IdAbs\",\"ProfileId\":\"IdAbs\",\"DataLanguageId\":\"IdAbs\",,\"GuiLanguageId\":\"IdAbs\"}");
-                }
-                var headers = new Dictionary<string, string []>
+            // Get Result
+            return CallAsyncMacroGetResult(hopexTask.FirstOrDefault());
+        }
+
+        private IHttpActionResult ProcessQueryRequest(string schemaName, InputArguments args, string version, Func<string, IHttpActionResult> callMacro)
+        {
+            args.WebServiceUrl = Request.RequestUri.AbsoluteUri.Substring(0, Request.RequestUri.AbsoluteUri.IndexOf("/api/", StringComparison.Ordinal));
+
+            HopexContext hopexContext = null;
+            if (!TryParseHopexContext(ref hopexContext))
+            {
+                return BadRequest("Parameter \"x-hopex-context\" must be set in the header of your request. Example: HopexContext:{\"EnvironmentId\":\"IdAbs\",\"RepositoryId\":\"IdAbs\",\"ProfileId\":\"IdAbs\",\"DataLanguageId\":\"IdAbs\",,\"GuiLanguageId\":\"IdAbs\"}");
+            }
+            var headers = new Dictionary<string, string[]>
                 {
                     {
                         "EnvironmentId", new[] {hopexContext.EnvironmentId}
                     }
                 };
-                var path = BuildMacroPath("graphql", schemaName, version);
-                var data = JsonConvert.SerializeObject(new
+            var path = BuildMacroPath("graphql", schemaName, version);
+            var data = JsonConvert.SerializeObject(new
+            {
+                UserData = JsonConvert.SerializeObject(args),
+                Request = new
                 {
-                    UserData = JsonConvert.SerializeObject(args),
-                    Request = new
-                    {
-                        Headers = headers,
-                        Path = path
-                    }
-                });
+                    Headers = headers,
+                    Path = path
+                }
+            });
 
-                return CallAsyncMacroExecute(GraphQlMacro, data, "MS", "RW", false, wait);
-            }
-
-            // Get Result
-            return CallAsyncMacroGetResult(hopexTask.FirstOrDefault(), false, wait);
+            return callMacro(data);
         }
-        
+
         [HttpGet]
         [Route("{schemaName}/sdl")]
         public IHttpActionResult ExportSchema(string schemaName)
@@ -180,6 +158,16 @@ namespace Mega.WebService.GraphQL.Controllers
                 path = $"/api/{route}/{version}/{schemaName}";
             }
             return path;
+        }
+
+        protected override IHttpActionResult BuildActionResultFrom(AsyncMacroResult macroResult)
+        {
+            var response = JsonConvert.DeserializeObject<GraphQlResponse>(macroResult.Result);
+            if (response.HttpStatusCode != HttpStatusCode.OK)
+            {
+                return Content(response.HttpStatusCode, new { response.Error });
+            }
+            return Ok(JsonConvert.DeserializeObject(response.Result));
         }
     }
 }

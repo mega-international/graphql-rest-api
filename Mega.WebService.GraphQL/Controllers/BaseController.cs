@@ -1,20 +1,22 @@
-using System;
-using Mega.WebService.GraphQL.Models;
+using Hopex.Common.JsonMessages;
 using log4net;
 using Mega.Bridge.Filters;
 using Mega.Bridge.Models;
 using Mega.Bridge.Services;
+using Mega.WebService.GraphQL.Models;
+using Mega.WebService.GraphQL.Utils;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
-using System.Web.Configuration;
+using System.Threading.Tasks;
 using System.Web.Http;
-using Hopex.Common.JsonMessages;
 
 namespace Mega.WebService.GraphQL.Controllers
 {
@@ -22,55 +24,40 @@ namespace Mega.WebService.GraphQL.Controllers
     public class BaseController : ApiController
     {
         protected const string GraphQlMacro = "AAC8AB1E5D25678E";
-        protected static readonly ILog Logger = LogManager.GetLogger(typeof(BaseController));
+        protected static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        protected virtual int WaitStepMilliseconds => 100;
 
+        private readonly IConfigurationManager _configurationManager;
+        private readonly IHopexServiceFinder _hopexServiceFinder;
+
+        public BaseController()
+        {
+            _configurationManager = new RealConfigurationManager();
+            _hopexServiceFinder = new RealHopexServiceFinder();
+        }
+
+        public BaseController(IConfigurationManager configurationManager, IHopexServiceFinder hopexServiceFinder)
+        {
+            _configurationManager = configurationManager;
+            _hopexServiceFinder = hopexServiceFinder;
+        }
+        
         protected virtual WebServiceResult CallMacro(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
         {
-            // Get UserInfo
-            var userInfo = (UserInfo)Request.Properties ["UserInfo"];
-
-            // Get values from x-hopex-context
-            IEnumerable<string> hopexContextHeader;
-            HopexContext hopexContext;
-            if(!Request.Headers.TryGetValues("x-hopex-context", out hopexContextHeader) || !HopexServiceHelper.TryGetHopexContext(hopexContextHeader.FirstOrDefault(), out hopexContext))
+            if (!TryGetHopexService(sessionMode, accessMode, closeSession, out var hopexService, out var error))
             {
-                const string message = "Parameter \"x-hopex-context\" must be set in the header of your request. Example: HopexContext:{\"EnvironmentId\":\"IdAbs\",\"RepositoryId\":\"IdAbs\",\"ProfileId\":\"IdAbs\",\"DataLanguageId\":\"IdAbs\",,\"GuiLanguageId\":\"IdAbs\"}";
-                Logger.Debug(message);
-                return new WebServiceResult { ErrorType = "BadRequest", Content = message };
-            }
-
-            // Find the Hopex session
-            var sspUrl = ConfigurationManager.AppSettings ["MegaSiteProvider"];
-            var securityKey = ((NameValueCollection)WebConfigurationManager.GetSection("secureAppSettings")) ["SecurityKey"];
-            var mwasUrl = HopexService.FindSession(sspUrl, securityKey, hopexContext.EnvironmentId, hopexContext.DataLanguageId, hopexContext.GuiLanguageId, hopexContext.ProfileId, userInfo.HopexAuthPerson, true);
-            if(mwasUrl == null)
-            {
-                const string message = "Unable to get MWAS url. Please retry later and check your configuration if it doesn't work.";
-                Logger.Debug(message);
-                return new WebServiceResult { ErrorType = "BadRequest", Content = message };
-            }
-            mwasUrl = mwasUrl.ToLower().Replace("hopexmwas", "hopexapimwas");
-
-            // Open the Hopex session
-            var hopexService = new HopexService(mwasUrl, securityKey);
-            var mwasSettings = InitMwasSettings();
-            var mwasSessionConnectionParameters = InitMwasSessionConnectionParameters(sessionMode, accessMode, hopexContext, userInfo);
-            if(!hopexService.TryOpenSession(mwasSettings, mwasSessionConnectionParameters, findSession: !closeSession))
-            {
-                var message = "Unable to open an Hopex session. Please check the values in the HopexContext header and retry.";
-                Logger.Debug(message);
-                return new WebServiceResult { ErrorType = "BadRequest", Content = message };
+               return error;
             }
 
             // Call the macro
-            string macroResult = "";
+            var macroResult = "";
             try
             {
                 macroResult = hopexService.CallMacro(macroId, data);
             }
-            catch(Exception)
+            catch
             {
-
+                // ignored
             }
 
             // Close the Hopex session
@@ -83,46 +70,90 @@ namespace Mega.WebService.GraphQL.Controllers
             return new WebServiceResult { ErrorType = "None", Content = macroResult };
         }
 
-        protected IHttpActionResult CallAsyncMacroExecute(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false, TimeSpan? wait = null, int waitStepMilliseconds = 100)
+        private bool ExecuteTimedOut<T>(string funcName, Func<T> function, out T result, out WebServiceResult error)
         {
-            if(wait == null)
+            result = default(T);
+            error = null;
+            try
             {
-                wait = TimeSpan.Zero;
+                result = function();
+                return true;
             }
+            catch (TaskCanceledException)
+            {
+                var message = $"Timeout of 100 seconds reached while waiting for {funcName} request.";
+                Logger.Debug(message);
+                error = new WebServiceResult { ErrorType = "Timeout", Content = message };
+                return false;
+            }
+        }
+
+        private bool TryGetHopexService(string sessionMode, string accessMode, bool closeSession, out IHopexService hopexService, out WebServiceResult error)
+        {
+            hopexService = null;
+            error = null;
 
             // Get UserInfo
-            var userInfo = (UserInfo)Request.Properties ["UserInfo"];
+            var userInfo = (UserInfo)Request.Properties["UserInfo"];
 
             // Get values from x-hopex-context
-            if(!Request.Headers.TryGetValues("x-hopex-context", out var hopexContextHeader) || !HopexServiceHelper.TryGetHopexContext(hopexContextHeader.FirstOrDefault(), out var hopexContext))
+            IEnumerable<string> hopexContextHeader;
+            HopexContext hopexContext;
+            if (!Request.Headers.TryGetValues("x-hopex-context", out hopexContextHeader) || !HopexServiceHelper.TryGetHopexContext(hopexContextHeader.FirstOrDefault(), out hopexContext))
             {
                 const string message = "Parameter \"x-hopex-context\" must be set in the header of your request. Example: HopexContext:{\"EnvironmentId\":\"IdAbs\",\"RepositoryId\":\"IdAbs\",\"ProfileId\":\"IdAbs\",\"DataLanguageId\":\"IdAbs\",,\"GuiLanguageId\":\"IdAbs\"}";
                 Logger.Debug(message);
-                return BadRequest(message);
+                error = new WebServiceResult { ErrorType = "BadRequest", Content = message };
+                return false;
             }
 
             // Find the Hopex session
-            var sspUrl = ConfigurationManager.AppSettings ["MegaSiteProvider"];
-            var securityKey = ((NameValueCollection)WebConfigurationManager.GetSection("secureAppSettings")) ["SecurityKey"];
-            var mwasUrl = HopexService.FindSession(sspUrl, securityKey, hopexContext.EnvironmentId, hopexContext.DataLanguageId, hopexContext.GuiLanguageId, hopexContext.ProfileId, userInfo.HopexAuthPerson, true);
-            if(mwasUrl == null)
+            var sspUrl = _configurationManager.AppSettings["MegaSiteProvider"];
+            var securityKey = ((NameValueCollection)_configurationManager.GetSection("secureAppSettings"))?["SecurityKey"];
+
+            Request.Headers.TryGetValues("x-session-type", out var hopexSessionTypeHeader);
+            Enum.TryParse(hopexSessionTypeHeader?.FirstOrDefault(), out HopexSessionType hopeSessionType);
+
+            string FuncFindSession() => _hopexServiceFinder.FindSession(sspUrl, securityKey, hopexContext.EnvironmentId, hopexContext.DataLanguageId, hopexContext.GuiLanguageId, hopexContext.ProfileId, userInfo.HopexAuthPerson, hopeSessionType == HopexSessionType.API);
+            if (!ExecuteTimedOut("FindSession", FuncFindSession, out string mwasUrl, out error))
+            {
+                return false;
+            }
+            if (mwasUrl == null)
             {
                 const string message = "Unable to get MWAS url. Please retry later and check your configuration if it doesn't work.";
                 Logger.Debug(message);
-                return BadRequest(message);
+                error = new WebServiceResult { ErrorType = "BadRequest", Content = message };
+                return false;
             }
             mwasUrl = mwasUrl.ToLower().Replace("hopexmwas", "hopexapimwas");
 
             // Open the Hopex session
-            var hopexService = new HopexService(mwasUrl, securityKey);
+            hopexService = _hopexServiceFinder.GetService(mwasUrl, securityKey);
             var mwasSettings = InitMwasSettings();
             var mwasSessionConnectionParameters = InitMwasSessionConnectionParameters(sessionMode, accessMode, hopexContext, userInfo);
-            if(!hopexService.TryOpenSession(mwasSettings, mwasSessionConnectionParameters, findSession: true))
+
+            var hopexServiceCopy = hopexService;
+            bool FuncTryOpenSession() => hopexServiceCopy.TryOpenSession(mwasSettings, mwasSessionConnectionParameters, findSession: !closeSession);
+            bool sessionOpened;
+            if (!ExecuteTimedOut("TryOpenSession", FuncTryOpenSession, out sessionOpened, out error))
+            {
+                return false;
+            }
+            if (!sessionOpened)
             {
                 var message = "Unable to open an Hopex session. Please check the values in the HopexContext header and retry.";
                 Logger.Debug(message);
-                return BadRequest(message);
+                error = new WebServiceResult { ErrorType = "BadRequest", Content = message };
+                return false;
             }
+            return true;
+        }
+
+        protected virtual IHttpActionResult CallAsyncMacroExecute(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
+        {
+            if (!TryGetHopexService(sessionMode, accessMode, closeSession, out var hopexService, out var error))
+                return FormatResult(error);
 
             // Call the execution of the macro in async mode
             var asyncMacroResult = hopexService.CallAsyncMacroExecute(macroId, data);
@@ -137,27 +168,17 @@ namespace Mega.WebService.GraphQL.Controllers
                 return Ok(asyncMacroResult);
             }
 
+            var wait = ReadWaitHeader();
             // If wait time is zero
-            if(wait <= TimeSpan.Zero)
-            {
-                var response = new HttpResponseMessage(HttpStatusCode.PartialContent);
-                var hopexSession = HopexServiceHelper.EncryptHopexSessionInfo(hopexService.MwasUrl, hopexService.HopexSessionToken);
-                response.Headers.Add("x-hopex-sessiontoken", hopexSession);
-                response.Headers.Add("x-hopex-task", asyncMacroResult.ActionId);
-                return ResponseMessage(response);
-            }
+            if (wait <= TimeSpan.Zero)
+                return BuildTaskInProgressActionResult(hopexService, asyncMacroResult);
 
             // Get result
-            return WaitForResult(hopexService, asyncMacroResult.ActionId, closeSession, wait.Value, waitStepMilliseconds);
+            return WaitForResult(hopexService, asyncMacroResult.ActionId, closeSession);
         }
 
-        protected IHttpActionResult CallAsyncMacroGetResult(string hopexTask, bool closeSession = true, TimeSpan? wait = null, int waitStepMilliseconds = 100)
+        protected virtual IHttpActionResult CallAsyncMacroGetResult(string hopexTask, bool closeSession = false)
         {
-            if(wait == null)
-            {
-                wait = TimeSpan.Zero;
-            }
-
             // Get values from x-hopex-sessiontoken
             if(!Request.Headers.TryGetValues("x-hopex-sessiontoken", out var hopexSessionHeader) || !HopexServiceHelper.TryGetHopexSessionInfo(hopexSessionHeader.FirstOrDefault(), out var hopexSessionInfo))
             {
@@ -167,34 +188,36 @@ namespace Mega.WebService.GraphQL.Controllers
             }
 
             // Get the existing Hopex session 
-            var hopexService = HopexServiceHelper.GetMwasService(hopexSessionInfo.MwasUrl, hopexSessionInfo.HopexSessionToken);
+            var hopexService = _hopexServiceFinder.GetMwasService(hopexSessionInfo.MwasUrl, hopexSessionInfo.HopexSessionToken);
 
             // Get result
-            return WaitForResult(hopexService, hopexTask, closeSession, wait.Value, waitStepMilliseconds);
+            return WaitForResult(hopexService, hopexTask, closeSession);
         }
 
-        private IHttpActionResult WaitForResult(HopexService hopexService, string hopexTask, bool closeSession, TimeSpan wait, int waitStepMilliseconds)
+        private IHttpActionResult WaitForResult(IHopexService hopexService, string hopexTask, bool closeSession)
         {
+            var stopwatch = new Stopwatch();
+            var wait = ReadWaitHeader();
             do
             {
                 // Call the execution result of the macro in async mode
+                stopwatch.Restart();
+                Logger.Info("CallAsyncMacroGetResult");
                 var asyncMacroResult = hopexService.CallAsyncMacroGetResult(hopexTask);
+                Logger.Info("CallAsyncMacroGetResult ended: " + Math.Round(stopwatch.Elapsed.TotalMilliseconds) + " ms");
+                wait = wait - stopwatch.Elapsed;
 
                 // Return status if action is not finished and wait time is over
                 if(asyncMacroResult.Status == "InProgress")
                 {
                     if(wait <= TimeSpan.Zero)
                     {
-                        if(closeSession)
+                        if (closeSession)
                         {
                             hopexService.CloseUpdateSession();
                         }
 
-                        var response = new HttpResponseMessage(HttpStatusCode.PartialContent);
-                        var hopexSession = HopexServiceHelper.EncryptHopexSessionInfo(hopexService.MwasUrl, hopexService.HopexSessionToken);
-                        response.Headers.Add("x-hopex-sessiontoken", hopexSession);
-                        response.Headers.Add("x-hopex-task", asyncMacroResult.ActionId);
-                        return ResponseMessage(response);
+                        return BuildTaskInProgressActionResult(hopexService, asyncMacroResult);
                     }
                 }
                 // Else return result
@@ -208,15 +231,7 @@ namespace Mega.WebService.GraphQL.Controllers
                     switch (asyncMacroResult.Status)
                     {
                         case "Terminate":
-                        {
-                            var response = JsonConvert.DeserializeObject<GraphQlResponse>(asyncMacroResult.Result);
-                            if(response.HttpStatusCode != HttpStatusCode.OK)
-                            {
-                                return Content(response.HttpStatusCode, new { response.Error });
-                            }
-                            return Ok(JsonConvert.DeserializeObject(response.Result));
-                        }
-                            //return Ok(JsonConvert.DeserializeObject(asyncMacroResult.Result));
+                            return BuildActionResultFrom(asyncMacroResult);
                         case "UnknownActionId":
                             return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, asyncMacroResult));
                         default:
@@ -225,10 +240,31 @@ namespace Mega.WebService.GraphQL.Controllers
                 }
 
                 // Wait and decrement wait time
-                Thread.Sleep(waitStepMilliseconds);
-                wait = wait.Add(TimeSpan.FromMilliseconds(-waitStepMilliseconds));
+                Thread.Sleep(WaitStepMilliseconds);
+                wait = wait.Add(TimeSpan.FromMilliseconds(-WaitStepMilliseconds));
 
             } while(true);
+        }
+
+        private TimeSpan ReadWaitHeader()
+        {
+            if (Request.Headers.TryGetValues("x-hopex-wait", out var hopexWait) && int.TryParse(hopexWait.FirstOrDefault(), out var hopexWaitMilliseconds))
+                return TimeSpan.FromMilliseconds(hopexWaitMilliseconds);
+            return TimeSpan.Zero;
+        }
+
+        private IHttpActionResult BuildTaskInProgressActionResult(IHopexService hopexService, AsyncMacroResult asyncMacroResult)
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.PartialContent);
+            var hopexSession = HopexServiceHelper.EncryptHopexSessionInfo(hopexService.MwasUrl, hopexService.HopexSessionToken);
+            response.Headers.Add("x-hopex-sessiontoken", hopexSession);
+            response.Headers.Add("x-hopex-task", asyncMacroResult.ActionId);
+            return ResponseMessage(response);
+        }
+
+        protected virtual IHttpActionResult BuildActionResultFrom(AsyncMacroResult asyncMacroResult)
+        {
+            throw new NotImplementedException();
         }
 
         private static MwasSettings InitMwasSettings()
@@ -313,6 +349,8 @@ namespace Mega.WebService.GraphQL.Controllers
                     return Ok(result.Content);
                 case "BadRequest":
                     return BadRequest(result.Content);
+                case "Timeout":
+                    return Content(HttpStatusCode.RequestTimeout, new ErrorContent(result.Content));
                 default:
                     return InternalServerError(new Exception($"{result.ErrorType}: {result.Content}"));
             }

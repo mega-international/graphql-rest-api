@@ -1,4 +1,5 @@
 using Hopex.Common.JsonMessages;
+using Mega.Bridge.Models;
 using Mega.WebService.GraphQL.Models;
 using Mega.WebService.GraphQL.Utils;
 using System;
@@ -11,28 +12,50 @@ using System.Web.Http;
 
 namespace Mega.WebService.GraphQL.Controllers
 {
-    [RoutePrefix("api/diagram")]
+    [RoutePrefix("api")]
     public class DiagramController : BaseController
     {
         [HttpGet]
-        [Route("{diagramId}/image")]
+        [Route("diagram/{diagramId}/image")]
         public IHttpActionResult GetImage(string diagramId)
+        {
+            return ProcessRequest(diagramId, data =>
+            {
+                var result = CallMacro(GraphQlMacro, data.ToString());
+                return ProcessMacroResult(result, () =>
+                {
+                    return ResponseMessage(FileDownloadHttpResponse.From(result));
+                });
+            });
+        }
+
+        [HttpGet]
+        [Route("async/diagram/{diagramId}/image")]
+        public IHttpActionResult AsyncGetImage(string diagramId)
+        {
+            // Start job
+            if (!Request.Headers.TryGetValues("x-hopex-task", out var hopexTask))
+            {
+                return ProcessRequest(diagramId, data => CallAsyncMacroExecute(GraphQlMacro, data, "MS", "RW", false));
+            }
+
+            // Get Result
+            return CallAsyncMacroGetResult(hopexTask.FirstOrDefault(), false);
+        }
+
+        private IHttpActionResult ProcessRequest(string diagramId, Func<string, IHttpActionResult> callMacro)
         {
             ImageFormat? format = GetImageFormatFromHeader();
             if (!format.HasValue)
                 return StatusCode(HttpStatusCode.NotAcceptable);
 
             var diagramArgs = new DiagramExportArguments { Format = format.Value };
-            if (! TryParseQualityHeader(ref diagramArgs))
-                return BadRequest("Invalid X-Hopex-JpegQuality, should a number between 1 and 100");            
+            if (!TryParseQualityHeader(ref diagramArgs))
+                return BadRequest("Invalid X-Hopex-JpegQuality, should a number between 1 and 100");
 
-            var data = new CallMacroArguments<DiagramExportArguments>($"/api/diagram/{diagramId}/image", diagramArgs);            
+            var data = new CallMacroArguments<DiagramExportArguments>($"/api/diagram/{diagramId}/image", diagramArgs);
 
-            var result = CallMacro(GraphQlMacro, data.ToString());
-            return ProcessMacroResult(result, () =>
-            {
-                return ResponseMessage(FileDownloadHttpResponse.From(result));
-            });
+            return callMacro(data.ToString());
         }
 
         private ImageFormat? GetImageFormatFromHeader()
@@ -103,6 +126,12 @@ namespace Mega.WebService.GraphQL.Controllers
                 }                
             }
             return true;
+        }
+
+        protected override IHttpActionResult BuildActionResultFrom(AsyncMacroResult macroResult)
+        {
+            var webServiceResult = new WebServiceResult { Content = macroResult.Result };
+            return ResponseMessage(FileDownloadHttpResponse.From(webServiceResult));
         }
     }
 }

@@ -12,7 +12,7 @@
 [assembly: System.Reflection.AssemblyCompany("MEGA International")]
 [assembly: System.Reflection.AssemblyProduct("HOPEX")]
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
-[assembly: System.CLSCompliant(true)]
+[assembly: System.CLSCompliant(false)]
 [assembly: System.Reflection.AssemblyTitle("HOPEX")]
 [assembly: System.Reflection.AssemblyCopyright("Copyright MEGA International, All rights reserved.")]
 [assembly: System.Reflection.AssemblyVersion("0.0.0.0")]
