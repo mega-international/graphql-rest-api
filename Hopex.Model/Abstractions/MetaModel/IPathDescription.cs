@@ -1,5 +1,6 @@
 using Hopex.Model.MetaModel;
 using Mega.Macro.API;
+using System.Collections.Generic;
 
 namespace Hopex.Model.Abstractions.MetaModel
 {
@@ -11,5 +12,6 @@ namespace Hopex.Model.Abstractions.MetaModel
         string TargetSchemaId { get; }
         string Multiplicity { get; }
         PathConditionDescription Condition { get; }
+
     }
 }

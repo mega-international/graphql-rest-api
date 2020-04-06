@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,9 +21,15 @@ namespace Hopex.Model.PivotSchema.Loaders
             _names = _assembly.GetManifestResourceNames();
         }
 
-        public Task<Models.PivotSchema> ReadAsync(string schemaName)
+        public IEnumerable<SchemaReference> EnumerateStandardSchemas(string version)
         {
-            var name = _names.FirstOrDefault(n => string.Compare(_namespace + "." + schemaName + ".json", n, true) == 0);
+            return _names.Select(n => new SchemaReference { Version = version, SchemaName = Path.GetFileNameWithoutExtension(n) });
+        }
+
+        public Task<Models.PivotSchema> ReadAsync(SchemaReference schemaRef)
+        {
+            var path = $"{_namespace}.{schemaRef.Version}.STANDARD.{schemaRef.SchemaName}.json";
+            var name = _names.FirstOrDefault(n => string.Compare(path, n, true) == 0);
             if (name != null)
             {
                 var stream = _assembly.GetManifestResourceStream(name);

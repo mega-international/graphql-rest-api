@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Hopex.Model.PivotSchema.Models
 {
-    public class PivotPathDescription
+    public class PivotPathDescription : PivotEntityHasProperties
     {
         [JsonProperty("id")]
         public string Id { get; set; }

@@ -62,7 +62,7 @@
       <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -100,6 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\DataModel\CollectionSetter.cs" />
+    <Compile Include="Abstractions\DataModel\CustomFieldSetter.cs" />
+    <Compile Include="Abstractions\DataModel\CustomRelationshipSetter.cs" />
     <Compile Include="Abstractions\DataModel\IHopexDataModel.cs" />
     <Compile Include="Abstractions\DataModel\IModelCollection.cs" />
     <Compile Include="Abstractions\DataModel\IModelElement.cs" />
@@ -119,9 +121,14 @@
     <Compile Include="Abstractions\MetaModel\IRelationshipDescription.cs" />
     <Compile Include="Abstractions\MetaModel\PropertyType.cs" />
     <Compile Include="DataModel\CrudComputer.cs" />
+    <Compile Include="DataModel\GenericModelCollection.cs" />
     <Compile Include="DataModel\HopexDataModel.cs" />
     <Compile Include="DataModel\HopexModelCollection.cs" />
     <Compile Include="DataModel\HopexModelElement.cs" />
+    <Compile Include="DataModel\IdType.cs" />
+    <Compile Include="DataModel\IdTypeEnum.cs" />
+    <Compile Include="DataModel\NameSpaceFormatEnum.cs" />
+    <Compile Include="DataModel\StringFormatEnum.cs" />
     <Compile Include="MetaModel\ClassDescription.cs" />
     <Compile Include="MetaModel\EnumDescription.cs" />
     <Compile Include="MetaModel\HopexMetaModelManager.cs" />
@@ -131,11 +138,11 @@
     <Compile Include="MetaModel\PropertyDescription.cs" />
     <Compile Include="MetaModel\RelationshipDescription.cs" />
     <Compile Include="Mocks\DataGenerator.cs" />
-    <Compile Include="Mocks\IMegaDrawing.cs" />
+    <Compile Include="Abstractions\IMegaDrawing.cs" />
     <Compile Include="Mocks\MockDataElement.cs" />
     <Compile Include="Mocks\MockDataModel.cs" />
     <Compile Include="Mocks\MockModelCollection.cs" />
-    <Compile Include="Mocks\IMegaRoot.cs" />
+    <Compile Include="Abstractions\IMegaRoot.cs" />
     <Compile Include="PivotSchema\Convertors\PivotSchemaValidationException.cs" />
     <Compile Include="PivotSchema\Convertors\SchemaPivotConvertor.cs" />
     <Compile Include="PivotSchema\Convertors\ValidationContext.cs" />
@@ -152,9 +159,12 @@
     <Compile Include="PivotSchema\Models\PropertyDescription.cs" />
     <Compile Include="PivotSchema\Models\RelationshipDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RealMegaDrawingFactory.cs" />
+    <Compile Include="RealMegaRootFactory.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

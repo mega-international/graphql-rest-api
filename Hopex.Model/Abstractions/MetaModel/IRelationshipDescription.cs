@@ -1,4 +1,5 @@
 using Mega.Macro.API;
+using System.Collections.Generic;
 
 namespace Hopex.Model.Abstractions.MetaModel
 {
@@ -10,5 +11,6 @@ namespace Hopex.Model.Abstractions.MetaModel
         string RoleId { get; }
         string Description { get; }
         IPathDescription[] Path { get; }
+        IClassDescription TargetClass { get; }
     }
 }

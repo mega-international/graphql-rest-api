@@ -1,7 +1,6 @@
+using Hopex.Model.Abstractions.MetaModel;
 using System;
 using System.Collections.Generic;
-using Hopex.Model.Abstractions.MetaModel;
-using Mega.Macro.API;
 
 namespace Hopex.Model.MetaModel
 {
@@ -14,10 +13,11 @@ namespace Hopex.Model.MetaModel
         private List<IEnumDescription> _enumValues;
         private string _propertyTypeName;
 
-        public PropertyDescription(IClassDescription classDescription, string name, string id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isTranslatable = false, bool? isFormattedText = false, int? maxLength = null)
+        public PropertyDescription(IClassDescription classDescription, string name, string id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isTranslatable = false, bool? isFormattedText = false, int? maxLength = null, PropertyScope scope=PropertyScope.Class)
         {
-            ClassDescription = classDescription;
+            Owner = classDescription;
             Name = name;
+            Scope = scope;
             Id = Utils.NormalizeHopexId(id);
             Description = description;
             PropertyTypeName = propertyType;
@@ -40,6 +40,7 @@ namespace Hopex.Model.MetaModel
         }
 
         public string Name { get; }
+        public PropertyScope Scope { get; }
         public string Id { get; }
         public string Description { get; internal set; }
         public IEnumerable<IConstraintDescription> Constraints { get; }
@@ -49,7 +50,7 @@ namespace Hopex.Model.MetaModel
         public bool IsTranslatable { get; internal set; }
         public bool IsFormattedText { get; internal set; }
         public int? MaxLength { get; internal set; }
-        public IClassDescription ClassDescription { get; }
+        public IClassDescription Owner { get; }
         public string SetterFormat { get; internal set; }
         public string GetterFormat { get; internal set; }
 
@@ -61,18 +62,13 @@ namespace Hopex.Model.MetaModel
                 _propertyTypeName = value;
                 switch (_propertyTypeName.ToLower())
                 {
+                    case "id":
+                        NativeType = typeof(string);
+                        PropertyType = PropertyType.Id;
+                        break;
                     case "int":
                         NativeType = typeof(int);
                         PropertyType = PropertyType.Int;
-                        break;
-                    case "boolean":
-                        NativeType = typeof(bool);
-                        PropertyType = PropertyType.Boolean;
-                        break;
-                    case "id":
-                    case "string":
-                        NativeType = typeof(string);
-                        PropertyType = PropertyType.String;
                         break;
                     case "long":
                         NativeType = typeof(long);
@@ -82,13 +78,25 @@ namespace Hopex.Model.MetaModel
                         NativeType = typeof(float);
                         PropertyType = PropertyType.Double;
                         break;
+                    case "double":
+                        NativeType = typeof(double);
+                        PropertyType = PropertyType.Double;
+                        break;
+                    case "string":
+                        NativeType = typeof(string);
+                        PropertyType = PropertyType.String;
+                        break;
+                    case "boolean":
+                        NativeType = typeof(bool);
+                        PropertyType = PropertyType.Boolean;
+                        break;
                     case "date":
                         NativeType = typeof(DateTime);
                         PropertyType = PropertyType.Date;
                         break;
-                    case "double":
+                    case "currency":
                         NativeType = typeof(double);
-                        PropertyType = PropertyType.Double;
+                        PropertyType = PropertyType.Currency;
                         break;
                     case "binary":
                         NativeType = typeof(byte[]);

@@ -1,52 +1,102 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
+using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.MetaModel;
 using Mega.Macro.API;
+using Mega.Macro.API.Library;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 namespace Hopex.Model.DataModel
 {
     internal class HopexModelElement : IModelElement, IDisposable
     {
-        private HopexDataModel _domainModel;
         public MegaObject MegaObject { get; }
+        public HopexDataModel DomainModel { get; private set; }
+
+        public IMegaObject IMegaObject { get; }
+        private IMegaRoot _iRoot;
 
         public HopexModelElement(HopexDataModel domainModel, IClassDescription schema, MegaObject megaObject, MegaId id = null)
         {
-            _domainModel = domainModel;
+            DomainModel = domainModel;
             ClassDescription = schema;
+
             MegaObject = megaObject;
-            Id = id;
-            if(id == null)
+            _iRoot = RealMegaRootFactory.FromNativeRoot(megaObject.Root);
+            IMegaObject = new RealMegaObject(megaObject);
+
+            Id = InitializeId(IMegaObject, id);
+        }
+
+        public HopexModelElement(HopexDataModel domainModel, IClassDescription schema, IMegaObject iMegaObject, MegaId id = null)
+        {
+            DomainModel = domainModel;
+            ClassDescription = schema;
+
+            IMegaObject = iMegaObject;
+            _iRoot = iMegaObject.Root;
+            if (iMegaObject is RealMegaObject)
             {
-                id = Utils.SanitizeId(megaObject.MegaField);
+                MegaObject = ((RealMegaObject)iMegaObject).RealObject;
+            }            
+
+            Id = InitializeId(IMegaObject, id);
+        }
+
+        private MegaId InitializeId(IMegaObject iMegaObject, MegaId id)
+        {
+            if (id == null)
+            {
+                id = Utils.SanitizeId(iMegaObject.MegaField);
                 int pos = id.ToString().IndexOf('[');
-                if(pos > 0)
+                if (pos > 0)
                 {
                     id = id.ToString().Substring(0, pos);
                 }
             }
-            Id = Utils.SanitizeId(id);
+            return Utils.SanitizeId(id);
         }
 
         public MegaId Id { get; }
         public IClassDescription ClassDescription { get; }
         public IHopexMetaModel MetaModel => ClassDescription.MetaModel;
 
+
+        public IModelCollection GetGenericCollection(string collectionMegaId)
+        {
+            return new GenericModelCollection(collectionMegaId, IMegaObject, DomainModel);
+        }      
+
         public Task<IModelCollection> GetCollectionAsync(string name, string erql, List<Tuple<string, int>> orderByClauses = null, string relationshipName = null)
         {
             IRelationshipDescription relationshipDescription = ClassDescription.GetRelationshipDescription(relationshipName ?? name);
-            return Task.FromResult<IModelCollection>(new HopexModelCollection(_domainModel, relationshipDescription, MegaObject.Root, erql, orderByClauses));
+            return Task.FromResult<IModelCollection>(new HopexModelCollection(DomainModel, relationshipDescription, MegaObject.Root, _iRoot, MegaObject, erql, orderByClauses));
         }
 
-        public T GetValue<T>(string propertyName, string format = null)
+        public object GetGenericValue(string propertyMegaId, Dictionary<string, object> arguments)
+        {
+            var normalizedId = Utils.NormalizeHopexId((string)arguments["id"]);
+            if (! arguments.TryGetValue("format", out var format))
+            {
+                format = "ASCII";
+            }
+            var propertyDescription = new PropertyDescription(ClassDescription, propertyMegaId, normalizedId, "", "string", null, null)
+            {
+                GetterFormat = format.ToString()
+            };
+            var value = GetValue<string>(propertyDescription, arguments);
+            return value;
+        }
+
+        public T GetValue<T>(string propertyName, Dictionary<string, object> arguments = null, string format = null)
         {
             var property = ClassDescription.GetPropertyDescription(propertyName);
-            return GetValue<T>(property, format);
+            return GetValue<T>(property, arguments, format);
         }
 
         public void SetValue<T>(string propertyName, T value, string format = null)
@@ -55,42 +105,79 @@ namespace Hopex.Model.DataModel
             SetValue<T>(property, value, format);
         }
 
-        public T GetValue<T>(IPropertyDescription property, string format = null)
+        public T GetValue<T>(IPropertyDescription property, Dictionary<string, object> arguments = null, string format = null)
         {
             var permissions = GetPropertyCrud(property);
-            if (! permissions.IsReadable)
+            if (!permissions.IsReadable)
             {
-                return (T) Convert.ChangeType(null, typeof(T));
+                return (T)Convert.ChangeType(null, typeof(T));
             }
 
             var propertyGetterFormat = format ?? property.GetterFormat ?? PropertyDescription.DefaultGetterFormat;
 
-            switch(property.PropertyType)
+            switch (property.PropertyType)
             {
+                case PropertyType.Id:
+                    return IMegaObject.GetPropertyValue<T>(property.Id, "External");
                 case PropertyType.String:
                 case PropertyType.RichText:
-                    if(format != null)
+                    var propertyId = property.Id;
+                    if (arguments != null && arguments.ContainsKey("nameSpace"))
                     {
-                        if(format == "RAW")
+                        NameSpaceFormatEnum nameSpaceFormatEnum;
+                        if(Enum.TryParse(arguments["nameSpace"].ToString(), out nameSpaceFormatEnum))
+                        {
+                            switch (nameSpaceFormatEnum)
+                            {
+                                case NameSpaceFormatEnum.LOCAL:
+                                    propertyId = MetaAttributeLibrary.GenericLocalName;
+                                    break;
+                                case NameSpaceFormatEnum.SHORT:
+                                    propertyId = MetaAttributeLibrary.ShortName;
+                                    break;
+                                case NameSpaceFormatEnum.LONG:
+                                    propertyId = MetaAttributeLibrary.Name;
+                                    break;
+                            }
+                        }
+                    }
+                    var languageId = "";
+                    if (arguments != null && arguments.ContainsKey("language"))
+                    {
+                        languageId = arguments["language"].ToString();
+                    }
+                    if (!string.IsNullOrEmpty(languageId))
+                    {
+                        var attribute = IMegaObject.GetAttribute(propertyId);
+                        var translatedAttribute = attribute.Translate(languageId).Value();
+                        return (T)Convert.ChangeType(translatedAttribute, typeof(T));
+                    }
+                    if (format != null)
+                    {
+                        if (format == "RAW")
                         {
                             format = "ANSI";
                         }
-                        return MegaObject.NativeObject.GetFormated(property.Id.ToString(), format);
+                        return MegaObject.NativeObject.GetFormated(propertyId, format);
                     }
-                    return MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+                    if (property.IsFormattedText)
+                    {
+                        return MegaObject.NativeObject.GetFormated(propertyId, "HTML");
+                    }
+                    return IMegaObject.GetPropertyValue<T>(propertyId, propertyGetterFormat);
                 case PropertyType.Enum:
                     var enumResult = MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
                     var q = from x in property.EnumValues
-                        where x.InternalValue == enumResult.ToString()
-                        select x.Name;
+                            where x.InternalValue == enumResult.ToString()
+                            select x.Name;
                     return (T)Convert.ChangeType(q.FirstOrDefault(), typeof(T));
                 case PropertyType.Date:
-                    var dateResult = MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
-                    if(dateResult.ToString() == "")
+                    var dateResult = MegaObject.GetPropertyValue<T>(property.Id);
+                    if (dateResult.ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
-                    if(propertyGetterFormat != "ASCII" && MegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
+                    if (propertyGetterFormat != "ASCII" && MegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
@@ -99,294 +186,142 @@ namespace Hopex.Model.DataModel
                 case PropertyType.Long:
                 case PropertyType.Double:
                     var numericResult = MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
-                    if(numericResult.ToString() == "")
+                    if (numericResult.ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
-                    if(propertyGetterFormat != "ASCII" && MegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
+                    if (propertyGetterFormat != "ASCII" && MegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
                     return numericResult;
+                case PropertyType.Currency:
+                    var amountResult = FormatCurrency<T>(property, arguments, propertyGetterFormat);
+                    if (amountResult == null)
+                    {
+                        return (T)Convert.ChangeType(null, typeof(T));
+                    }
+                    return amountResult;
                 default:
                     return MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
             }
         }
 
+        private T FormatCurrency<T>(IPropertyDescription property, IReadOnlyDictionary<string, object> arguments, string propertyGetterFormat)
+        {
+            object result = null;
+            if (arguments != null && (arguments.ContainsKey("currency") || arguments.ContainsKey("dateRate")))
+            {
+                var currency = MegaObject.Root.CurrentEnvironment.Currency;
+                var value = MegaObject.GetPropertyValue(property.Id);
+                var currencyId = currency.GetCurrencyId(value);
+                if (arguments.ContainsKey("currency"))
+                {
+                    var currencyCode = arguments["currency"].ToString();
+                    var availableCurrency = MegaObject.Root.GetSelection($"Select {MetaClassLibrary.Currency} Where {MetaAttributeLibrary.CurrencyCode} = \"{currencyCode}\"").FirstOrDefault();
+                    if (availableCurrency != null && availableCurrency.Exists)
+                    {
+                        if (MegaObject.Root.CurrentEnvironment.Toolkit.IsSameId(availableCurrency.Id, currencyId))
+                        {
+                            var currencyValue = MegaObject.NativeObject.GetAttribute(property.Id).Value;
+                            result = currency.GetAmount(currencyValue);
+                            DateTime dateRate;
+                            if(arguments.ContainsKey("dateRate") && DateTime.TryParse(arguments["dateRate"].ToString(), out dateRate))
+                            {
+                                result = currency.NativeObject.GetInternalAmount(result, currencyId, currencyId, dateRate);
+                            }
+                        }
+                        else
+                        {
+                            var availableCurrencyId = availableCurrency.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier);
+                            var currencyValue = MegaObject.NativeObject.GetAttribute(property.Id).Translate(availableCurrencyId).Value;
+                            result = currency.GetAmount(currencyValue);
+                            DateTime dateRate;
+                            if(arguments.ContainsKey("dateRate") && DateTime.TryParse(arguments["dateRate"].ToString(), out dateRate))
+                            {
+                                result = currency.NativeObject.GetInternalAmount(result, currencyId, availableCurrencyId, dateRate);
+                            }
+                        }
+                    }
+                }
+                if (arguments.ContainsKey("dateRate"))
+                {
+                    var currencyValue = MegaObject.NativeObject.GetAttribute("~bKxT)KisHnbR[Amount]").Value;
+                    result = currency.GetAmount(currencyValue);
+                    DateTime dateRate;
+                    if(DateTime.TryParse(arguments["dateRate"].ToString(), out dateRate))
+                    {
+                        result = currency.NativeObject.GetInternalAmount(result, currencyId, currencyId, dateRate);
+                    }
+                }
+            }
+            else
+            {
+                result = MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+            }
+            if (result is DBNull)
+            {
+                return (T)Convert.ChangeType(null, typeof(T));
+            }
+            return (T)Convert.ChangeType(result, typeof(T));
+        }
+
         public void SetValue<T>(IPropertyDescription property, T value, string format = null)
         {
             var permissions = GetPropertyCrud(property);
-            if (! permissions.IsUpdatable)
+            if (!permissions.IsUpdatable)
             {
                 throw new ExecutionError($"You are not allowed to perform this action on this property ({property.Name})");
             }
-            if(value is DateTime)
+            if (value is DateTime)
             {
                 var dateTimeValue = (DateTime)Convert.ChangeType(value, typeof(DateTime));
                 MegaObject.SetPropertyValue(property.Id, dateTimeValue.ToString("yyyy/MM/dd HH:mm:ss"));
             }
             else
             {
-                MegaObject.SetPropertyValue(property.Id, value, format ?? property.SetterFormat ?? PropertyDescription.DefaultSetterFormat);
+                if (property.IsFormattedText)
+                {
+                    format = "HTML";
+                }
+                IMegaObject.SetPropertyValue(property.Id, value, format ?? property.SetterFormat ?? PropertyDescription.DefaultSetterFormat);
             }
         }
+
 
         internal async Task UpdateElement(IEnumerable<ISetter> setters)
         {
-            if(setters == null)
+            if (setters == null)
             {
                 return;
             }
 
-            foreach(ISetter setter in setters)
+            foreach (ISetter setter in setters)
             {
                 //_domainModel.LogInformation("before setter");
-                if(setter is PropertySetter ps)
-                {
-                    //_domainModel.LogInformation($"setter prop = {ps.PropertyDescription}");
-                    SetValue(ps.PropertyDescription, ps.Value, ps.SetterFormat);
-                }
-                else if(setter is CollectionSetter cs)
-                {
-                    //_domainModel.LogInformation($"setter col = {cs.ToString()}");
-                    var link = cs.RelationshipDescription;
-                    var permissions = GetPathCrud(link.Path[0]);
-                    switch(cs.Action)
-                    {
-                        case CollectionAction.ReplaceAll:
-                            if (!permissions.IsCreatable || !permissions.IsDeletable)
-                            {
-                                throw new ExecutionError($"You are not allowed to perform this action on this property ({link.Path[0].RoleName})");
-                            }
-                            RemoveAllConnection(link.Path);
-                            foreach(var element in cs.Elements)
-                            {
-                                await ConnectToAsync(link, element.Id, true);
-                            }
-                            break;
-                        case CollectionAction.Add:
-                            if (!permissions.IsCreatable)
-                            {
-                                throw new ExecutionError($"You are not allowed to perform this action on this property ({link.Path[0].RoleName})");
-                            }
-                            foreach(var element in cs.Elements)
-                            {
-                                await ConnectToAsync(link, element.Id, true);
-                            }
-                            break;
-                        case CollectionAction.Remove:
-                            if (!permissions.IsDeletable)
-                            {
-                                throw new ExecutionError($"You are not allowed to perform this action on this property ({link.Path[0].RoleName})");
-                            }
-                            foreach(var element in cs.Elements)
-                            {
-                                await ConnectToAsync(link, element.Id, false);
-                            }
-                            break;
-                    }
-                }
+                await setter.UpdateElementAsync(DomainModel, this);                                   
                 //_domainModel.LogInformation("after setter");
             }
-        }
-
-        private async Task<IModelElement> ConnectToAsync(IRelationshipDescription link, string id, bool insert)
-        {
-            var elemSchema = ClassDescription.MetaModel.GetClassDescription(link.Path.Last().TargetSchemaName);
-
-            var getElementByIdAsyncTask = _domainModel.GetElementByIdAsync(elemSchema, id);
-            if(getElementByIdAsyncTask == null)
-            {
-                throw new Exception($"Element {elemSchema.Name} not found with id {id}");
-            }
-
-            if(!(await getElementByIdAsyncTask is HopexModelElement elemToInsert))
-            {
-                throw new Exception($"{id}' is not a valid item to add for relationship {link.Name} of {id}");
-            }
-
-            var current = insert ? InsertConnection(elemToInsert, link.Path) : RemoveConnection(elemToInsert, link.Path);
-
-            return current != null ? new HopexModelElement(_domainModel, elemSchema, current, id) : null;
-        }
-
-        private MegaObject InsertConnection(HopexModelElement elemToInsert, IPathDescription [] path)
-        {
-            var current = MegaObject;
-            var interObjects = new List<MegaObject>();
-            var found = FillInterObjects(current, elemToInsert.MegaObject, path, ref interObjects);
-            if(found) //adding a new connection from a source to a target already linked together is forbidden
-            {
-                return current;
-            }
-
-            for(int ix = 0;ix < path.Length;ix++)
-            {
-                bool isLast = ix == path.Length - 1;
-                IPathDescription hop = path [ix];
-
-                MegaId roleId = hop.RoleId;
-
-                var collection = current.GetCollection(roleId);
-                if(isLast)
-                {
-                    collection.Add(Utils.NormalizeHopexId(elemToInsert.Id));
-                    current = elemToInsert.MegaObject;
-                }
-                else
-                {
-                    current = collection.Create();
-                }
-                CreateCondition(current, hop.Condition);
-            }
-            return current;
-        }
-
-        private void CreateCondition(MegaObject current, PathConditionDescription hopCondition)
-        {
-            if (hopCondition == null || string.IsNullOrEmpty(hopCondition.RoleId) || string.IsNullOrEmpty(hopCondition.ObjectFilterId))
-            {
-                return;
-            }
-            var conditionObject = current.Root.GetObjectFromId<MegaObject>(Utils.NormalizeHopexId(hopCondition.ObjectFilterId));
-            current.GetCollection(Utils.NormalizeHopexId(hopCondition.RoleId)).Add(conditionObject.Id);
-        }
-
-        private MegaObject RemoveConnection(HopexModelElement elemToInsert, IPathDescription [] path)
-        {
-            var current = MegaObject;
-            List<MegaObject> interObjects = new List<MegaObject>();
-            var found = FillInterObjects(current, elemToInsert.MegaObject, path, ref interObjects);
-            if(!found) //Inexisting link
-            {
-                return current;
-            }
-
-            if(interObjects.Any()) //remove interObject will automatically kill links
-            {
-                interObjects.ForEach(interObject => interObject.Delete("NoHierarchy"));
-            }
-            else if(path.Any()) //remove single link
-            {
-                IPathDescription hop = path.First();
-                MegaId roleId = hop.RoleId;
-                var collection = current.GetCollection(roleId);
-                var id = Utils.NormalizeHopexId(elemToInsert.Id);
-                RemoveFromCollection(collection, id);
-            }
-            return current;
-        }
-
-        private void RemoveAllConnection(IPathDescription [] paths)
-        {
-            bool hasInterObjects = paths.Length > 1;
-            if(hasInterObjects)
-            {
-                List<MegaObject> interObjects = new List<MegaObject>();
-                FillInterObjects(MegaObject, null, paths, ref interObjects);
-                interObjects.ForEach(interObject => interObject.Delete("NoHierarchy"));
-            }
-            else if(paths.Length == 1)
-            {
-                RemoveAllLinks(MegaObject, paths [0]);
-            }
-        }
-
-        bool FillInterObjects(MegaObject source, MegaObject target, IPathDescription [] paths, ref List<MegaObject> interObjects, int idx = 0)
-        {
-            bool isLast = idx == paths.Length - 1;
-            MegaId roleId = paths [idx].RoleId;
-            var collection = source.GetCollection(roleId);
-            var enumerator = collection.GetEnumerator();
-            if((target == null) && isLast)
-            {
-                return true;
-            }
-
-            while(enumerator.MoveNext())
-            {
-                var item = (MegaObject)enumerator.Current;
-                if(isLast) //for last path, we find target id
-                {
-                    if(item.IsSameId(target.Id) && MetaAssociationConditionFilter(item, paths[idx]))
-                    {
-                        return true;
-                    }
-                }
-                else //for previous paths, we find interobjects
-                {
-                    if(FillInterObjects(item, target, paths, ref interObjects, idx + 1))
-                    {
-                        if (MetaAssociationConditionFilter(item, paths[idx]))
-                        {
-                            interObjects.Add(item);
-                            if (target != null)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-            return (target == null); //target null is always true
-        }
-
-        private static bool MetaAssociationConditionFilter(MegaObject item, IPathDescription hop)
-        {
-            if(hop.Condition == null || string.IsNullOrEmpty(hop.Condition.RoleId) || string.IsNullOrEmpty(hop.Condition.ObjectFilterId))
-            {
-                return true;
-            }
-            return item.GetPropertyValue(Utils.NormalizeHopexId(hop.Condition.RoleId)) == hop.Condition.ObjectFilterId;
-        }
-
-        void RemoveAllLinks(MegaObject source, IPathDescription path)
-        {
-            MegaId roleId = path.RoleId;
-            var collection = source.GetCollection(roleId);
-            var enumerator = collection.GetEnumerator();
-            var ids = new List<MegaId>();
-            while(enumerator.MoveNext())
-            {
-                var item = (MegaObject)enumerator.Current;
-                ids.Add(item.Id);
-            }
-            ids.ForEach(id => RemoveFromCollection(collection, id));
-        }
-
+        }                       
+      
         public void Dispose()
         {
-            _domainModel = null;
+            DomainModel = null;
             (MegaObject as IDisposable)?.Dispose();
         }
-
-        private void RemoveFromCollection(MegaCollection collection, MegaObject item)
-        {
-            RemoveFromCollection(collection, item.Id);
-        }
-
-        private void RemoveFromCollection(MegaCollection collection, MegaId id)
-        {
-            collection.NativeObject.Item(id.Value).Remove();
-        }
-
+                
         public CrudResult GetCrud()
         {
-            return CrudComputer.GetCrud(MegaObject);
+            return CrudComputer.GetCrud(IMegaObject);
         }
 
         public CrudResult GetPropertyCrud(IPropertyDescription property)
         {
-            return CrudComputer.GetPropertyCrud(MegaObject, property);
+            return CrudComputer.GetPropertyCrud(IMegaObject, property);
         }
+        
+        public bool IsConfidential => IMegaObject.IsConfidential;
 
-        public CrudResult GetPathCrud(IPathDescription path)
-        {
-            return CrudComputer.GetPathCrud(MegaObject, path);
-        }
-
-        public bool IsConfidential => MegaObject.NativeObject.IsConfidential;
-
-        public bool IsAvailable => MegaObject.NativeObject.CallFunction("IsAvailable");
+        public bool IsAvailable => IMegaObject.IsAvailable;
     }
 }

@@ -1,35 +1,54 @@
+using Hopex.Model.Abstractions.MetaModel;
+
+using Mega.Macro.API.Library;
+
 using System;
 using System.Collections.Generic;
-using Hopex.Model.Abstractions.MetaModel;
-using Mega.Macro.API;
-using Mega.Macro.API.Library;
 
 namespace Hopex.Model.MetaModel
 {
+
     [System.Diagnostics.DebuggerDisplay("{Name}")]
     internal class ClassDescription : IClassDescription
     {
-        private readonly Dictionary<string, IPropertyDescription> _properties;
         private readonly Dictionary<string, IRelationshipDescription> _relationships;
 
-        public ClassDescription(IHopexMetaModel schema, string name, string id, string description, bool isEntryPoint)
+        public ClassDescription(IHopexMetaModel schema, string name, string id, string description, bool isEntryPoint, IClassDescription extendedClass = null)
         {
             IsEntryPoint = isEntryPoint;
+            Extends = extendedClass;
             MetaModel = schema;
             Name = name;
             Id = Utils.NormalizeHopexId(id);
             Description = description;
-            _properties = new Dictionary<string, IPropertyDescription>(StringComparer.OrdinalIgnoreCase);
             _relationships = new Dictionary<string, IRelationshipDescription>(StringComparer.OrdinalIgnoreCase);
+            _properties = new Dictionary<string, IPropertyDescription>(StringComparer.OrdinalIgnoreCase);
         }
 
         public string Name { get; }
         public string Id { get; }
         public string Description { get; internal set; }
-
-        internal IClassDescription Clone(IHopexMetaModel schema)
+        private readonly Dictionary<string, IPropertyDescription> _properties;
+        public IEnumerable<IPropertyDescription> Properties
         {
-            ClassDescription clone = new ClassDescription(schema, Name, Id, Description, IsEntryPoint);
+            get
+            {
+                foreach (var p in _properties.Values)
+                {
+                    yield return p;
+                }
+                if (Extends != null)
+                {
+                    foreach (var p in Extends.Properties)
+                    {
+                        yield return p;
+                    }
+                }
+            }
+        }
+
+        public void CloneProperties(IClassDescription clone)
+        {
             foreach (PropertyDescription prop in _properties.Values)
             {
                 PropertyDescription p = new PropertyDescription(this, prop.Name, prop.Id, prop.Description, prop.PropertyTypeName, prop.IsRequired, prop.IsReadOnly, prop.IsTranslatable, prop.IsFormattedText);
@@ -39,21 +58,7 @@ namespace Hopex.Model.MetaModel
                 }
                 clone.AddProperty(p);
             }
-
-            foreach (RelationshipDescription rel in _relationships.Values)
-            {
-                RelationshipDescription r = new RelationshipDescription(rel.Id, this, rel.Name, rel.RoleId, rel.Description);
-                r.SetPath(rel.Path);
-                clone.AddRelationship(r);
-            }
-            return clone;
         }
-
-        public bool IsEntryPoint { get; internal set; }
-        public IEnumerable<IPropertyDescription> Properties => _properties.Values;
-        public IEnumerable<IRelationshipDescription> Relationships => _relationships.Values;
-        public Type NativeType { get; }
-        public IHopexMetaModel MetaModel { get; }
 
         public IPropertyDescription GetPropertyDescription(string propertyName, bool throwExceptionIfNotExists = true)
         {
@@ -66,6 +71,10 @@ namespace Hopex.Model.MetaModel
             {
                 return cd;
             }
+            if (Extends != null)
+            {
+                return Extends.GetPropertyDescription(propertyName, throwExceptionIfNotExists);
+            }
 
             if (throwExceptionIfNotExists)
             {
@@ -75,13 +84,59 @@ namespace Hopex.Model.MetaModel
             return null;
         }
 
+        public void AddProperty(IPropertyDescription prop)
+        {
+            _properties.Add(prop.Name, prop);
+        }
+
+
+        internal IClassDescription Clone(IHopexMetaModel schema)
+        {
+            ClassDescription clone = new ClassDescription(schema, Name, Id, Description, IsEntryPoint);
+            CloneProperties(clone);
+
+            foreach (RelationshipDescription rel in _relationships.Values)
+            {
+                RelationshipDescription r = new RelationshipDescription(rel.Id, this, rel.Name, rel.RoleId, rel.Description);
+                r.SetPath(rel.Path);
+                clone.AddRelationship(r);
+            }
+            return clone;
+        }
+
+        public bool IsEntryPoint { get; internal set; }
+        public IClassDescription Extends { get; }
+
+        public IEnumerable<IRelationshipDescription> Relationships
+        {
+            get
+            {
+                foreach (var p in _relationships.Values)
+                {
+                    yield return p;
+                }
+                if (Extends != null)
+                {
+                    foreach (var p in Extends.Relationships)
+                    {
+                        yield return p;
+                    }
+                }
+            }
+        }
+        public Type NativeType { get; }
+        public IHopexMetaModel MetaModel { get; }
+
         public IRelationshipDescription GetRelationshipDescription(string roleName, bool throwExceptionIfNotExists = true)
         {
             if (_relationships.TryGetValue(roleName, out IRelationshipDescription cd))
             {
                 return cd;
             }
-
+            if (Extends != null)
+            {
+                return Extends.GetRelationshipDescription(roleName, throwExceptionIfNotExists);
+            }
             if (throwExceptionIfNotExists)
             {
                 throw new Exception($"{roleName} not found");
@@ -89,14 +144,11 @@ namespace Hopex.Model.MetaModel
             return null;
         }
 
-        internal void AddProperty(IPropertyDescription prop)
-        {
-            _properties.Add(prop.Name, prop);
-        }
-
         internal void AddRelationship(IRelationshipDescription rel)
         {
             _relationships.Add(rel.Name, rel);
         }
+
+        public string GetBaseName() => Extends != null ? Extends.GetBaseName() : Name;
     }
 }

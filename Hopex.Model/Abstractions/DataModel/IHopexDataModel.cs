@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hopex.Model.Abstractions.MetaModel;
+using Hopex.Model.DataModel;
 
 namespace Hopex.Model.Abstractions.DataModel
 {
@@ -13,9 +14,10 @@ namespace Hopex.Model.Abstractions.DataModel
 
     public interface IHopexDataModel : IHasCollection
     {
-        Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id);
-        Task<IModelElement> CreateElementAsync(IClassDescription schema, IEnumerable<ISetter> setters, bool useInstanceCreator);
-        Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IEnumerable<ISetter> setters);
-        Task<IModelElement> RemoveElementAsync(IClassDescription schema, string id, bool cascade);
+        Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType);
+        Task<IModelElement> CreateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters);
+        Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters);
+        Task<IModelElement> CreateUpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters, bool useInstanceCreator);
+        Task<IModelElement> RemoveElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool cascade);
     }
 }

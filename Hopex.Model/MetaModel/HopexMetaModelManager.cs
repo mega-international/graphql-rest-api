@@ -20,32 +20,54 @@ namespace Hopex.Model.MetaModel
             _convertorFactory = convertorFactory;
         }
 
-        public async Task<IHopexMetaModel> GetMetaModelAsync(string schemaName, ValidationContext ctx = null)
+        public IEnumerable<IHopexMetaModel> Schemas => _schemas.Values;
+
+        public async Task<IHopexMetaModel> GetMetaModelAsync(SchemaReference schemaRef, ValidationContext ctx = null)
         {
-            if (_schemas.TryGetValue(schemaName, out IHopexMetaModel schema))
+            if (_schemas.TryGetValue(schemaRef.UniqueId, out IHopexMetaModel schema))
             {
                 return schema;
             }
 
-            if (_resolvedSchemas.Contains(schemaName))
+            if (_resolvedSchemas.Contains(schemaRef.UniqueId))
             {
                 throw new Exception("Circular reference");
             }
-            PivotSchema.Models.PivotSchema json = await _loader.ReadAsync(schemaName);
+
+            if(_loader == null)
+            {
+                throw new Exception("Unable to load schema.");
+            }
+            var json = await _loader.ReadAsync(schemaRef);
             if (json == null)
             {
-                throw new Exception($"Schema {schemaName} not found.");
+                throw new Exception($"Schema {schemaRef.UniqueId} not found.");
             }
 
             var convertor = _convertorFactory(ctx ?? new ValidationContext());
             if (convertor != null)
             {
-                schema = await convertor.ConvertAsync(this, json);
-                _schemas[schemaName] = schema;
-                _resolvedSchemas.Add(schemaName);
+                schema = await convertor.ConvertAsync(this, json, schemaRef);
+                _schemas[schemaRef.UniqueId] = schema;
+                _resolvedSchemas.Add(schemaRef.UniqueId);
             }
 
             return schema;
+        }
+
+        public async Task LoadAllAsync(string version)
+        {
+            foreach (var schemaRef in _loader.EnumerateStandardSchemas(version))
+            {
+                try
+                {
+                    await GetMetaModelAsync(schemaRef);
+                }
+                catch
+                {
+                    // TODO ?
+                }
+            }
         }
     }
 }

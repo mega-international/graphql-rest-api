@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
@@ -14,6 +15,8 @@ namespace Hopex.Model.Mocks
         private readonly ConcurrentDictionary<string, object> _values = new ConcurrentDictionary<string, object>();
 
         public MegaObject MegaObject => new MegaObject();
+
+        public IMegaObject IMegaObject => throw new NotImplementedException();
 
         public MockDataElement(MockDataModel dataModel, IClassDescription metaclass, string id = null, string name = null)
         {
@@ -39,7 +42,7 @@ namespace Hopex.Model.Mocks
             return Task.FromResult((IModelCollection)_values.GetOrAdd(relationshipDescription.Name, _ => DataGenerator.CreateCollection(DataModel, relationshipDescription)));
         }
 
-        public T GetValue<T>(IPropertyDescription propertyDescription, string format = null)
+        public T GetValue<T>(IPropertyDescription propertyDescription, Dictionary<string, object> arguments = null, string format = null)
         {
             return (T)_values.GetOrAdd(propertyDescription.Name, _ => DataGenerator.CreateRandom(propertyDescription));
         }
@@ -49,10 +52,10 @@ namespace Hopex.Model.Mocks
             _values.AddOrUpdate(propertyDescription.Name, value, (_, v) => value);
         }
 
-        public T GetValue<T>(string propertyName, string format = null)
+        public T GetValue<T>(string propertyName, Dictionary<string, object> arguments = null, string format = null)
         {
             var property = ClassDescription.GetPropertyDescription(propertyName);
-            return GetValue<T>(property, format);
+            return GetValue<T>(property, arguments, format);
         }
 
         public void SetValue<T>(string propertyName, T value, string format = null)
@@ -64,6 +67,16 @@ namespace Hopex.Model.Mocks
         public CrudResult GetCrud()
         {
             return new CrudResult("CRUD");
+        }
+
+        public object GetGenericValue(string popertyMegaId, Dictionary<string, object> arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IModelCollection GetGenericCollection(string collectionMegaId)
+        {
+            throw new NotImplementedException();
         }
 
         public bool IsConfidential => false;

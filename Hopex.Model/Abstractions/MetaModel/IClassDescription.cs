@@ -15,10 +15,14 @@ namespace Hopex.Model.Abstractions.MetaModel
         IEnumerable<IPropertyDescription> Properties { get; }
         IEnumerable<IRelationshipDescription> Relationships { get; }
 
+        void AddProperty(IPropertyDescription prop);
+        void CloneProperties(IClassDescription clone);
+        IPropertyDescription GetPropertyDescription(string propertyName, bool throwExceptionIfNotExists = true);
+
         IRelationshipDescription GetRelationshipDescription(string roleName, bool throwExceptionIfNotExists = true);
 
         Type NativeType { get; }
-
-        IPropertyDescription GetPropertyDescription(string propertyName, bool throwExceptionIfNotExists = true);
+        IClassDescription Extends { get; }
+        string GetBaseName();
     }
 }

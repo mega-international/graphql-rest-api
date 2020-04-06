@@ -9,7 +9,9 @@ namespace Hopex.Model.Abstractions.MetaModel
         string Name { get; }
 
         IEnumerable<IClassDescription> Classes { get; }
-
+        IEnumerable<IClassDescription> Interfaces { get; }
+        IClassDescription FindClassDescriptionById(string metaClassId);
         IClassDescription GetClassDescription(string schemaName, bool throwExceptionIfNotExists = true);
+        IClassDescription GetInterfaceDescription(string schemaName, bool throwExceptionIfNotExists = true);
     }
 }

@@ -1,13 +1,20 @@
+using Hopex.Model.MetaModel;
+
 using System;
 using System.Collections.Generic;
-using Mega.Macro.API;
 
 namespace Hopex.Model.Abstractions.MetaModel
 {
+    public enum PropertyScope
+    {
+        Class,
+        Relationship,
+        TargetClass
+    }
+
     public interface IPropertyDescription
     {
-        IClassDescription ClassDescription { get; }
-
+        IClassDescription Owner { get; }
         string Name { get; }
         string Id { get; }
         string Description { get; }
@@ -22,5 +29,6 @@ namespace Hopex.Model.Abstractions.MetaModel
         Type NativeType { get; }
         string SetterFormat { get; }
         string GetterFormat { get; }
+        PropertyScope Scope { get; }
     }
 }

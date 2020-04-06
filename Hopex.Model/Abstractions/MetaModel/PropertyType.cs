@@ -3,13 +3,14 @@ namespace Hopex.Model.Abstractions.MetaModel
     public enum PropertyType
     {
         Id,
-        String,
-        Double,
-        Date,
         Int,
         Long,
+        Double,
+        String,
         RichText,
         Boolean,
+        Date,
+        Currency,
         Enum,
         Binary
     }

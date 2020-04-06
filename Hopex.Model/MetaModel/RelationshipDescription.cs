@@ -1,13 +1,16 @@
+using Hopex.Model.Abstractions.MetaModel;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hopex.Model.Abstractions.MetaModel;
-using Mega.Macro.API;
 
 namespace Hopex.Model.MetaModel
 {
     [System.Diagnostics.DebuggerDisplay("{Name}")]
     internal class RelationshipDescription : IRelationshipDescription
     {
+        private readonly Dictionary<string, IPropertyDescription> _properties;
+
         public RelationshipDescription(string id, IClassDescription classDescription, string name, string roleId, string description)
         {
             Id = id;
@@ -15,6 +18,7 @@ namespace Hopex.Model.MetaModel
             Name = name;
             RoleId = Utils.NormalizeHopexId(roleId);
             Description = description;
+            _properties = new Dictionary<string, IPropertyDescription>(StringComparer.OrdinalIgnoreCase);
         }
         public string Id { get; }
         public string Name { get; }
@@ -22,6 +26,9 @@ namespace Hopex.Model.MetaModel
         public string Description { get; internal set; }
         public string RoleId { get; }
         public IClassDescription ClassDescription { get; }
+        public IEnumerable<IPropertyDescription> Properties => _properties.Values;
+
+        public IClassDescription TargetClass { get; internal set; }
 
         internal void SetPath(IEnumerable<IPathDescription> pathDescriptions)
         {

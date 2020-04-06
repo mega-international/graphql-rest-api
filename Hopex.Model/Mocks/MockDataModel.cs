@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
+using Hopex.Model.DataModel;
 using Mega.Macro.API;
 
 namespace Hopex.Model.Mocks
@@ -51,7 +52,7 @@ namespace Hopex.Model.Mocks
         public IHopexMetaModel MetaModel { get; }
         public static int MaxCollectionSize { get; set; } = 4;
 
-        public async Task<IModelElement> CreateElementAsync(IClassDescription schema, IEnumerable<ISetter> setters, bool useInstanceCreator)
+        public async Task<IModelElement> CreateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters)
         {
             var coll = await GetCollectionAsync(schema.Name, null) as MockModelCollection;
             var elem = CreateElement(schema, cx++);
@@ -78,6 +79,9 @@ namespace Hopex.Model.Mocks
                     IRelationshipDescription link = cs.RelationshipDescription;
                     var collection = await elem.GetCollectionAsync(link.Name, null) as MockModelCollection;
                     var targeSchema = MetaModel.GetClassDescription(link.Path.Last().TargetSchemaName);
+
+                    var elements = cs.ListElement.Cast<Dictionary<string, object>>();
+
                     switch (cs.Action)
                     {
                         case CollectionAction.ReplaceAll:
@@ -85,20 +89,20 @@ namespace Hopex.Model.Mocks
                             goto case CollectionAction.Add;
 
                         case CollectionAction.Add:
-                            foreach (var element in cs.Elements)
+                            foreach (var element in elements)
                             {
-                                var e = await GetElementByIdAsync(targeSchema, element.Id);
+                                var e = await GetElementByIdAsync(targeSchema, element["id"].ToString(), IdTypeEnum.INTERNAL);
                                 if (e == null)
                                 {
-                                    throw new Exception($"Invalid {element.Id} when adding a new relationship");
+                                    throw new Exception($"Invalid {element["id"]} when adding a new relationship");
                                 }
                                 collection.Add(e);
                             }
                             break;
                         case CollectionAction.Remove:
-                            foreach (var element in cs.Elements)
+                            foreach (var element in elements)
                             {
-                                var e = await GetElementByIdAsync(targeSchema, element.Id);
+                                var e = await GetElementByIdAsync(targeSchema, element["id"].ToString(), IdTypeEnum.INTERNAL);
                                 collection.Remove(e.Id, true);
                             }
                             break;
@@ -110,20 +114,29 @@ namespace Hopex.Model.Mocks
             }
         }
 
+        public async Task<IModelElement> CreateUpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters, bool useInstanceCreator)
+        {
+            var coll = await GetCollectionAsync(schema.Name, null) as MockModelCollection;
+            var elem = CreateElement(schema, cx++);
+            coll.Add(elem);
+            await UpdateAsync(elem, setters);
+            return elem;
+        }
+
         public Task<IModelCollection> GetCollectionAsync(string name, string erql, List<Tuple<string, int>> orderByClauses = null, string relationshipName = null)
         {
             var schema = MetaModel.GetClassDescription(name);
             return Task.FromResult<IModelCollection>(_collections.GetOrAdd(schema.Name, _ => new MockModelCollection(this, schema)));
         }
 
-        public Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id)
+        public Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType)
         {
             if (_elements.TryGetValue(id, out var elem))
                 return Task.FromResult(elem);
             return Task.FromResult<IModelElement>(null);
         }
 
-        public Task<IModelElement> RemoveElementAsync(IClassDescription schema, string id, bool cascade)
+        public Task<IModelElement> RemoveElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool cascade)
         {
             if (_collections.TryGetValue(schema.Name, out var collections))
             {
@@ -142,9 +155,9 @@ namespace Hopex.Model.Mocks
             return elem;
         }
 
-        public async Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IEnumerable<ISetter> setters)
+        public async Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters)
         {
-            var elem = await GetElementByIdAsync(schema, id);
+            var elem = await GetElementByIdAsync(schema, id, IdTypeEnum.INTERNAL);
             if (elem == null) throw new Exception("Not found");
             await UpdateAsync(elem, setters);
             return elem;

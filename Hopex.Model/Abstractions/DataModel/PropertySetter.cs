@@ -1,5 +1,7 @@
 using GraphQL;
 using Hopex.Model.Abstractions.MetaModel;
+using Hopex.Model.DataModel;
+using System.Threading.Tasks;
 
 namespace Hopex.Model.Abstractions.DataModel
 {
@@ -29,5 +31,11 @@ namespace Hopex.Model.Abstractions.DataModel
         public virtual object Value { get; private set; }
         public string SetterFormat { get; private set; }
 
+        public Task UpdateElementAsync(HopexDataModel _, IModelElement element)
+        {
+            //_domainModel.LogInformation($"setter prop = {ps.PropertyDescription}");
+            element.SetValue(PropertyDescription, Value, SetterFormat);
+            return Task.CompletedTask;
+        }
     }
 }

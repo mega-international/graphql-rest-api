@@ -33,7 +33,7 @@ namespace Hopex.Model.Mocks
         {
             switch (propertyType)
             {
-                case PropertyType.String:
+                case PropertyType.Id:
                     return Instance.NextLoremIpsum(20);
                 case PropertyType.Double:
                     return Instance.Random.NextDouble();
@@ -41,21 +41,22 @@ namespace Hopex.Model.Mocks
                     return Instance.Random.Next();
                 case PropertyType.Long:
                     return Convert.ToInt64(Instance.Random.NextDouble());
+                case PropertyType.String:
+                case PropertyType.RichText:
+                    return Instance.NextLoremIpsum(20);
                 case PropertyType.Boolean:
                     return Instance.Random.Next(2) == 0;
+                case PropertyType.Date:
+                    return Instance.NextDate();
+                case PropertyType.Currency:
+                    return Instance.Random.NextDouble();
                 case PropertyType.Enum:
                     if (enums == null)
                     {
                         throw new ArgumentNullException("enums");
                     }
-
                     IEnumDescription[] values = enums.ToArray();
                     return values[Instance.Random.Next(values.Length + 1)].InternalValue;
-                case PropertyType.Date:
-                    return Instance.NextDate();
-                case PropertyType.RichText:
-                default:
-                    break;
             }
             throw new NotImplementedException();
         }
