@@ -21,12 +21,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mega.WebService.GraphQL.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E79F70BE-4742-4D7D-82B4-74AC3612A560}"
 	ProjectSection(SolutionItems) = preProject
+		AzureDevOpsCodeCoverage.runsettings = AzureDevOpsCodeCoverage.runsettings
+		DevSkipInittIntegrationTesting.runsettings = DevSkipInittIntegrationTesting.runsettings
 		HOWTO_BUILD.md = HOWTO_BUILD.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mega.WebService.GraphQL.V3.UnitTests", "Mega.WebService.GraphQL.V3.UnitTests\Mega.WebService.GraphQL.V3.UnitTests.csproj", "{187AAB01-3AD5-4739-B9CE-86D745277496}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hopex.Common", "Hopex.Common\Hopex.Common.csproj", "{43369561-0052-477A-B23F-61FC57B8466F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mega.WebService.GraphQL.IntegrationTests", "Mega.WebService.GraphQL.IntegrationTests\Mega.WebService.GraphQL.IntegrationTests.csproj", "{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +136,18 @@ Global
 		{43369561-0052-477A-B23F-61FC57B8466F}.Release|x64.Build.0 = Release|Any CPU
 		{43369561-0052-477A-B23F-61FC57B8466F}.Release|x86.ActiveCfg = Release|Any CPU
 		{43369561-0052-477A-B23F-61FC57B8466F}.Release|x86.Build.0 = Release|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Debug|x64.Build.0 = Debug|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Debug|x86.Build.0 = Debug|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|x64.ActiveCfg = Release|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|x64.Build.0 = Release|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +158,7 @@ Global
 		{567FF750-FAF0-4AE5-B0B6-4AF27755661D} = {45B6F4EB-6C64-488A-A494-592636F5FDEF}
 		{12A07F31-936F-4DE8-9260-A66842AC203C} = {45B6F4EB-6C64-488A-A494-592636F5FDEF}
 		{187AAB01-3AD5-4739-B9CE-86D745277496} = {45B6F4EB-6C64-488A-A494-592636F5FDEF}
+		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB} = {45B6F4EB-6C64-488A-A494-592636F5FDEF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7268F9AF-3729-4AFA-8A6D-D325FEC9DFB7}
