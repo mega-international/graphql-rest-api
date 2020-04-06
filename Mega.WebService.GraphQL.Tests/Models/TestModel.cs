@@ -20,6 +20,9 @@ namespace Mega.WebService.GraphQL.Tests.Models
         [JsonProperty("description")]
         public string Description { get; set; }
 
+        [JsonProperty("hideSourceRepository")]
+        public bool HideSourceRepository { get; set; }
+
         private AbstractTest _test;
 
         public async Task<ProgressionModel> Run(Parameters parameters, ProgressionModel progression)

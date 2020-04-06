@@ -1,3 +1,5 @@
+using Mega.WebService.GraphQL.Tests.Models.Interfaces.Safety;
+using Mega.WebService.GraphQL.Tests.Models.Safety;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
@@ -10,79 +12,60 @@ namespace Mega.WebService.GraphQL.Tests.Models
         Completed
     }
 
-    public class ProgressionModel
+    public class ProgressionModel : ISafeClass
     {
         [JsonProperty("messageTime")]
-        private string _messageTime = "";
+        public readonly IAddableSafeField<string> MessageTime;
 
         [JsonProperty("messageCounts")]
-        private string _messageCounts = "";
+        public readonly IAddableSafeField<string> MessageCounts;
 
         [JsonProperty("messageDetails")]
-        private string _messageDetails = "";
+        public readonly IAddableSafeField<string> MessageDetails;
 
         [JsonProperty("status")]
-        private TestStatus _status = TestStatus.Running;
+        [JsonConverter(typeof(SafeFieldJsonConverter<TestStatus>))]
+        public readonly ISafeField<TestStatus> Status;
 
-        private readonly object _objLock = new object();
+        [JsonProperty("error")]
+        [JsonConverter(typeof(SafeFieldJsonConverter<ExceptionContent>))]
+        public readonly ISafeField<ExceptionContent> Error;
+
+        [JsonIgnore]
+        public object ObjectLock { get; } = new object();
+
+        [JsonIgnore]
         private TaskCompletionSource<bool> _tcs;
+
+        [JsonIgnore]
         private bool _updated = false;
         
 
         public ProgressionModel()
-        {}
+        {
+            MessageTime = new StringSafeField(this);
+            MessageCounts = new StringSafeField(this);
+            MessageDetails = new StringSafeField(this);
+            Status = new SafeField<TestStatus>(this);
+            Error = new SafeField<ExceptionContent>(this);
+        }
 
         public void Reset()
         {
-            lock(_objLock)
+            lock(ObjectLock)
             {
-                _messageTime = "";
-                _messageCounts = "";
-                _messageDetails = "";
-                _status = TestStatus.Running;
-            }
-            Update();
-        }
-
-        public void SetMessageTime(string message)
-        {
-            lock(_objLock)
-            {
-                _messageTime = message;
-                Update();
-            }
-        }
-
-        public void AddToMessageCounts(string message)
-        {
-            lock(_objLock)
-            {
-                _messageCounts += message;
-                Update();
-            }
-        }
-
-        public void AddToMessageDetails(string message)
-        {
-            lock(_objLock)
-            {
-                _messageDetails += message;
-                Update();
-            }
-        }
-
-        public void SetStatus(TestStatus status)
-        {
-            lock(_objLock)
-            {
-                _status = status;
+                MessageTime.Reset();
+                MessageCounts.Reset();
+                MessageDetails.Reset();
+                Status.Reset();
+                Error.Reset();
                 Update();
             }
         }
 
         public async Task WaitForUpdate()
         {
-            lock(_objLock)
+            lock(ObjectLock)
             {
                 if(_updated)
                 {
@@ -95,9 +78,9 @@ namespace Mega.WebService.GraphQL.Tests.Models
             }
         }
 
-        private void Update()
+        public void Update()
         {
-            lock(_objLock)
+            lock(ObjectLock)
             {
                 _updated = false;
                 _tcs?.TrySetResult(true);
@@ -106,7 +89,7 @@ namespace Mega.WebService.GraphQL.Tests.Models
 
         public void Updated()
         {
-            lock(_objLock)
+            lock(ObjectLock)
             {
                 _updated = true;
             }
