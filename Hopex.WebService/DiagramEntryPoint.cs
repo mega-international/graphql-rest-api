@@ -1,11 +1,12 @@
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common.JsonMessages;
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 using Mega.Macro.API.Enums;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Hopex.Modules.GraphQL
@@ -35,19 +36,32 @@ namespace Hopex.Modules.GraphQL
                 return Task.FromResult(HopexResponse.Json(JsonConvert.SerializeObject(result)));
             }
 
-            var fileName = drawing.Name + "." + args.Format.ToString().ToLower();
-            var tempFileName = Path.GetTempFileName();
-            var _ = 0;
-            drawing.SaveAsPicture(tempFileName, _argFormatToMega[args.Format], 0, args.Quality, 0, 0, 0, ref _, ref _, null);
+            var response = BuildImageResponse(args, drawing);
+            return Task.FromResult(response);
+        }
 
-            return Task.FromResult(BuildTempFileResult(fileName, tempFileName));
+        private HopexResponse BuildImageResponse(DiagramExportArguments args, IMegaDrawing drawing)
+        {
+            var fileName = drawing.Name + "." + args.Format.ToString().ToLower();
+            if (args.Format == ImageFormat.Svg)
+            {
+                var svg = drawing.InvokeFunction<string>("SaveAsSvg");
+                var bytes = Encoding.UTF8.GetBytes(svg);
+                return BuildFileContentResult(fileName, bytes);
+            }
+            else
+            {
+                var tempFileName = Path.GetTempFileName();
+                var _ = 0;
+                drawing.SaveAsPicture(tempFileName, _argFormatToMega[args.Format], 0, args.Quality, 0, 0, 0, ref _, ref _, null);
+                return BuildTempFileResult(fileName, tempFileName);
+            }
         }
 
         private readonly Dictionary<ImageFormat, MegaFilePictureFormat> _argFormatToMega = new Dictionary<ImageFormat, MegaFilePictureFormat>()
         {
             { ImageFormat.Png, MegaFilePictureFormat.Png },
-            { ImageFormat.Jpeg, MegaFilePictureFormat.Jpg },
-            { ImageFormat.Svg, MegaFilePictureFormat.Svg }
+            { ImageFormat.Jpeg, MegaFilePictureFormat.Jpg }
         };
     }
 }

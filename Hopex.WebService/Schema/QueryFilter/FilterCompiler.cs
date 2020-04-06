@@ -195,9 +195,9 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             WriteRightStatement(op, elem.Value, prop);
         }
 
-        private void GenerateFilterRelationshipPrefix(string relationshipId)
+        private void GenerateFilterRelationshipPrefix(string relationshipName)
         {
-            var rel = _itemClassDescription.GetRelationshipDescription(relationshipId);
+            var rel = _itemClassDescription.GetRelationshipDescription(relationshipName);
             bool first = true;
             foreach (var segment in rel.Path)
             {

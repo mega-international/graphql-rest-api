@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace Hopex.Modules.GraphQL.Schema
 {
-    internal class HopexEnumerationGraphType : EnumerationGraphType
+    public class HopexEnumerationGraphType : EnumerationGraphType
     {
         public override object Serialize(object value)
         {

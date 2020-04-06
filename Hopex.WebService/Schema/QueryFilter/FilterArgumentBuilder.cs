@@ -20,20 +20,24 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
         internal class FilterItem
         {
             public InputObjectGraphType<object> Filter;
+            public HopexEnumerationGraphType OrderBy;
             public bool IsInitialized;
         }
 
         internal Dictionary<string, FilterItem> Filters { get; } = new Dictionary<string, FilterItem>();
 
-        public QueryArguments BuildFilterArguments(IClassDescription clazz, bool fromRoot)
+        public QueryArguments BuildFilterArguments(IClassDescription clazz, bool fromRoot, IEnumerable<IPropertyDescription> linkProperties=null)
         {
             var arguments = new QueryArguments();
-            string filterName = clazz.Name + "Filter";
-            var filterItem = GetOrCreateFilterObject(filterName);
+            var filterItem = GetOrCreateFilterObject(clazz.Name);
             arguments.Add(new QueryArgument(filterItem.Filter) { Name = "filter" });
+            arguments.Add(new QueryArgument<IntGraphType> { Name = "first" });
+            arguments.Add(new QueryArgument<StringGraphType> { Name = "after" });
+            arguments.Add(new QueryArgument<IntGraphType> { Name = "last" });
+            arguments.Add(new QueryArgument<StringGraphType> { Name = "before" });
             arguments.Add(new QueryArgument<IntGraphType> { Name = "skip" });
-            arguments.Add(new QueryArgument<IntGraphType> { Name = "take" });
-            
+            arguments.Add(new QueryArgument(new ListGraphType(filterItem.OrderBy)) { Name = "orderBy" });
+
             if (filterItem.IsInitialized)
             {
                 return arguments;
@@ -41,6 +45,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
             filterItem.IsInitialized = true;
             var filter = filterItem.Filter;
+            var enumOrderBy = filterItem.OrderBy;
             filter.AddField(new FieldType
             {
                 Name = "and",
@@ -54,32 +59,23 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 ResolvedType = new ListGraphType(new NonNullGraphType(filter))
             });
 
-            if (fromRoot)
+            var properties = clazz.Properties;
+            if (linkProperties != null)
             {
-                filter.AddField(new FieldType { Type = typeof(StringGraphType), Name = "id" });
+                properties = properties.Concat(linkProperties);
             }
-            filter.AddField(new FieldType { Type = typeof(StringGraphType),Name = "id_not"});
-            filter.AddField(new FieldType { Type = typeof(ListGraphType<NonNullGraphType<StringGraphType>>), Name ="id_in"});
-            filter.AddField(new FieldType { Type = typeof(ListGraphType<NonNullGraphType<StringGraphType>>), Name ="id_not_in"});
-
-            var enumOrderBy = new HopexEnumerationGraphType
+            foreach (var prop in properties)
             {
-                Name = $"orderBy{clazz.Name}"
-            };
-
-            foreach (var prop in clazz.Properties)
-            {
+                var propName = prop.Name.ToCamelCase();
                 var graphType = prop.NativeType.GetGraphTypeFromType(true);
                 IGraphType resolvedType = null;
                 if(prop.EnumValues?.Count() > 0)
                 {
-                    var enumTypeName = string.Concat(clazz.Name, prop.Name, "Enum");
-                    resolvedType = _schemaBuilder.Enums[enumTypeName];
+                    resolvedType = _schemaBuilder.GetOrCreateEnumType(prop);
                 }
 
                 var nonNullType = typeof(NonNullGraphType<>).MakeGenericType(graphType);
                 var typeList = typeof(ListGraphType<>).MakeGenericType(nonNullType);
-                var propName = prop.Name.ToCamelCase();
                 
                 filter.AddField(new FieldType { ResolvedType=resolvedType, Type = graphType, Name = $"{propName}" });
                 filter.AddField(new FieldType { ResolvedType=resolvedType, Type = graphType,Name = $"{propName}_not"});
@@ -112,14 +108,14 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                     }
                 }
 
-                enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string , int>(prop.ClassDescription.GetPropertyDescription(propName).Id.ToString(), 1));
-                enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string , int>(prop.ClassDescription.GetPropertyDescription(propName).Id.ToString(), -1));
+                enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string , int>(prop.Owner.GetPropertyDescription(propName).Id.ToString(), 1));
+                enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string , int>(prop.Owner.GetPropertyDescription(propName).Id.ToString(), -1));
             }
 
             foreach (var rel in clazz.Relationships)
             {
                 var targetName = rel.Path.Last().TargetSchemaName;
-                var targetFilter = GetOrCreateFilterObject(targetName + "Filter");
+                var targetFilter = GetOrCreateFilterObject(targetName);
                 filter.AddField(new FieldType
                 {
                     Name = rel.Name + "_some",
@@ -140,19 +136,21 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 //});
             }
 
-            if (enumOrderBy.Values.Any())
-            {
-                arguments.Add(new QueryArgument(new ListGraphType(enumOrderBy)) { Name = "orderBy" });
-            }
-
             return arguments;
         }
 
-        private FilterItem GetOrCreateFilterObject(string filterName)
-        {            
+        private FilterItem GetOrCreateFilterObject(string className)
+        {
+            var filterName = className + "Filter";
+            var orderByName = className + "OrderBy";
             if (!Filters.TryGetValue(filterName, out var filter))
             {
-                filter = new FilterItem { Filter = new InputObjectGraphType<object>() { Name = filterName }, IsInitialized = false };
+                filter = new FilterItem
+                {
+                    Filter = new InputObjectGraphType<object> { Name = filterName },
+                    OrderBy = new HopexEnumerationGraphType {Name = orderByName },
+                    IsInitialized = false
+                };
                 Filters.Add(filterName, filter);
             }
             return filter;

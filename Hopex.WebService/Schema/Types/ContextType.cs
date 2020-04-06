@@ -1,8 +1,8 @@
 using GraphQL.Types;
-using Mega.Macro.API;
 
 namespace Hopex.Modules.GraphQL.Schema.Types
 {
+
     public class ContextType : ObjectGraphType
     {
         public ContextType()

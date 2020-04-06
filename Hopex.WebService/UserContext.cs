@@ -1,4 +1,4 @@
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 using Mega.Macro.API;
 
 namespace Hopex.Modules.GraphQL
@@ -8,5 +8,6 @@ namespace Hopex.Modules.GraphQL
         public MegaRoot MegaRoot { get; set; }
         public IMegaRoot IRoot { get; set; }
         public string WebServiceUrl { get; set; }
+        public string SchemaFile { get; set; }
     }
 }

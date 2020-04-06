@@ -1,0 +1,11 @@
+{
+    "Version": "1.0.14",
+    "Id": "hopex.graphql",
+    "Description": "Hopex Domain Data Access GraphQL Api",
+    "EnabledOnSettingsMode": false,
+    "ShowInPortal": false,
+    "IsSystem": false,
+    "Author": "Mega International",
+    "Kind": "WebService",
+    "RequireLicenseAcceptance": false
+}

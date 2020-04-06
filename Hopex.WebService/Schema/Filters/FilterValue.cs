@@ -1,5 +1,4 @@
 using Hopex.Model.Abstractions.MetaModel;
-using Mega.Macro.API;
 
 namespace Hopex.Modules.GraphQL.Schema.Filters
 {
@@ -13,17 +12,15 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
         internal static FilterValue Create(IPropertyDescription propertyDescription, string operation, object value)
         {
-            if(Equals(propertyDescription.Id, "~310000000D00"))
-            {
-                return new IdFilterValue
-                {
-                    PropertyDescription = propertyDescription,
-                    Operation = operation,
-                    Value = value
-                };
-            }
             switch(propertyDescription.PropertyType)
             {
+                case PropertyType.Id:
+                    return new IdFilterValue()
+                    {
+                        PropertyDescription = propertyDescription,
+                        Operation = operation,
+                        Value = value
+                    };
                 case PropertyType.Date:
                     return new DateTimeFilterValue
                     {
@@ -46,6 +43,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                         Value = value
                     };
                 case PropertyType.Double:
+                case PropertyType.Currency:
                     return new DoubleFilterValue
                     {
                         PropertyDescription = propertyDescription,

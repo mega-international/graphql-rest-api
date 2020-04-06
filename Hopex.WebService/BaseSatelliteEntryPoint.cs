@@ -1,6 +1,7 @@
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common.JsonMessages;
-using Hopex.Model.Mocks;
+using Hopex.Model;
+using Hopex.Model.Abstractions;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -32,11 +33,16 @@ namespace Hopex.Modules.GraphQL
 
         protected HopexResponse BuildTempFileResult(string fileName, string fullPath)
         {            
-            var contentType = GetMimeMapping(fileName);
             var bytes = fileSource.ReadAllBytes(fullPath);
+            fileSource.Delete(fullPath);
+            return BuildFileContentResult(fileName, bytes);            
+        }
+
+        protected HopexResponse BuildFileContentResult(string fileName, byte[] bytes)
+        {
+            var contentType = GetMimeMapping(fileName);
             var content = Convert.ToBase64String(bytes);
             var result = new FileDownloadMacroResponse { FileName = fileName, ContentType = contentType, Content = content };
-            fileSource.Delete(fullPath);
             return HopexResponse.Json(JsonConvert.SerializeObject(result));
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hopex.ApplicationServer.WebServices;
+using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.MetaModel;
 
 namespace Hopex.Modules.GraphQL.Schema
@@ -21,8 +22,9 @@ namespace Hopex.Modules.GraphQL.Schema
 
         private static readonly SemaphoreSlim _loadSemaphore = new SemaphoreSlim(1, 1);
 
-        public async Task<(global::GraphQL.Types.Schema, IHopexMetaModel)> GetSchemaAsync(string path)
+        public async Task<(global::GraphQL.Types.Schema, IHopexMetaModel)> GetSchemaAsync(SchemaReference schemaRef,  Dictionary<string, string> languages)
         {
+            var path = schemaRef.UniqueId;
             if (_schemas.TryGetValue(path, out var builder))
             {
                 return (builder.Schema, builder.HopexSchema);
@@ -36,13 +38,13 @@ namespace Hopex.Modules.GraphQL.Schema
                     return (builder.Schema, builder.HopexSchema);
                 }
 
-                var hopexSchema = await _hopexSchemaManager.GetMetaModelAsync(path);
+                var hopexSchema = await _hopexSchemaManager.GetMetaModelAsync(schemaRef);
                 if (hopexSchema == null)
                 {
                     return (null, null);
                 }
 
-                builder = new SchemaBuilder(hopexSchema, Logger);
+                builder = new SchemaBuilder(hopexSchema, languages, Logger, this);
                 builder.Create();
                 _schemas.Add(path, builder);
                 return (builder.Schema, hopexSchema);
@@ -50,8 +52,9 @@ namespace Hopex.Modules.GraphQL.Schema
             finally
             {
                 _loadSemaphore.Release();
-            }
+            }           
         }
+        internal IEnumerable<IHopexMetaModel> HopexSchemas => _hopexSchemaManager.Schemas;
 
         private readonly Dictionary<string, SchemaBuilder> _schemas = new Dictionary<string, SchemaBuilder>(StringComparer.OrdinalIgnoreCase);
     }

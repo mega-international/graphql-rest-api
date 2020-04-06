@@ -1,6 +1,6 @@
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common.JsonMessages;
-using Hopex.Model.Mocks;
+using Hopex.Model.Abstractions;
 using Mega.Macro.API;
 using Newtonsoft.Json;
 using System;
