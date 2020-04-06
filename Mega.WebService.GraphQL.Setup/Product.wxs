@@ -43,6 +43,7 @@
         <Feature Id="MacroFeature" Title="Mega Macro GraphQL" Level="1">
             <ComponentGroupRef Id="MacroConfigFiles" />
             <ComponentGroupRef Id="MacroConfigV3StandardFiles" />
+            <ComponentGroupRef Id="MacroConfigV3CustomFiles" />
             <ComponentGroupRef Id="MacroFiles" />
         </Feature>
 
@@ -75,12 +76,6 @@
                                             <Directory Id="MacroConfigV3Custom" Name="Custom">
                                             </Directory>
                                             <Directory Id="MacroConfigV3Standard" Name="Standard">
-                                            </Directory>
-                                        </Directory>
-                                        <Directory Id="MacroConfigV4" Name="V4">
-                                            <Directory Id="MacroConfigV4Custom" Name="Custom">
-                                            </Directory>
-                                            <Directory Id="MacroConfigV4Standard" Name="Standard">
                                             </Directory>
                                         </Directory>
                                     </Directory>
@@ -262,17 +257,29 @@
             <Component Id="Config_Data.json" Guid="{6B2E4FEA-47E4-4963-BDC3-D29A86BEC9BD}">
                 <File Id="Config_Data.json" Name="Data.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Data.json" />
             </Component>
-            <Component Id="Config_GDPR.json" Guid="{4ACA6800-4DB5-4B0F-B484-9D0C6F0EC088}">
-                <File Id="Config_GDPR.json" Name="GDPR.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\GDPR.json" />
-            </Component>
-            <Component Id="Config_Incident.json" Guid="{BE48BC01-A696-44EE-B6CB-E5C0C49514A8}">
-                <File Id="Config_Incident.json" Name="Incident.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Incident.json" />
+            <Component Id="Config_DataPrivacy.json" Guid="{4ACA6800-4DB5-4B0F-B484-9D0C6F0EC088}">
+                <File Id="Config_DataPrivacy.json" Name="DataPrivacy.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\DataPrivacy.json" />
             </Component>
             <Component Id="Config_ITPM.json" Guid="{8C1ECD8D-0B96-48D1-87EF-7CF3F41A43FA}">
                 <File Id="Config_ITPM.json" Name="ITPM.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\ITPM.json" />
             </Component>
             <Component Id="Config_MetaModel.json" Guid="{E12AD817-11F4-4EE0-801B-1228CF61C4D3}">
                 <File Id="Config_MetaModel.json" Name="MetaModel.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\MetaModel.json" />
+            </Component>
+            <Component Id="Config_Reporting.json" Guid="{667EAA1F-47E6-448D-AC63-A47243820F52}">
+                <File Id="Config_Reporting.json" Name="Reporting.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Reporting.json" />
+            </Component>
+            <Component Id="Config_Risk.json" Guid="{CEC43209-2588-4E79-B991-911C75616E78}">
+                <File Id="Config_Risk.json" Name="Risk.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Risk.json" />
+            </Component>
+            <Component Id="Config_Workflow.json" Guid="{5DAA710C-265C-4EDC-B177-5827B1927D2A}">
+                <File Id="Config_Workflow.json" Name="Workflow.json" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Standard\Workflow.json" />
+            </Component>
+        </ComponentGroup>
+
+        <ComponentGroup Id="MacroConfigV3CustomFiles" Directory="MacroConfigV3Custom">
+            <Component Id="Config_readme.txt" Guid="{11221E0C-90E3-48A2-AA46-FA7A26E1F338}">
+                <File Id="Config_readme.txt" Name="readme.txt" Source="$(var.Hopex.WebService_TargetDir)CONFIG\V3\Custom\readme.txt" />
             </Component>
         </ComponentGroup>
 
