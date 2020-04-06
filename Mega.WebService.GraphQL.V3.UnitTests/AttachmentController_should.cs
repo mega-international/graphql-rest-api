@@ -17,14 +17,14 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
     public class AttachmentController_should
     {
         const string DOCUMENT_ID = "ABCDEF";
-        readonly Mock<IMacroCaller> mockMacro = new Mock<IMacroCaller>();
+        readonly Mock<IMacroCall> mockMacro = new Mock<IMacroCall>();
         readonly TestableAttachmentController controller;
 
         public AttachmentController_should()
         {
             controller = new TestableAttachmentController
             {
-                MacroCaller = mockMacro.Object,
+                MacroCall = mockMacro.Object,
                 Request = new HttpRequestMessage()
             };
         }
@@ -83,13 +83,13 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         public async void Download_a_file()
         {
             mockMacro.Setup(m => m.CallMacro("AAC8AB1E5D25678E", HasJsonArg(a => a.Request.Path.EndsWith("downloadfile"))))
-                .Returns(Ok($@"{{""documentId"": ""{DOCUMENT_ID}"", ""contentType"": ""text/plain"", ""content"":""YWJjZGVmZw=="", ""fileName"":""foo.txt""}}"));
+                .Returns(Ok($@"{{""documentId"": ""{DOCUMENT_ID}"", ""contentType"": ""text/plain"", ""content"":""YWJjZGVmZw=="", ""fileName"":""foo v1.txt""}}"));
 
             var actionResult = controller.DownloadFile(DOCUMENT_ID);
 
             var content = ((ResponseMessageResult) actionResult).Response.Content;
             content.Headers.ContentType.ToString().Should().Be("text/plain");
-            content.Headers.ContentDisposition.FileName.Should().Be("foo.txt");
+            content.Headers.ContentDisposition.FileName.Should().Be("\"foo v1.txt\"");
             (await content.ReadAsStringAsync()).Should().Be("abcdefg");            
         }
     }
@@ -97,11 +97,11 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
     class TestableAttachmentController : AttachmentController
     {
 
-        internal IMacroCaller MacroCaller;
+        internal IMacroCall MacroCall;
                 
         protected override WebServiceResult CallMacro(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
         {
-            return MacroCaller.CallMacro(macroId, data);
+            return MacroCall.CallMacro(macroId, data);
         }
 
         protected override Stream GetRequestBufferlessStream()

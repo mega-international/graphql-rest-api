@@ -7,7 +7,10 @@ using Mega.WebService.GraphQL.V3.UnitTests.Assertions;
 using Moq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net.Http;
+using System.Web.Http;
 using System.Web.Http.Results;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,14 +22,13 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
     public partial class DiagramController_should
     {
 
-        readonly Mock<IMacroCaller> mockMacro = new Mock<IMacroCaller>();
+        readonly Mock<IMacroCall> mockMacro = new Mock<IMacroCall>();
         readonly TestableDiagramController controller;
 
         public DiagramController_should()
         {
-            controller = new TestableDiagramController
+            controller = new TestableDiagramController(mockMacro.Object)
             {
-                MacroCaller = mockMacro.Object,
                 Request = new HttpRequestMessage()
             };
         }
@@ -118,6 +120,28 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
             actionResult.Should().BeBadRequest("*X-Hopex-JpegQuality*"); ;
         }
 
+        [Fact]
+        public async void Execute_async_query()
+        {
+            mockMacro.Setup(m => m.CallMacro("AAC8AB1E5D25678E", It.IsAny<string>()))
+                .Returns(Ok($@"{{""contentType"": ""image/svg+xml"", ""content"":""PHN2Zz5hYmNkPC9zdmc+"", ""fileName"":""Library diagram.svg""}}"));
+            controller.Request.Headers.Accept.ParseAdd("image/svg+xml");
+
+            var result = controller.AsyncGetImage("BGZ4uPrgG(Up");
+
+            var content = result as ResponseMessageResult;
+            var taskId = content.Response.Headers.GetValues("x-hopex-task").First();
+            controller.Request.Headers.Add("x-hopex-task", taskId);
+
+            result = controller.AsyncGetImage("BGZ4uPrgG(Up");
+
+            var content2 = ((ResponseMessageResult)result).Response.Content;
+            content2.Headers.ContentType.ToString().Should().Be("image/svg+xml");
+            content2.Headers.ContentDisposition.FileName.Trim('"').Should().Be($"Library diagram.svg");
+            var actual = await content2.ReadAsStringAsync();
+            actual.Should().Be("<svg>abcd</svg>");
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
         public class ExpectedFormat : IXunitSerializable
         {
@@ -128,6 +152,7 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
             static internal ExpectedFormat Png = new ExpectedFormat { MegaFormat = ImageFormat.Png, MimeType = "image/png", Extension = "png" };
             static internal ExpectedFormat Jpeg = new ExpectedFormat { MegaFormat = ImageFormat.Jpeg, MimeType = "image/jpeg", Extension = "jpeg" };
 
+            [ExcludeFromCodeCoverage]
             public void Deserialize(IXunitSerializationInfo info)
             {
                 var format = JsonConvert.DeserializeObject<ExpectedFormat>(info.GetValue<string>("objValue"));
@@ -147,11 +172,26 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         class TestableDiagramController : DiagramController
         {
 
-            internal IMacroCaller MacroCaller;
+            private FakeMacroCaller _macroCaller;
+
+            internal TestableDiagramController(IMacroCall macroCaller)
+            {
+                _macroCaller = new FakeMacroCaller(macroCaller);
+            }
 
             protected override WebServiceResult CallMacro(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
             {
-                return MacroCaller.CallMacro(macroId, data);
+                return _macroCaller.CallMacro(macroId, data, sessionMode, accessMode, closeSession);
+            }
+
+            protected override IHttpActionResult CallAsyncMacroExecute(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
+            {
+                return ResponseMessage(_macroCaller.CallAsyncMacroExecute(macroId, data, sessionMode, accessMode, closeSession));
+            }
+
+            protected override IHttpActionResult CallAsyncMacroGetResult(string hopexTask, bool closeSession = false)
+            {
+                return BuildActionResultFrom(_macroCaller.CallAsyncMacroGetResult(hopexTask, closeSession));
             }
         }
 
