@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <UI>
+            <Dialog Id="GetUserInputsDlg" Width="370" Height="270" Title="Specific parameters">
+                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+                <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+                <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+                    <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+                </Control>
+                <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="WebService parameters" />
+                <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Please, set the following parameters:" />
+                <Control Id="SspUrlText" Type="Text" X="40" Y="63" Width="100" Height="16" Text="SSP url:" RightAligned="yes" />
+                <Control Id="SspUrl" Type="Edit" Property="SSP_URL" X="150" Y="60" Width="150" Height="17" />
+                <Control Id="UasUrlText" Type="Text" X="40" Y="93" Width="100" Height="15" Text="UAS url:" RightAligned="yes" />
+                <Control Id="UasUrl" Type="Edit" Property="UAS_URL" X="150" Y="90" Width="150" Height="17" />
+                <Control Id="SecurityKeyText" Type="Text" X="40" Y="123" Width="100" Height="15" Text="Security key:" RightAligned="yes" />
+                <Control Id="SecurityKey" Type="Edit" Property="SECURITY_KEY" X="150" Y="120" Width="150" Height="17" />
+                <Control Id="ActivateGraphiQL" Type="CheckBox" Property="ACTIVATE_GRAPHIQL" CheckBoxValue="1" X="40" Y="170" Width="330" Height="17" Text="Activate GraphiQL (not suitable in production)"/>
+                <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallDirDlgBannerBitmap)" />
+                <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+                <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+            </Dialog>
+        </UI>
+    </Fragment>
+</Wix>

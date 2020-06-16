@@ -1,0 +1,144 @@
+{
+    "TestList": [
+        {
+            "name": "test1",
+            "nameDisplay": "Transfer: application",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test1",
+            "description": "Copy all application from a source repository to a target repository.",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test2",
+            "nameDisplay": "Transfer: business process",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test2",
+            "description": "Copy all business process from a source repository to a target repository.",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test3",
+            "nameDisplay": "Link transfer: application <=> business process",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test3",
+            "description": "Link each application to corresponding business processes in target repository as done in source repository.",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test4",
+            "nameDisplay": "Transfer: business capability",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test4",
+            "description": "Copy all business capability from a source repository to a target repository.",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test5",
+            "nameDisplay": "Link transfer: application <=> business capability",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test5",
+            "description": "Link each application to corresponding business capabilities in target repository including inter objects as done in source repository.",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test6",
+            "nameDisplay": "Transfer: software technology",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test6",
+            "description": "Copy all software technology from a source repository to a target repository.",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test7",
+            "nameDisplay": "Link transfer: application <=> software technology",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test7",
+            "description": "Link each application to corresponding software technology in target repository as done in source repository.",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test8",
+            "nameDisplay": "Link deletion: application <=> business process",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test8",
+            "description": "Delete all link between applications and business processes from target repository",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test9",
+            "nameDisplay": "Link deletion: application <=> business capability",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test9",
+            "description": "Delete all link between applications and business capabilities including interobjects from target repository",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test10",
+            "nameDisplay": "Link deletion: application <=> software technology",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test10",
+            "description": "Delete all link between applications and software technologies from target repository",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test11",
+            "nameDisplay": "Deletion: software technology",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test11",
+            "description": "Delete all existing software technology from target repository",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test12",
+            "nameDisplay": "Deletion: business capability",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test12",
+            "description": "Delete all existing business capability from target repository",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test13",
+            "nameDisplay": "Deletion: business process",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test13",
+            "description": "Delete all existing business process from target repository",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test14",
+            "nameDisplay": "Deletion: application",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test14",
+            "description": "Delete all existing application from target repository",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test15",
+            "nameDisplay": "Transfer: audits and elements connected",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test15",
+            "description": "Copy all audit connected to at least one audit activity, copy all corresponding audit themes, audit activities, work papers, test sheets, questions/audits, answers/audits, audit themes (for audit activities) and findings. Make corresponding links between all copied elements",
+            "hideSourceRepository": false
+        },
+        {
+            "name": "test16",
+            "nameDisplay": "Deletion: audits and linked elements",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test16",
+            "description": "Delete all links concerning elements of audits. Delete all audit, audit themes, audit activities, work papers, test sheets, questions/audits, answers/audits and findings.",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test17",
+            "nameDisplay": "Filter: filter all application field",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test17",
+            "description": "Check expected count for each filter and check if all filtered request returns the expected number of items.",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test18",
+            "nameDisplay": "Asynchrone tasks: execute asynchrones queries on audits",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test18",
+            "description": "Process asynchrones tasks as 'create finding and display updated audit acitivites' or 'delete finding' multiple times.",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test19",
+            "nameDisplay": "Asynchrone tasks multi users: execute asynchrones queries on audits",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test19",
+            "description": "Process asynchrone tasks with 2 distincts users.",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test20",
+            "nameDisplay": "Deletion cascade: audit plan",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test20",
+            "description": "Delete all existing audit plan including all audit, audit activity and assignation attached from target repository",
+            "hideSourceRepository": true
+        }
+    ]
+}

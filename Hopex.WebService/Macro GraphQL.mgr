@@ -1,0 +1,353 @@
+
+- Execution       : Extraction (2019/07/10 09:15:25)
+- File exported   : C:\Users\scr\Desktop\Macro GraphQL.mgr
+- Environment     : c:\mega\hopex v3.00.00\Environments\EnvTestsLab_SQLSERVER_787_500tst_5250
+- DataBase        : EA
+- User            : CRONIER Sébastien
+- Options         : Definition of path of MetaAssociation -> M2013
+- Perimeter       : ~Bav0cNnAjyQR[Standard for export]
+- ************************************************************************************************
+
+
+- Root objects:
+-      GraphQL
+- 
+- Macro                                   GraphQL
+- _TransferredObject                      59EE5D0B49A608A3
+- _TransferredObject                      7156931F49B703C8
+- _TransferredObject                      693E69BF56F251A3
+- _TransferredObject                      [Duplicate entry] 64B4650E56F20A70
+- _TransferredObject                      B628E3EB49EE0FDB
+- _TransferredObject                      D9C8E10854F92782
+- _TransferredObject                      5A7D660C54FD79E4
+- _TransferredObject                      5A7D645854FD7789
+- _TransferredObject                      5A7D644454FD7717
+- _TransferredObject                      7B0E831E49C801CE
+- _TransferredObject                      A8AFB3C649D00430
+- _TransferredObject                      64B4650E56F20A70
+- _TransferredObject                      BC33BE0249BF02C5
+- _TransferredObject                      744776185409297D
+- _TransferredObject                      AC00EA5149D905DC
+
+-  "Macro" "GraphQL"
+.Create ."~PRjF04qYoSC0[Macro]" "GraphQL" -
+        .CHK "oYigUiQ9TvuPC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2019/07/10 09:08:46" -
+        ."~610000000P00[Modification Date]"                  "2019/07/10 09:10:53" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "30837" -
+        ."~620000000P40[Update Version]"                     "30837" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~wQjFw3qYoyA0[_ObjectFactory]"                     "DNET:hopex.graphql:1.0.0.*" -
+        ."~v3ZBOz2k1j10[SystemComponent]"                    "D"
+
+-  "_TransferredObject" "59EE5D0B49A608A3"
+.Create ."~b20000000M20[_TransferredObject]" "59EE5D0B49A608A3" -
+        .CHK "hvGVjGO(9f(0C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2009/04/30 10:57:49" -
+        ."~610000000P00[Modification Date]"                  "2009/04/30 10:57:49" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29200" -
+        ."~620000000P40[Update Version]"                     "29200" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002iUq05B9M0NCiLjkNIQ)UDGJYHKKvC4GrEJH2C3P1Cq4u0000000000000000000000000000000000000000000000000000000000000000(OGj001900000000000000009my000000000000000030000000000000000"
+
+-  "_TransferredObject" "59EE5D0B49A608A3"
+.Update ."~b20000000M20[_TransferredObject]" "59EE5D0B49A608A3" -
+        .CHK "hvGVjGO(9f(0" -
+        ."~610000000P00[Modification Date]"                  "2009/04/30 10:57:49" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Org-Unit' 'EUROMASTER::Sales Rep' towards 'EUROMASTER::Sales R;
+epresentative'
+.
+
+-  "_TransferredObject" "7156931F49B703C8"
+.Create ."~b20000000M20[_TransferredObject]" "7156931F49B703C8" -
+        .CHK "9lI1KX0(9nF0C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2009/04/29 07:57:08" -
+        ."~610000000P00[Modification Date]"                  "2009/04/29 07:57:08" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29200" -
+        ."~620000000P40[Update Version]"                     "29200" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002iUq05B9M0NCikvU5IQEaDmPTDZKnCJCvEJH6C3T2E4Cp0000000000000000000000000000000000000000000000000000000000000000(0XK001900000000000000009my000000000000000030000000000000000"
+
+-  "_TransferredObject" "7156931F49B703C8"
+.Update ."~b20000000M20[_TransferredObject]" "7156931F49B703C8" -
+        .CHK "9lI1KX0(9nF0" -
+        ."~610000000P00[Modification Date]"                  "2009/04/29 07:57:08" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Org-Unit' 'EUROMASTER::Pricecoord' towards 'EUROMASTER::Price ;
+Coordinator Denmark'
+.
+
+-  "_TransferredObject" "693E69BF56F251A3"
+.Create ."~b20000000M20[_TransferredObject]" "693E69BF56F251A3" -
+        .CHK "Fpsl89yyM9vlC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2016/03/24 10:32:40" -
+        ."~610000000P00[Modification Date]"                  "2016/03/24 10:32:40" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "30464" -
+        ."~620000000P40[Update Version]"                     "30464" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~m300000001B0[_TransferredTarget]"                 "GESGaVLyMTxK"
+
+-  "_TransferredObject" "[Duplicate entry] 64B4650E56F20A70"
+.Create ."~b20000000M20[_TransferredObject]" "[Duplicate entry] 64B4650E56F20A70" -
+        .CHK "Lpslw7yyMXklC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2016/03/24 10:31:22" -
+        ."~610000000P00[Modification Date]"                  "2016/03/24 10:31:22" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "30464" -
+        ."~620000000P40[Update Version]"                     "30464" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~m300000001B0[_TransferredTarget]"                 "XCSG6XLyMHEL"
+
+-  "_TransferredObject" "B628E3EB49EE0FDB"
+.Create ."~b20000000M20[_TransferredObject]" "B628E3EB49EE0FDB" -
+        .CHK "SQtaOOPy9bg0C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2009/04/24 10:36:08" -
+        ."~610000000P00[Modification Date]"                  "2009/04/24 10:36:08" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29200" -
+        ."~620000000P40[Update Version]"                     "29200" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002iUq05B9M0NCigROeIUxZGW(fE38sHJD5EJH2C4L5GaH60000000000000000000000000000000000000000000000000000000000000000yPOO001900000000000000009my000000000000000030SS0nvACaVm10077"
+
+-  "_TransferredObject" "B628E3EB49EE0FDB"
+.Update ."~b20000000M20[_TransferredObject]" "B628E3EB49EE0FDB" -
+        .CHK "SQtaOOPy9bg0" -
+        ."~610000000P00[Modification Date]"                  "2009/04/24 10:36:08" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Org-Unit' 'Common Objects::Process Designer-1' towards 'Common;
+ Objects::Process Designer'
+.
+
+-  "_TransferredObject" "D9C8E10854F92782"
+.Create ."~b20000000M20[_TransferredObject]" "D9C8E10854F92782" -
+        .CHK "EqdMNKQ)KzroC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2015/03/09 13:50:15" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:50:15" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29952" -
+        ."~620000000P40[Update Version]"                     "29952" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "0168200026)W0cHpU0FCxWTd8LFdWH2P(E4CvC355D3KuCZb6CZWt0000000000000000000000000000000000000000000000000000000000000000)QKN001K0000000000000000000000000000000000000000000000000000"
+
+-  "_TransferredObject" "D9C8E10854F92782"
+.Update ."~b20000000M20[_TransferredObject]" "D9C8E10854F92782" -
+        .CHK "EqdMNKQ)Kzro" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:50:15" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Requirement' 'ITGRC example::[§ 15.1.6, ISO 27002 Code of prac;
+tice for information security management, 2005]-1' towards 'ITGRC example;
+::[§ 15.1.6, ISO 27002 Code of practice for information security manageme;
+nt, 2005]'
+.
+
+-  "_TransferredObject" "5A7D660C54FD79E4"
+.Create ."~b20000000M20[_TransferredObject]" "5A7D660C54FD79E4" -
+        .CHK "SsdMqcP)KHsmC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2015/03/09 13:01:40" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:01:41" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29952" -
+        ."~620000000P40[Update Version]"                     "29952" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "0168200026)W0cHpU0FCx2rfzLFsPDRMUH3T1C3OsD3L3DqH6D4Kv0000000000000000000000000000000000000000000000000000000000000000)Pcq001K0000000000000000000000000000000000000000000000000000"
+
+-  "_TransferredObject" "5A7D660C54FD79E4"
+.Update ."~b20000000M20[_TransferredObject]" "5A7D660C54FD79E4" -
+        .CHK "SsdMqcP)KHsm" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:01:41" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Requirement' 'ITGRC example::[Table A.1 Row A.14.1.2, ISO 2700;
+1:2013, Information Technology - Security Techniques - Information Securi;
+ty Management Systems - Requirements, 2013]' towards 'A.14 System acquisi;
+tion, development and maintenance::A.14.1 Security requirements of inform;
+ation systems::A.14.1.2??Securing applications services on public network;
+s'
+.
+
+-  "_TransferredObject" "5A7D645854FD7789"
+.Create ."~b20000000M20[_TransferredObject]" "5A7D645854FD7789" -
+        .CHK "VrdMKdP)KP0nC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2015/03/09 13:02:12" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:02:12" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29952" -
+        ."~620000000P40[Update Version]"                     "29952" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "0168200026)W0cHpU0FCx2rfzLFsPDRMsH3T1DJGsD3KuDqH6EJWt0000000000000000000000000000000000000000000000000000000000000000)PdK001K0000000000000000000000000000000000000000000000000000"
+
+-  "_TransferredObject" "5A7D645854FD7789"
+.Update ."~b20000000M20[_TransferredObject]" "5A7D645854FD7789" -
+        .CHK "VrdMKdP)KP0n" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:02:12" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Requirement' 'ITGRC example::[Table A.1 Row A.14.1.3, ISO 2700;
+1:2013, Information Technology - Security Techniques - Information Securi;
+ty Management Systems - Requirements, 2013]' towards 'A.14 System acquisi;
+tion, development and maintenance::A.14.1 Security requirements of inform;
+ation systems::A.14.1.3 Protecting application services transactions'
+.
+
+-  "_TransferredObject" "5A7D644454FD7717"
+.Create ."~b20000000M20[_TransferredObject]" "5A7D644454FD7717" -
+        .CHK "ltdMgdP)K18nC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2015/03/09 13:02:34" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:02:34" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29952" -
+        ."~620000000P40[Update Version]"                     "29952" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002lfm08C(Z0BD5OrfzLFsNDPIKH3T1D3GsD3KqDqH6Dp4t0000000000000000000000000000000000000000000000000000000000000000)Pdg001K0000000000000000000000000000000000000000000000000000"
+
+-  "_TransferredObject" "5A7D644454FD7717"
+.Update ."~b20000000M20[_TransferredObject]" "5A7D644454FD7717" -
+        .CHK "ltdMgdP)K18n" -
+        ."~610000000P00[Modification Date]"                  "2015/03/09 13:02:34" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Regulation Framework' 'ITGRC example::ISO 27001' towards 'ITGR;
+C example::ISO 27001:2013'
+.
+
+-  "_TransferredObject" "7B0E831E49C801CE"
+.Create ."~b20000000M20[_TransferredObject]" "7B0E831E49C801CE" -
+        .CHK "lAPD0OpoAnP0C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2009/10/06 12:20:16" -
+        ."~610000000P00[Modification Date]"                  "2009/10/06 12:20:16" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29200" -
+        ."~620000000P40[Update Version]"                     "29200" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002iUq05B9M0MyiB(k7ITO1DmU(HJ12CJCuEJH5C3X3HKCn0000000000000000000000000000000000000000000000000000000000000000opO0001A00000000000000009my000000000000000090J40CS3ym6m1004n"
+
+-  "_TransferredObject" "7B0E831E49C801CE"
+.Update ."~b20000000M20[_TransferredObject]" "7B0E831E49C801CE" -
+        .CHK "lAPD0OpoAnP0" -
+        ."~610000000P00[Modification Date]"                  "2009/10/06 12:20:16" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Application' 'EUROMASTER::Euromaster Corporate::Optimi' toward;
+s 'EUROMASTER::Euromaster Denmark::Center Program::Däckdata'
+.
+
+-  "_TransferredObject" "A8AFB3C649D00430"
+.Create ."~b20000000M20[_TransferredObject]" "A8AFB3C649D00430" -
+        .CHK "u2hHSC5(9TzEC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2009/04/29 13:16:12" -
+        ."~610000000P00[Modification Date]"                  "2009/04/29 13:16:12" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29200" -
+        ."~620000000P40[Update Version]"                     "29200" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002iUq05B9M0NCi1qSBIVX9GGE(Ha4uGpD2EJGsC314C3Cq0000000000000000000000000000000000000000000000000000000000000000(5CQ001900000000000000009my000000000000000030000000000000000"
+
+-  "_TransferredObject" "A8AFB3C649D00430"
+.Update ."~b20000000M20[_TransferredObject]" "A8AFB3C649D00430" -
+        .CHK "u2hHSC5(9TzE" -
+        ."~610000000P00[Modification Date]"                  "2009/04/29 13:16:12" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Org-Unit' 'EUROMASTER::Country MD-1' towards 'EUROMASTER::Coun;
+try MD'
+.
+
+-  "_TransferredObject" "64B4650E56F20A70"
+.Create ."~b20000000M20[_TransferredObject]" "64B4650E56F20A70" -
+        .CHK "wExQHrcyMrJMC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2016/03/23 10:17:53" -
+        ."~610000000P00[Modification Date]"                  "2016/03/23 10:17:53" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "30464" -
+        ."~620000000P40[Update Version]"                     "30464" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~m300000001B0[_TransferredTarget]"                 "XCSG6XLyMHEL"
+
+-  "_TransferredObject" "BC33BE0249BF02C5"
+.Create ."~b20000000M20[_TransferredObject]" "BC33BE0249BF02C5" -
+        .CHK "aVSHqp5r9LXLC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2009/04/02 06:36:37" -
+        ."~610000000P00[Modification Date]"                  "2009/04/02 06:36:37" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29200" -
+        ."~620000000P40[Update Version]"                     "29200" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002iUq05B9U0Rii(RmpIR(zGWAkCpD3C4L2EJGoC4P2DKCo0000000000000000000000000000000000000000000000000000000000000000r5pp001900000000000000009my000000000000000030SS0ns9SOSm10077"
+
+-  "_TransferredObject" "BC33BE0249BF02C5"
+.Update ."~b20000000M20[_TransferredObject]" "BC33BE0249BF02C5" -
+        .CHK "aVSHqp5r9LXL" -
+        ."~610000000P00[Modification Date]"                  "2009/04/02 06:36:37" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Organizational Process' 'Forretningsprocesser::Lån & Kredit::B;
+oligfinansiering med TK-lån ved omprioritering' towards 'Forretningsproce;
+sser::Lån & Kredit::Boligfinansiering med TK-lån ved køb af ny bolig'
+.
+
+-  "_TransferredObject" "744776185409297D"
+.Create ."~b20000000M20[_TransferredObject]" "744776185409297D" -
+        .CHK "XbjuhJkbP9dTC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2017/08/18 13:00:27" -
+        ."~610000000P00[Modification Date]"                  "2017/08/18 13:00:27" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "30464" -
+        ."~620000000P40[Update Version]"                     "30464" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~m300000001B0[_TransferredTarget]"                 "YgAVqrN2Kjm8"
+
+-  "_TransferredObject" "AC00EA5149D905DC"
+.Create ."~b20000000M20[_TransferredObject]" "AC00EA5149D905DC" -
+        .CHK "kwk8)X2(99B1C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2009/04/29 10:14:23" -
+        ."~610000000P00[Modification Date]"                  "2009/04/29 10:14:23" -
+        ."~(10000000v30[Creator]"                            "820000W8Y8Y8" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~520000000L40[Create Version]"                     "29200" -
+        ."~620000000P40[Update Version]"                     "29200" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~W20000000160[_TransferredData]"                   "016820002iUq05B9M0NCiifU5IQEaGGNzC313DK55EJGnC3b4GqGr0000000000000000000000000000000000000000000000000000000000000000(2X)001900000000000000009my000000000000000030000000000000000"
+
+-  "_TransferredObject" "AC00EA5149D905DC"
+.Update ."~b20000000M20[_TransferredObject]" "AC00EA5149D905DC" -
+        .CHK "kwk8)X2(99B1" -
+        ."~610000000P00[Modification Date]"                  "2009/04/29 10:14:23" -
+        ."~b10000000L20[Modifier]"                           "820000W8Y8Y8" -
+        ."~f10000000b20[Comment]" "G3000000W10S" 
+Fusion of 'Org-Unit' 'EUROMASTER::Sales Manager-1' towards 'EUROMASTER::S;
+ales Manager'
+.
+
+-  "System Object with User In Charge (Internal)" "GraphQL"
+-  "User In Charge" "CRONIER Sébastien"
+.Connect ."~MBk8bUomBTV0[System Object with User In Charge (Internal)]" "GraphQL" ."~E8k8EWomBHi0[User In Charge]" "CRONIER Sébastien" -
+        .CHK "oYigUiQ9TvuPXgCp3syUNLAH" -
+        ."~710000000T00[Link creation date]"                 "2019/07/10 09:08:46" -
+        ."~810000000X00[Link modification date]"             "2019/07/10 09:08:46" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"

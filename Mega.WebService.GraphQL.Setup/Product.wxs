@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension">
+
+    <Product
+        Id="*"
+        UpgradeCode="{59D9A7F7-3A19-4A93-B361-C6D21168F76B}"
+        Name="HOPEX GraphQL API"
+        Language="1033"
+        Version="!(bind.FileVersion.Macro.Hopex.WebService.dll)"
+        Manufacturer="MEGA">
+
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+        <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+        <MediaTemplate EmbedCab="yes" />
+
+        <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+        <UIRef Id="CustomFeatureTree" />
+
+        <Feature Id="MacroFeature" Title="Mega Macro GraphQL" Level="1" ConfigurableDirectory="INSTALLFOLDER_MACRO" AllowAdvertise="no">
+            <ComponentGroupRef Id="MacroConfigFiles" />
+            <ComponentGroupRef Id="MacroConfigV3StandardFiles" />
+            <ComponentGroupRef Id="MacroConfigV3CustomFiles" />
+            <ComponentGroupRef Id="MacroFiles" />
+            <ComponentRef Id="RegistryMacroEntries" />
+        </Feature>
+        <Feature Id="WebServiceFeature" Title="Mega WebService GraphQL" Level="1" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no">
+            <ComponentGroupRef Id="WebServiceFiles" />
+            <ComponentGroupRef Id="WebServiceBinFiles" />
+            <ComponentGroupRef Id="WebServiceContentFiles" />
+            <ComponentGroupRef Id="WebServiceViewsFiles" />
+            <ComponentGroupRef Id="WebServiceViewsHomeFiles" />
+            <ComponentGroupRef Id="HOPEXGraphQLIssConfiguration" />
+            <ComponentRef Id="RegistryWebServiceEntries" />
+        </Feature>
+
+        <Property Id="HOPEX_V3_FOLDER">
+            <RegistrySearch Id="Hopex_V3" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\{701985D0-72D5-453B-80AC-5CC1AD7BD1EA}" Name="InstallLocation" Type="directory" Win64="yes" />
+        </Property>
+        <Property Id="HOPEX_V4_FOLDER">
+            <RegistrySearch Id="Hopex_V4" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\{9B681FAA-7CF1-4260-B4C6-C9D44E7926FC}" Name="InstallLocation" Type="directory" Win64="yes" />
+        </Property>
+        <Property Id="HOPEX_V4_1_FOLDER">
+            <RegistrySearch Id="Hopex_V4_1" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\{B7502C36-8C2B-4F8D-8CBD-364F9E486FF8}" Name="InstallLocation" Type="directory" Win64="yes" />
+        </Property>
+        <Property Id="HOPEX_BACKEND_FOLDER">
+            <RegistrySearch Id="Hopex_BackEnd_Folder" Root="HKLM" Key="Software\MEGA\HOPEX" Name="InstallLocation-BackEnd" Type="directory" />
+        </Property>
+        <Property Id="HOPEX_FRONTEND_FOLDER">
+            <RegistrySearch Id="Hopex_FrontEnd_Folder" Root="HKLM" Key="Software\MEGA\HOPEX" Name="InstallLocation-FrontEnd" Type="directory" />
+        </Property>
+        <Condition Message="This application requires Hopex V3 or later. Please install it and then run this installer again.">
+            <![CDATA[Installed OR HOPEX_V3_FOLDER OR HOPEX_V4_FOLDER OR HOPEX_V4_1_FOLDER OR HOPEX_BACKEND_FOLDER]]>
+        </Condition>
+
+        <SetProperty Id="HOPEX_FOLDER" After="AppSearch" Value="c:\temp" Action="HopexFolder0">
+            <![CDATA[NOT HOPEX_V3_FOLDER AND NOT HOPEX_V4_FOLDER AND NOT HOPEX_V4_1_FOLDER AND NOT HOPEX_BACKEND_FOLDER]]>
+        </SetProperty>
+        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder0" Value="[HOPEX_V3_FOLDER]" Action="HopexFolder1">
+            <![CDATA[HOPEX_V3_FOLDER]]>
+        </SetProperty>
+        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder1" Value="[HOPEX_V4_FOLDER]" Action="HopexFolder2">
+            <![CDATA[HOPEX_V4_FOLDER]]>
+        </SetProperty>
+        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder2" Value="[HOPEX_V4_1_FOLDER]" Action="HopexFolder3">
+            <![CDATA[HOPEX_V4_1_FOLDER]]>
+        </SetProperty>
+        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder3" Value="[HOPEX_BACKEND_FOLDER]" Action="HopexFolder4">
+            <![CDATA[HOPEX_BACKEND_FOLDER]]>
+        </SetProperty>
+        <SetProperty Id="INSTALLFOLDER" After="HopexFolder4" Value="[HOPEX_FRONTEND_FOLDER]" Action="HopexFolder5">
+            <![CDATA[HOPEX_FRONTEND_FOLDER]]>
+        </SetProperty>
+
+        <Property Id="CHAINED_INSTALL" Value="0" />
+        <Property Id="SSP_URL" Value="http://localhost/MEGASSP" />
+        <Property Id="UAS_URL" Value="http://localhost/UAS" />
+        <Property Id="SECURITY_KEY" Secure="yes" />
+        <Property Id="ACTIVATE_GRAPHIQL" Secure="yes"></Property>
+        <Property Id="ENVIRONMENT_ID" Value="EnvironmentIdAbs" />
+        <Property Id="REPOSITORY_ID" Value="RepositoryIdAbs" />
+        <Property Id="PROFILE_ID" Value="ProfileIdAbs" />
+        <Property Id="GRAPHIQL_USER" Value="HopexUser" />
+        <Property Id="GRAPHIQL_USER_PASSWORD" Value="HopexPassword" />
+
+        <Property Id="FRAMEWORKBASEPATH">
+            <RegistrySearch Id="FindFrameworkDir" Root="HKLM"  Key="Software\Microsoft\.NETFramework"  Name="InstallRoot" Type="raw">
+            </RegistrySearch>
+        </Property>
+        <Property Id="ASPNETREGIIS">
+            <DirectorySearch Path="[FRAMEWORKBASEPATH]" Depth="4" Id="FindAspNetRegIis">
+                <FileSearch Name="aspnet_regiis.exe" MinVersion="2.0.5" />
+            </DirectorySearch>
+        </Property>
+        <CustomAction Directory="HOPEXGraphQL" Execute="deferred" Id="EncryptWebConfig" ExeCommand="[ASPNETREGIIS] -pe secureAppSettings -app /HOPEXGraphQL" Return="ignore">
+            <![CDATA[&WebServiceFeature=3]]>
+        </CustomAction>
+        <InstallExecuteSequence>
+            <Custom Action="EncryptWebConfig" Before="InstallFinalize"></Custom>
+        </InstallExecuteSequence>
+
+    </Product>
+
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="MEGA" Name="MEGA">
+                    <Directory Id="HOPEX_FOLDER" Name="HOPEX">
+                        <Directory Id="INSTALLFOLDER_MACRO" Name="DotNet">
+                            <Directory Id="Macro" Name="hopex.graphql" >
+                                <Directory Id="MacroVersion" Name="1.0.0.0">
+                                    <Directory Id="MacroConfig" Name="CONFIG">
+                                        <Directory Id="MacroConfigV3" Name="V3">
+                                            <Directory Id="MacroConfigV3Custom" Name="Custom">
+                                            </Directory>
+                                            <Directory Id="MacroConfigV3Standard" Name="Standard">
+                                            </Directory>
+                                        </Directory>
+                                    </Directory>
+                                </Directory>
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+            <Directory Id="inetpub" Name="inetpub">
+                <Directory Id="INSTALLFOLDER" Name="wwwroot">
+                    <Directory Id="HOPEXGraphQL" Name="HOPEXGraphQL">
+                        <Directory Id="BinFolder" Name="bin">
+                        </Directory>
+                        <Directory Id="ContentFolder" Name="Content">
+                        </Directory>
+                        <Directory Id="ViewsFolder" Name="Views">
+                            <Directory Id="ViewsHomeFolder" Name="Home">
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </Directory>
+    </Fragment>
+
+    <Fragment>
+        <iis:WebSite Id="DefaultWebSite" Description='Default Web Site'>
+            <iis:WebAddress Id="AllUnassigned" Port="80" />
+        </iis:WebSite>
+        <DirectoryRef Id="HOPEXGraphQL">
+            <Component Id="HOPEXGraphQLAppPool" Guid="{81961616-EF7E-47E6-856C-BC49B1D18079}" KeyPath="yes" Permanent="yes">
+                <iis:WebAppPool Id="HOPEXGraphQLAppPool" Name="HOPEXAPI" ManagedPipelineMode="Integrated" ManagedRuntimeVersion="v4.0" />
+            </Component>
+            <Component Id="HOPEXGraphQLWebApplication" Guid="{17085A1F-BF1E-449F-B495-38012007EB0D}" KeyPath="yes">
+                <iis:WebVirtualDir Id="HOPEXGraphQL" Alias="HOPEXGraphQL" Directory="HOPEXGraphQL" WebSite="DefaultWebSite">
+                    <iis:WebApplication Id="HOPEXGraphQL" Name="HOPEXGraphQL" WebAppPool="HOPEXGraphQLAppPool" />
+                </iis:WebVirtualDir>
+            </Component>
+        </DirectoryRef>
+        <ComponentGroup Id="HOPEXGraphQLIssConfiguration">
+            <ComponentRef Id="HOPEXGraphQLAppPool" />
+            <ComponentRef Id="HOPEXGraphQLWebApplication" />
+        </ComponentGroup>
+    </Fragment>
+
+    <Fragment>
+        <DirectoryRef Id="TARGETDIR">
+            <Component Id="RegistryMacroEntries" Guid="{6CD0AD03-633C-4F9B-997A-BAEA43E9C08F}">
+                <RegistryKey Root="HKLM" Key="Software\MEGA\HOPEX GraphQL\Install" Action="createAndRemoveOnUninstall">
+                    <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
+                    <RegistryValue Type="string" Name="ProductCode" Value="[ProductCode]"/>
+                    <RegistryValue Type="string" Name="InstallLocation-BackEnd" Value="[INSTALLFOLDER_MACRO]"/>
+                    <RegistryValue Type="integer" Name="ChainedInstall" Value="[CHAINED_INSTALL]"/>
+                </RegistryKey>
+            </Component>
+        </DirectoryRef>
+        <DirectoryRef Id="TARGETDIR">
+            <Component Id="RegistryWebServiceEntries" Guid="{8883DF29-C37E-41C4-9932-8A35DD50257C}">
+                <RegistryKey Root="HKLM" Key="Software\MEGA\HOPEX GraphQL\Install" Action="createAndRemoveOnUninstall">
+                    <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
+                    <RegistryValue Type="string" Name="ProductCode" Value="[ProductCode]"/>
+                    <RegistryValue Type="string" Name="InstallLocation-FrontEnd" Value="[INSTALLFOLDER]"/>
+                    <RegistryValue Type="integer" Name="ChainedInstall" Value="[CHAINED_INSTALL]"/>
+                </RegistryKey>
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+
+</Wix>

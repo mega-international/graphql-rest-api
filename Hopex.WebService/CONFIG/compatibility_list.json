@@ -1,0 +1,17 @@
+/*
+ * DefaultSchemaFolder is the fallback folder in case of your version is not contained into VersionSchemaFolder.
+ * VersionSchemaFolder is a key-value dictionary containing the folder that must be mapped when the web service client does not specify a version explicitly.
+ */
+{
+    "DefaultSchemaFolder": "V3",
+    "VersionSchemaFolder": {
+        "HOPEX V3.*": "V3",
+        "HOPEX V4.*": "V3",
+        "HOPEX V5.*": "V3",
+        "HOPEX V3.00.02": "V3",
+        "HOPEX V3.00.03": "V3",
+        "HOPEX V3.01.00": "V3",
+        "HOPEX V3.02.00": "V3",
+        "HOPEX V4.00.00": "V3"
+    }
+}

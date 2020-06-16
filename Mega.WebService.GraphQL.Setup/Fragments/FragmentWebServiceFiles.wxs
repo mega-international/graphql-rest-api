@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+    <Fragment>
+
+        <ComponentGroup Id="WebServiceFiles" Directory="HOPEXGraphQL">
+            <Component Id="favicon.ico" Guid="{EF21D222-FB21-463C-A842-3FE4A7094824}">
+                <File Id="favicon.ico" Name="favicon.ico" Source="$(var.Mega.WebService.GraphQL.ProjectDir)favicon.ico" />
+            </Component>
+            <Component Id="Global.asax" Guid="{5853B994-8344-4922-8765-512545EB5007}">
+                <File Id="Global.asax" Name="Global.asax" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Global.asax" />
+            </Component>
+            <Component Id="Web.config" Guid="{91642ABE-AFF6-4616-A7EC-E71301DF4647}">
+                <File Id="Web.config" Name="Web.config" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Web.config" />
+            </Component>
+            <Component Id="MegaSiteProvider" Guid="{0AEF5EC8-F59B-46FF-807F-F3E7DB8B7DEA}" KeyPath="yes">
+                <util:XmlConfig Id="MegaSiteProvider"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[SSP_URL]"
+                                ElementPath="//configuration/appSettings/add[\[]@key='MegaSiteProvider'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+            <Component Id="AuthenticationUrl" Guid="{EAFFCDA2-01A0-4D4F-A60A-5855A1A2EF2A}" KeyPath="yes">
+                <util:XmlConfig Id="AuthenticationUrl"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[UAS_URL]"
+                                ElementPath="//configuration/appSettings/add[\[]@key='AuthenticationUrl'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+            <Component Id="SecurityKey" Guid="{C673F502-B5EB-4759-82BC-FC8A6FA56775}" KeyPath="yes">
+                <util:XmlConfig Id="SecurityKey"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[SECURITY_KEY]"
+                                ElementPath="//configuration/secureAppSettings/add[\[]@key='SecurityKey'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+            <Component Id="EnableTestingWebService" Guid="{7B705C93-83E9-4F25-A67F-7D3712860F41}" KeyPath="yes">
+                <util:XmlConfig Id="EnableTestingWebService"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="true"
+                                ElementPath="//configuration/appSettings/add[\[]@key='EnableTestingWebService'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+                <Condition>ACTIVATE_GRAPHIQL=1</Condition>
+            </Component>
+            <Component Id="EnvironmentId" Guid="{63F9783D-21D9-48DF-807A-D4DF84551B84}" KeyPath="yes">
+                <util:XmlConfig Id="EnvironmentId"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[ENVIRONMENT_ID]"
+                                ElementPath="//configuration/appSettings/add[\[]@key='EnvironmentId'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+            <Component Id="RepositoryId" Guid="{140CA36F-CCE7-4041-AB94-1AA178F0A384}" KeyPath="yes">
+                <util:XmlConfig Id="RepositoryId"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[REPOSITORY_ID]"
+                                ElementPath="//configuration/appSettings/add[\[]@key='RepositoryId'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+            <Component Id="ProfileId" Guid="{37E58449-5D41-4431-A78B-3E9D67BBBC80}" KeyPath="yes">
+                <util:XmlConfig Id="ProfileId"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[PROFILE_ID]"
+                                ElementPath="//configuration/appSettings/add[\[]@key='ProfileId'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+            <Component Id="Login" Guid="{531847BD-EBF0-4C6F-ADA7-8B246FAA5E3C}" KeyPath="yes">
+                <util:XmlConfig Id="Login"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[GRAPHIQL_USER]"
+                                ElementPath="//configuration/appSettings/add[\[]@key='Login'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+            <Component Id="Password" Guid="{35EF82D0-4620-4DEF-96BF-4DD1E00071E5}" KeyPath="yes">
+                <util:XmlConfig Id="Password"
+                                File="[HOPEXGraphQL]Web.config"
+                                Action="create"
+                                On="install"
+                                Node="value"
+                                Name="value"
+                                Value="[GRAPHIQL_USER_PASSWORD]"
+                                ElementPath="//configuration/appSettings/add[\[]@key='Password'[\]]"
+                                Sequence="1">
+                </util:XmlConfig>
+            </Component>
+        </ComponentGroup>
+
+        <ComponentGroup Id="WebServiceBinFiles" Directory="BinFolder">
+            <Component Id="Hopex.Common.dll" Guid="{8FC0AA80-DAD5-43C9-BB2E-8A3900E6C920}">
+                <File Id="Hopex.Common.dll" Name="Hopex.Common.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Hopex.Common.dll" />
+            </Component>
+            <Component Id="IdentityModel.dll" Guid="{14413225-5C6A-4AFB-8C74-DFF1A77ECFC8}">
+                <File Id="IdentityModel.dll" Name="IdentityModel.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)IdentityModel.dll" />
+            </Component>
+            <Component Id="log4net.dll" Guid="{8E7D9C9F-78FC-4EFA-8694-AF6324C46756}">
+                <File Id="log4net.dll" Name="log4net.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)log4net.dll" />
+            </Component>
+            <Component Id="Mega.Bridge.dll" Guid="{5ED7242C-8BFA-4EE4-8BBF-ED2B43B92163}">
+                <File Id="Mega.Bridge.dll" Name="Mega.Bridge.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Mega.Bridge.dll" />
+            </Component>
+            <Component Id="Mega.WebService.GraphQL.dll" Guid="{C5533388-8112-4433-AA80-25756D17AFDF}">
+                <File Id="Mega.WebService.GraphQL.dll" Name="Mega.WebService.GraphQL.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Mega.WebService.GraphQL.dll" />
+            </Component>
+            <Component Id="Microsoft.Web.Infrastructure.dll" Guid="{50AB5CF3-C314-448C-A70E-F9A448DD3BB7}">
+                <File Id="Microsoft.Web.Infrastructure.dll" Name="Microsoft.Web.Infrastructure.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Microsoft.Web.Infrastructure.dll" />
+            </Component>
+            <Component Id="Newtonsoft.Json.dll" Guid="{79E9DED8-F018-4F49-B2D1-6D1E5278C646}">
+                <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Newtonsoft.Json.dll" />
+            </Component>
+            <Component Id="System.ComponentModel.DataAnnotations.dll" Guid="{E4901813-9090-4E2D-AE06-83074694981A}">
+                <File Id="System.ComponentModel.DataAnnotations.dll" Name="System.ComponentModel.DataAnnotations.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ComponentModel.DataAnnotations.dll" />
+            </Component>
+            <Component Id="System.Configuration.dll" Guid="{CAAE2C60-431B-4A8B-8752-7ED39A123730}">
+                <File Id="System.Configuration.dll" Name="System.Configuration.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Configuration.dll" />
+            </Component>
+            <Component Id="System.dll" Guid="{4504C6D5-6CAB-438C-AC21-997522E62CB8}">
+                <File Id="System.dll" Name="System.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.dll" />
+            </Component>
+            <Component Id="System.Net.Http.dll" Guid="{74967D04-6D89-4B20-BDC3-5429E249796B}">
+                <File Id="System.Net.Http.dll" Name="System.Net.Http.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Http.dll" />
+            </Component>
+            <Component Id="System.Net.Http.Formatting.dll" Guid="{B9B3C57C-2FAD-43D5-8D63-C6318916D9AA}">
+                <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Http.Formatting.dll" />
+            </Component>
+            <Component Id="System.Net.Http.WebRequest.dll" Guid="{4A57EB2A-38BF-4659-817D-62DDD9B2E97E}">
+                <File Id="System.Net.Http.WebRequest.dll" Name="System.Net.Http.WebRequest.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Http.WebRequest.dll" />
+            </Component>
+            <Component Id="System.Runtime.Serialization.dll" Guid="{09C326A2-432C-4EF4-B4D3-3307EB977142}">
+                <File Id="System.Runtime.Serialization.dll" Name="System.Runtime.Serialization.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Serialization.dll" />
+            </Component>
+            <Component Id="System.Text.Encoding.dll" Guid="{6F1AE932-FA4C-49E2-9AE9-DF4275E08BEA}">
+                <File Id="System.Text.Encoding.dll" Name="System.Text.Encoding.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Text.Encoding.dll" />
+            </Component>
+            <Component Id="System.Web.Abstractions.dll" Guid="{DE3853ED-84F5-44ED-9462-122E2F7F02CF}">
+                <File Id="System.Web.Abstractions.dll" Name="System.Web.Abstractions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Abstractions.dll" />
+            </Component>
+            <Component Id="System.Web.ApplicationServices.dll" Guid="{64D985BB-B0D5-4D5A-8DB1-19DA03B595D4}">
+                <File Id="System.Web.ApplicationServices.dll" Name="System.Web.ApplicationServices.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.ApplicationServices.dll" />
+            </Component>
+            <Component Id="System.Web.dll" Guid="{D7F51882-7A6F-4A9A-A44C-4A816709D3C1}">
+                <File Id="System.Web.dll" Name="System.Web.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.dll" />
+            </Component>
+            <Component Id="System.Web.Entity.dll" Guid="{90E2E948-ECA3-4F93-AF06-7737BE3150A7}">
+                <File Id="System.Web.Entity.dll" Name="System.Web.Entity.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Entity.dll" />
+            </Component>
+            <Component Id="System.Web.Helpers.dll" Guid="{4198DD28-EDD8-44E3-9BCE-3120296968A2}">
+                <File Id="System.Web.Helpers.dll" Name="System.Web.Helpers.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Helpers.dll" />
+            </Component>
+            <Component Id="System.Web.Http.dll" Guid="{689735CF-B0AC-493E-868F-B2609A3B73D7}">
+                <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Http.dll" />
+            </Component>
+            <Component Id="System.Web.Http.WebHost.dll" Guid="{AC85CFCE-7455-4EF6-AD1C-7011CCC87213}">
+                <File Id="System.Web.Http.WebHost.dll" Name="System.Web.Http.WebHost.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Http.WebHost.dll" />
+            </Component>
+            <Component Id="System.Web.Mvc.dll" Guid="{56CF2352-2C70-4B7D-9431-4107353F5CC1}">
+                <File Id="System.Web.Mvc.dll" Name="System.Web.Mvc.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Mvc.dll" />
+            </Component>
+            <Component Id="System.Web.Razor.dll" Guid="{24BE69AC-0045-4BEB-8AA1-F927531333F9}">
+                <File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Razor.dll" />
+            </Component>
+            <Component Id="System.Web.Routing.dll" Guid="{08137DDD-BB51-4B40-8260-48F519F8EFAE}">
+                <File Id="System.Web.Routing.dll" Name="System.Web.Routing.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Routing.dll" />
+            </Component>
+            <Component Id="System.Web.WebPages.Deployment.dll" Guid="{A8C087D1-AF4A-40AB-9ECD-CC594B41BB43}">
+                <File Id="System.Web.WebPages.Deployment.dll" Name="System.Web.WebPages.Deployment.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.WebPages.Deployment.dll" />
+            </Component>
+            <Component Id="System.Web.WebPages.dll" Guid="{FAA9CCA6-FAF2-40B1-B587-F11073721F58}">
+                <File Id="System.Web.WebPages.dll" Name="System.Web.WebPages.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.WebPages.dll" />
+            </Component>
+            <Component Id="System.Web.WebPages.Razor.dll" Guid="{321EAC34-EBA8-4592-9EA5-5A0D3C92CA2B}">
+                <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.WebPages.Razor.dll" />
+            </Component>
+            <Component Id="System.Xml.dll" Guid="{11390BE5-224E-489F-9DE6-D881D450CDF8}">
+                <File Id="System.Xml.dll" Name="System.Xml.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.dll" />
+            </Component>
+            <Component Id="System.Xml.Linq.dll" Guid="{46DF478B-B218-46AC-BF10-78F203C56F2F}">
+                <File Id="System.Xml.Linq.dll" Name="System.Xml.Linq.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.Linq.dll" />
+            </Component>
+        </ComponentGroup>
+
+        <ComponentGroup Id="WebServiceContentFiles" Directory="ContentFolder">
+            <Component Id="Content_graphiql.css" Guid="{6E19F040-B8F6-4B3A-A925-F6BAECD38E6C}">
+                <File Id="Content_graphiql.css" Name="graphiql.css" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\graphiql.css" />
+            </Component>
+            <Component Id="Content_graphiql.js" Guid="{92373A58-8FD7-4987-9A72-1BA0CE475704}">
+                <File Id="Content_graphiql.js" Name="graphiql.js" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\graphiql.js" />
+            </Component>
+        </ComponentGroup>
+
+        <ComponentGroup Id="WebServiceViewsFiles" Directory="ViewsFolder">
+            <Component Id="Views_Web.config" Guid="{BAA25C5B-C357-4192-805F-6ACEC565839A}">
+                <File Id="Views_Web.config" Name="Web.config" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Views\Web.config" />
+            </Component>
+        </ComponentGroup>
+
+        <ComponentGroup Id="WebServiceViewsHomeFiles" Directory="ViewsHomeFolder">
+            <Component Id="Views_Home_Index.cshtml" Guid="{FEBAA59D-D3C5-45A9-AA67-DAFDAAC84A35}">
+                <File Id="Views_Home_Index.cshtml" Name="Index.cshtml" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Views\Home\Index.cshtml" />
+            </Component>
+            <Component Id="Views_Home_Voyager.cshtml" Guid="{F6CCBB86-7593-4F98-85E1-C42868A4F1A1}">
+                <File Id="Views_Home_Voyager.cshtml" Name="Voyager.cshtml" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Views\Home\Voyager.cshtml" />
+            </Component>
+        </ComponentGroup>
+
+    </Fragment>
+
+</Wix>
