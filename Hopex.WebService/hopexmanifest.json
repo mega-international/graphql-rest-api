@@ -1,8 +1,0 @@
-{
-  "Version": "1.0.0.146",
-  "HopexAddress": "https://localhost:5000",
-  "Kind": "WebService",
-  "Description": "",
-  "Id": "Hopex.GraphQL",
-  "PathPrefix": null
-}
