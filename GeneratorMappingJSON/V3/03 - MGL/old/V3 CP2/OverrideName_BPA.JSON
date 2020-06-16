@@ -1,0 +1,6 @@
+{
+  "metaClassID" : "MetaClass to rename",
+  "metaAssociationID_metaClassID" : "Way to build the key for a simple path",
+  "metaAssociationID1_metaClassID1_metaAssociationID2_metaClassID2" : "Way to build the key for a 2 step path",
+  "metaAttributeID" : "MetaAttribute to rename"
+}

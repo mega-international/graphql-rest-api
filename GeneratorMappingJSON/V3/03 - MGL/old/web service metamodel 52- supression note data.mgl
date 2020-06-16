@@ -1,0 +1,28 @@
+
+- RepositoryLogExport: 2020/04/14 06:20:37
+- File: C:\Users\Administrator\Desktop\GraphQL MGL\web service metamodel 52- supression note data.mgl
+- Environment: C:\Users\Public\Documents\HOPEX V3\PRESALESV3
+- Repository: DEMO
+- Login: Mega
+
+-  "System Diagram" "Data (web service extract)"
+-  "MetaClass" "Note"
+.Disconnect ."~U20000000w10[System Diagram]" "Data (web service extract)" ."~bhCGT34OxC20[MetaClass]" "Note" -
+        .CHK "oJBWZI9bUPsB78xw2lkYo400Y)5pEoSQGn4M" -
+        ."~810000000X00[Link modification date]"             "2020/04/14 06:20:07" -
+        ."~920000000b40[Link Modifier]"                      "Y)5pEoSQGn4M"
+.Disconnect ."System Diagram" "Data (web service extract)" ."MetaAssociationEnd" "Note" "Described Object" -
+        .CHK "oJBWZI9bUPsBfRF0i3KiP57JY)5pEoSQGn4M" -
+        ."~810000000X00[Link modification date]"             "2020/04/14 06:20:08" -
+        ."~920000000b40[Link Modifier]"                      "Y)5pEoSQGn4M"
+
+-  "System Diagram" "Data (web service extract)"
+-  "MetaAssociation" "Note Ownership"
+.Disconnect ."~U20000000w10[System Diagram]" "Data (web service extract)" ."~HhCGT34Oxy00[MetaAssociation]" "Note Ownership" -
+        .CHK "oJBWZI9bUPsBeRF0i3KiP17JY)5pEoSQGn4M" -
+        ."~810000000X00[Link modification date]"             "2020/04/14 06:20:08" -
+        ."~920000000b40[Link Modifier]"                      "Y)5pEoSQGn4M"
+.Disconnect ."System Diagram" "Data (web service extract)" ."MetaAssociationEnd" "Group of Repository Item" "Owned Description Note" -
+        .CHK "oJBWZI9bUPsBgRF0i3KiP97JY)5pEoSQGn4M" -
+        ."~810000000X00[Link modification date]"             "2020/04/14 06:20:08" -
+        ."~920000000b40[Link Modifier]"                      "Y)5pEoSQGn4M"
