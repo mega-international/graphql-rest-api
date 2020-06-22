@@ -21,14 +21,15 @@
 
         <UIRef Id="CustomFeatureTree" />
 
-        <Feature Id="MacroFeature" Title="Mega Macro GraphQL" Level="1" ConfigurableDirectory="INSTALLFOLDER_MACRO" AllowAdvertise="no">
+        <Feature Id="MacroFeature" Title="Mega Macro GraphQL" Level="1" ConfigurableDirectory="HOPEX_BACKEND_FOLDER_DOTNET" AllowAdvertise="no">
             <ComponentGroupRef Id="MacroConfigFiles" />
             <ComponentGroupRef Id="MacroConfigV3StandardFiles" />
             <ComponentGroupRef Id="MacroConfigV3CustomFiles" />
             <ComponentGroupRef Id="MacroFiles" />
             <ComponentRef Id="RegistryMacroEntries" />
+            <ComponentRef Id="RegistryCommonEntries"/>
         </Feature>
-        <Feature Id="WebServiceFeature" Title="Mega WebService GraphQL" Level="1" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no">
+        <Feature Id="WebServiceFeature" Title="Mega WebService GraphQL" Level="1" ConfigurableDirectory="HOPEX_FRONTEND_FOLDER_FINAL" AllowAdvertise="no">
             <ComponentGroupRef Id="WebServiceFiles" />
             <ComponentGroupRef Id="WebServiceBinFiles" />
             <ComponentGroupRef Id="WebServiceContentFiles" />
@@ -36,47 +37,57 @@
             <ComponentGroupRef Id="WebServiceViewsHomeFiles" />
             <ComponentGroupRef Id="HOPEXGraphQLIssConfiguration" />
             <ComponentRef Id="RegistryWebServiceEntries" />
+            <ComponentRef Id="RegistryCommonEntries"/>
         </Feature>
 
-        <Property Id="HOPEX_V3_FOLDER">
+        <Property Id="HOPEX_BACKEND_FOLDER" />
+        <Property Id="HOPEX_V3_BACKEND_FOLDER">
             <RegistrySearch Id="Hopex_V3" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\{701985D0-72D5-453B-80AC-5CC1AD7BD1EA}" Name="InstallLocation" Type="directory" Win64="yes" />
         </Property>
-        <Property Id="HOPEX_V4_FOLDER">
-            <RegistrySearch Id="Hopex_V4" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\{9B681FAA-7CF1-4260-B4C6-C9D44E7926FC}" Name="InstallLocation" Type="directory" Win64="yes" />
+        <Property Id="HOPEX_BACKEND_FOLDER_APPSEARCH">
+            <RegistrySearch Id="Hopex_BackEnd_Folder" Root="HKLM" Key="Software\MEGA\HOPEX\Install" Name="InstallLocation-BackEnd" Type="directory" />
         </Property>
-        <Property Id="HOPEX_V4_1_FOLDER">
-            <RegistrySearch Id="Hopex_V4_1" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\{B7502C36-8C2B-4F8D-8CBD-364F9E486FF8}" Name="InstallLocation" Type="directory" Win64="yes" />
-        </Property>
-        <Property Id="HOPEX_BACKEND_FOLDER">
-            <RegistrySearch Id="Hopex_BackEnd_Folder" Root="HKLM" Key="Software\MEGA\HOPEX" Name="InstallLocation-BackEnd" Type="directory" />
-        </Property>
-        <Property Id="HOPEX_FRONTEND_FOLDER">
-            <RegistrySearch Id="Hopex_FrontEnd_Folder" Root="HKLM" Key="Software\MEGA\HOPEX" Name="InstallLocation-FrontEnd" Type="directory" />
-        </Property>
-        <Condition Message="This application requires Hopex V3 or later. Please install it and then run this installer again.">
-            <![CDATA[Installed OR HOPEX_V3_FOLDER OR HOPEX_V4_FOLDER OR HOPEX_V4_1_FOLDER OR HOPEX_BACKEND_FOLDER]]>
-        </Condition>
-
-        <SetProperty Id="HOPEX_FOLDER" After="AppSearch" Value="c:\temp" Action="HopexFolder0">
-            <![CDATA[NOT HOPEX_V3_FOLDER AND NOT HOPEX_V4_FOLDER AND NOT HOPEX_V4_1_FOLDER AND NOT HOPEX_BACKEND_FOLDER]]>
+        <SetProperty Id="HOPEX_BACKEND_FOLDER_FINAL" After="AppSearch" Value="C:\Program Files (x86)\MEGA\HOPEX V3" Action="HopexBackEndFolder0">
+            <![CDATA[NOT HOPEX_V3_BACKEND_FOLDER AND NOT HOPEX_BACKEND_FOLDER_APPSEARCH AND NOT HOPEX_BACKEND_FOLDER]]>
         </SetProperty>
-        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder0" Value="[HOPEX_V3_FOLDER]" Action="HopexFolder1">
-            <![CDATA[HOPEX_V3_FOLDER]]>
+        <SetProperty Id="HOPEX_BACKEND_FOLDER_FINAL" After="HopexBackEndFolder0" Value="[HOPEX_V3_BACKEND_FOLDER]" Action="HopexBackEndFolder1">
+            <![CDATA[HOPEX_V3_BACKEND_FOLDER]]>
         </SetProperty>
-        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder1" Value="[HOPEX_V4_FOLDER]" Action="HopexFolder2">
-            <![CDATA[HOPEX_V4_FOLDER]]>
+        <SetProperty Id="HOPEX_BACKEND_FOLDER_FINAL" After="HopexBackEndFolder1" Value="[HOPEX_BACKEND_FOLDER_APPSEARCH]" Action="HopexBackEndFolder2">
+            <![CDATA[HOPEX_BACKEND_FOLDER_APPSEARCH]]>
         </SetProperty>
-        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder2" Value="[HOPEX_V4_1_FOLDER]" Action="HopexFolder3">
-            <![CDATA[HOPEX_V4_1_FOLDER]]>
-        </SetProperty>
-        <SetProperty Id="HOPEX_FOLDER" After="HopexFolder3" Value="[HOPEX_BACKEND_FOLDER]" Action="HopexFolder4">
+        <SetProperty Id="HOPEX_BACKEND_FOLDER_FINAL" After="HopexBackEndFolder2" Value="[HOPEX_BACKEND_FOLDER]" Action="HopexBackEndFolder3">
             <![CDATA[HOPEX_BACKEND_FOLDER]]>
         </SetProperty>
-        <SetProperty Id="INSTALLFOLDER" After="HopexFolder4" Value="[HOPEX_FRONTEND_FOLDER]" Action="HopexFolder5">
+
+        <Property Id="HOPEX_FRONTEND_FOLDER" />
+        <Property Id="HOPEX_FRONTEND_FOLDER_APPSEARCH">
+            <RegistrySearch Id="Hopex_FrontEnd_Folder" Root="HKLM" Key="Software\MEGA\HOPEX\Install" Name="InstallLocation-FrontEnd" Type="directory" />
+        </Property>
+        <SetProperty Id="HOPEX_FRONTEND_FOLDER_FINAL" After="AppSearch" Value="[HOPEX_FRONTEND_FOLDER_APPSEARCH]" Action="HopexFrontEndFolder1">
+            <![CDATA[HOPEX_FRONTEND_FOLDER_APPSEARCH]]>
+        </SetProperty>
+        <SetProperty Id="HOPEX_FRONTEND_FOLDER_FINAL" After="HopexFrontEndFolder1" Value="[HOPEX_FRONTEND_FOLDER]" Action="HopexFrontEndFolder2">
             <![CDATA[HOPEX_FRONTEND_FOLDER]]>
         </SetProperty>
 
-        <Property Id="CHAINED_INSTALL" Value="0" />
+        <Property Id="HOPEX_VERSION" />
+        <Property Id="HOPEX_VERSION_APPSEARCH">
+            <RegistrySearch Id="Hopex_Version" Root="HKLM" Key="Software\MEGA\HOPEX\Install" Name="Version" Type="raw" />
+        </Property>
+        <SetProperty Id="HOPEX_VERSION_FINAL" After="AppSearch" Value="[HOPEX_VERSION_APPSEARCH]" Action="HopexVersion1">
+            <![CDATA[HOPEX_VERSION_APPSEARCH]]>
+        </SetProperty>
+        <SetProperty Id="HOPEX_VERSION_FINAL" After="HopexVersion1" Value="[HOPEX_VERSION]" Action="HopexVersion2">
+            <![CDATA[HOPEX_VERSION]]>
+        </SetProperty>
+
+        <!--<Condition Message="This application requires Hopex V3 or later. Please install it and then run this installer again.">
+            <![CDATA[Installed OR HOPEX_V3_BACKEND_FOLDER OR HOPEX_VERSION OR HOPEX_VERSION_APPSEARCH]]>
+        </Condition>-->
+
+
+        <Property Id="HOPEX_CHAINED_INSTALL" Value="0" />
         <Property Id="SSP_URL" Value="http://localhost/MEGASSP" />
         <Property Id="UAS_URL" Value="http://localhost/UAS" />
         <Property Id="SECURITY_KEY" Secure="yes" />
@@ -109,8 +120,8 @@
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder">
                 <Directory Id="MEGA" Name="MEGA">
-                    <Directory Id="HOPEX_FOLDER" Name="HOPEX">
-                        <Directory Id="INSTALLFOLDER_MACRO" Name="DotNet">
+                    <Directory Id="HOPEX_BACKEND_FOLDER_FINAL" Name="HOPEX">
+                        <Directory Id="HOPEX_BACKEND_FOLDER_DOTNET" Name="DotNet">
                             <Directory Id="Macro" Name="hopex.graphql" >
                                 <Directory Id="MacroVersion" Name="1.0.0.0">
                                     <Directory Id="MacroConfig" Name="CONFIG">
@@ -128,7 +139,7 @@
                 </Directory>
             </Directory>
             <Directory Id="inetpub" Name="inetpub">
-                <Directory Id="INSTALLFOLDER" Name="wwwroot">
+                <Directory Id="HOPEX_FRONTEND_FOLDER_FINAL" Name="wwwroot">
                     <Directory Id="HOPEXGraphQL" Name="HOPEXGraphQL">
                         <Directory Id="BinFolder" Name="bin">
                         </Directory>
@@ -168,20 +179,20 @@
         <DirectoryRef Id="TARGETDIR">
             <Component Id="RegistryMacroEntries" Guid="{6CD0AD03-633C-4F9B-997A-BAEA43E9C08F}">
                 <RegistryKey Root="HKLM" Key="Software\MEGA\HOPEX GraphQL\Install" Action="createAndRemoveOnUninstall">
-                    <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
-                    <RegistryValue Type="string" Name="ProductCode" Value="[ProductCode]"/>
-                    <RegistryValue Type="string" Name="InstallLocation-BackEnd" Value="[INSTALLFOLDER_MACRO]"/>
-                    <RegistryValue Type="integer" Name="ChainedInstall" Value="[CHAINED_INSTALL]"/>
+                    <RegistryValue Type="string" Name="InstallLocation-BackEnd" Value="[HOPEX_BACKEND_FOLDER_DOTNET]"/>
                 </RegistryKey>
             </Component>
-        </DirectoryRef>
-        <DirectoryRef Id="TARGETDIR">
             <Component Id="RegistryWebServiceEntries" Guid="{8883DF29-C37E-41C4-9932-8A35DD50257C}">
+                <RegistryKey Root="HKLM" Key="Software\MEGA\HOPEX GraphQL\Install" Action="createAndRemoveOnUninstall">
+                    <RegistryValue Type="string" Name="InstallLocation-FrontEnd" Value="[HOPEX_FRONTEND_FOLDER_FINAL]"/>
+                </RegistryKey>
+            </Component>
+            <Component Id="RegistryCommonEntries" Guid="{EBEB4D89-F3BB-4B03-9FC9-D7367DD2F25B}">
                 <RegistryKey Root="HKLM" Key="Software\MEGA\HOPEX GraphQL\Install" Action="createAndRemoveOnUninstall">
                     <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
                     <RegistryValue Type="string" Name="ProductCode" Value="[ProductCode]"/>
-                    <RegistryValue Type="string" Name="InstallLocation-FrontEnd" Value="[INSTALLFOLDER]"/>
-                    <RegistryValue Type="integer" Name="ChainedInstall" Value="[CHAINED_INSTALL]"/>
+                    <RegistryValue Type="string" Name="HopexVersion" Value="[HOPEX_VERSION_FINAL]"/>
+                    <RegistryValue Type="integer" Name="ChainedInstall" Value="[HOPEX_CHAINED_INSTALL]"/>
                 </RegistryKey>
             </Component>
         </DirectoryRef>

@@ -572,14 +572,14 @@ namespace Hopex.Modules.GraphQL.Schema
                 }
                 else if (kv.Key == "dataLanguageCode")
                 {
-                    var prop = entity.GetPropertyDescription("dataLanguageId", false);
+                    var prop = entity.FindPropertyDescriptionById(MetaAttributeLibrary.DataLanguage.Substring(1, 12));
                     if (prop != null)
                     {
                         yield return PropertySetter.Create(prop, kv.Value);
                     }
                     else
                     {
-                        throw new Exception($"dataLanguageId is not a valid member of {entity.Name}");
+                        throw new Exception($"dataLanguage is not a valid member of {entity.Name}");
                     }
                 }
                 else

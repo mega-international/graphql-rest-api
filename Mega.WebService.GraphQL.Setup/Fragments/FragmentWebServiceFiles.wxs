@@ -238,6 +238,9 @@
             <Component Id="Views_Home_Index.cshtml" Guid="{FEBAA59D-D3C5-45A9-AA67-DAFDAAC84A35}">
                 <File Id="Views_Home_Index.cshtml" Name="Index.cshtml" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Views\Home\Index.cshtml" />
             </Component>
+            <Component Id="Views_Home_ServicesDisabled.cshtml" Guid="{B91BE4E1-C5F6-4C4C-8BF8-12D1B9CBB12B}">
+                <File Id="Views_Home_ServicesDisabled.cshtml" Name="ServicesDisabled.cshtml" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Views\Home\ServicesDisabled.cshtml" />
+            </Component>
             <Component Id="Views_Home_Voyager.cshtml" Guid="{F6CCBB86-7593-4F98-85E1-C42868A4F1A1}">
                 <File Id="Views_Home_Voyager.cshtml" Name="Voyager.cshtml" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Views\Home\Voyager.cshtml" />
             </Component>
