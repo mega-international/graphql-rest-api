@@ -73,17 +73,17 @@
 			"profile": "HOPEX Customizer"
 		},
 		{
-			"included": "false",
-			"schemaName": "UML",
-			"metaModelAbsoluteIdentifier": "kDqIpjasU5OQ",
+			"included": "true",
+			"schemaName": "Reporting",
+			"metaModelAbsoluteIdentifier": "J82geYQVU9EF",
 			"login": "Mega",
 			"password": "Hopex",
 			"profile": "HOPEX Customizer"
 		},
 		{
-			"included": "true",
-			"schemaName": "Reporting",
-			"metaModelAbsoluteIdentifier": "J82geYQVU9EF",
+			"included": "false",
+			"schemaName": "UML",
+			"metaModelAbsoluteIdentifier": "kDqIpjasU5OQ",
 			"login": "Mega",
 			"password": "Hopex",
 			"profile": "HOPEX Customizer"
