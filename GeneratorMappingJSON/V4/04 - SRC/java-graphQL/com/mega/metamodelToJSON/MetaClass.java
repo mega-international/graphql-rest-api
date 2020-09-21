@@ -2,6 +2,7 @@ package com.mega.metamodelToJSON;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import com.mega.generator.Generator;
@@ -303,9 +304,17 @@ public class MetaClass  extends CommonAttributes  {
 
 	public static MegaCollection getCollectionShouldBeFeature(MegaRoot megaRoot) {
 		MegaCollection oCol = megaRoot.getSelection("");
-		oCol.insert(megaRoot.getObjectFromID("~030000000240[Responsability Assignment]"));
-		oCol.insert(megaRoot.getObjectFromID("~zs2udS(dEnKQ[ASsessment Signatory]"));
 
+		List<String> listMetaClass = listCollectionShouldBeFeature();
+		Iterator<String> it = listMetaClass.iterator();	
+		while(it.hasNext()) {
+			String strMetaClass= it.next();
+			MegaObject objectToInsert = megaRoot.getObjectFromID(strMetaClass);
+			boolean objectexist = objectToInsert.exists();
+			if (objectexist) {
+				oCol.insert(objectToInsert);
+			}
+		}
 
 		return oCol;
 	}	
@@ -313,75 +322,101 @@ public class MetaClass  extends CommonAttributes  {
 	// this function explicitly list the MetaClass not considered as intermediate object even if they inherint from Features
 	public static MegaCollection getCollectionOfObjectNotFeature(MegaRoot megaRoot) {
 		MegaCollection oCol = megaRoot.getSelection("");
-		oCol.insert(megaRoot.getObjectFromID("~8xkukQk8OD(1[Application Flow]"));
-		oCol.insert(megaRoot.getObjectFromID("~nQ65TIXKp400[Objective]"));
-		oCol.insert(megaRoot.getObjectFromID("~OsUiS9B5iiQ0[Operation]"));
-		oCol.insert(megaRoot.getObjectFromID("~DX4rZajG7jQ0[Event]"));
-		oCol.insert(megaRoot.getObjectFromID("~WIQqh8jB9TB0[Data Object]"));
-		oCol.insert(megaRoot.getObjectFromID("~GGQqWDjB95F0[Gateway]"));
-		oCol.insert(megaRoot.getObjectFromID("~CK0MCRcD9bV1[Message Flow]"));
-		oCol.insert(megaRoot.getObjectFromID("~jsV6VsHL7vJ0[Sequence Flow]"));
-		oCol.insert(megaRoot.getObjectFromID("~wxm88LFE9fG0[System Used]"));	
-		oCol.insert(megaRoot.getObjectFromID("~Pyc40Cn08f30[Task]"));	
-		oCol.insert(megaRoot.getObjectFromID("~ThXPLe61za91[Value Stage]"));	
-		oCol.insert(megaRoot.getObjectFromID("~eNC4(5X18P30[Participant]"));			
-		oCol.insert(megaRoot.getObjectFromID("~v2rdXCwxCjC0[Dictionary Entity Component Classification]"));			
-		oCol.insert(megaRoot.getObjectFromID("~w(XYAufKOT6M[Project Deliverable]"));			
-		oCol.insert(megaRoot.getObjectFromID("~YXRV)88Dp0G1[Attribute]"));	
-		oCol.insert(megaRoot.getObjectFromID("~cHFQE4Ny(m50[Attribute <DM>]"));	
-		oCol.insert(megaRoot.getObjectFromID("~jdFzaq1Bkyb1[colummn]"));	
-		oCol.insert(megaRoot.getObjectFromID("~s8rEmjZmoe00[Operation <UML>]"));	
-		oCol.insert(megaRoot.getObjectFromID("~wdFzaq1Bkmc1[Index]"));	
-		oCol.insert(megaRoot.getObjectFromID("~VdFzZq1Bk8b1[Key]"));
-		oCol.insert(megaRoot.getObjectFromID("~D7p5A4oEBnC2[Enterprise Goal]"));
 		
-		 
-		oCol.insert(megaRoot.getObjectFromID("~WmtRiDtI99C0[Offering]"));
-		oCol.insert(megaRoot.getObjectFromID("~Oump8OjLIb6J[Conversation]"));
-		oCol.insert(megaRoot.getObjectFromID("~WIQqh8jB9TB0[object]"));
-
-		oCol.insert(megaRoot.getObjectFromID("~RrIc2(AJQfA5[GDPR Risk]"));
-		
-//		oCol.insert(megaRoot.getObjectFromID("~XIVW7RPyMLmW[Memorized Business Information]"));
-//		oCol.insert(megaRoot.getObjectFromID("~Cs3HpJ2jKzVx[Logical Data Area Component]"));
-		
-		oCol.insert(megaRoot.getObjectFromID("~WGBjQ)sVHz4K[Logical Software Realization]"));
-
-		
-		 
-		oCol.insert(megaRoot.getObjectFromID("~n7zRl)MfvK70[Role]"));
-
-		oCol.insert(megaRoot.getObjectFromID("~qtv62qXBALA0[Service Point]"));
-		oCol.insert(megaRoot.getObjectFromID("~cqv6TqXBAnB0[Request Point]"));
-		
-		oCol.insert(megaRoot.getObjectFromID("~dfbVXxN0QnPE[Organization Department]"));		
-		oCol.insert(megaRoot.getObjectFromID("~e4v3m1H9QnLB[Organization Partner]"));
-		oCol.insert(megaRoot.getObjectFromID("~POj9qE31QzLU[Organizational Responsibility]"));
-		oCol.insert(megaRoot.getObjectFromID("~GhbVn0O0Q9hE[Organizational Position]"));
-
-		
-
-		 
-
-
-
-		
+		List<String> listMetaClass = listCollectionOfObjectNotFeature();
+		Iterator<String> it = listMetaClass.iterator();	
+		while(it.hasNext()) {
+			String strMetaClass= it.next();
+			MegaObject objectToInsert = megaRoot.getObjectFromID(strMetaClass);
+			boolean objectexist = objectToInsert.exists();
+			if (objectexist) {
+				oCol.insert(objectToInsert);
+			}
+		}
+			
 		return oCol;
 	}	
-	
-	
-	 
-	
+
+
 	public static MegaCollection getCollectionRootObjectThatShouldNotBeLinkedToFeatureMetaclass(MegaRoot megaRoot) {
 		MegaCollection oCol = megaRoot.getSelection("");
-		oCol.insert(megaRoot.getObjectFromID("~UkPT)TNyFDK5[Business document]"));
-		oCol.insert(megaRoot.getObjectFromID("~AbEujCE8GfyD[Business Document Version]"));
-		oCol.insert(megaRoot.getObjectFromID("~R9OwsdWJGj2A[Element with business Document]"));
-		oCol.insert(megaRoot.getObjectFromID("~KekPBSs3iS10[Diagram]"));
-		oCol.insert(megaRoot.getObjectFromID("~78xw2lkYo400[Note]"));
+
+		List<String> listMetaClass = listCollectionRootObjectThatShouldNotBeLinkedToFeatureMetaclass();
+		Iterator<String> it = listMetaClass.iterator();	
+		while(it.hasNext()) {
+			String strMetaClass= it.next();
+			MegaObject objectToInsert = megaRoot.getObjectFromID(strMetaClass);
+			boolean objectexist = objectToInsert.exists();
+			if (objectexist) {
+				oCol.insert(objectToInsert);
+			}
+		}		
 		
 		return oCol;
 	
 	}
+	
+	public static List<String> listCollectionShouldBeFeature() {
+		List<String> listMetaClass = new ArrayList<String>();
+		listMetaClass.add("~030000000240[Responsability Assignment]");
+		listMetaClass.add("~zs2udS(dEnKQ[ASsessment Signatory]");
+		return listMetaClass;		
+	}	
+	
+	public static List<String> listCollectionOfObjectNotFeature() {
+		List<String> listMetaClass = new ArrayList<String>();
+		listMetaClass.add("");
+
+		listMetaClass.add("~8xkukQk8OD(1[Application Flow]");
+		listMetaClass.add("~nQ65TIXKp400[Objective]");
+		listMetaClass.add("~OsUiS9B5iiQ0[Operation]");
+		listMetaClass.add("~DX4rZajG7jQ0[Event]");
+		listMetaClass.add("~WIQqh8jB9TB0[Data Object]");
+		listMetaClass.add("~GGQqWDjB95F0[Gateway]");
+		listMetaClass.add("~CK0MCRcD9bV1[Message Flow]");
+		listMetaClass.add("~jsV6VsHL7vJ0[Sequence Flow]");
+		listMetaClass.add("~wxm88LFE9fG0[System Used]");
+		listMetaClass.add("~Pyc40Cn08f30[Task]");
+		listMetaClass.add("~ThXPLe61za91[Value Stage]");
+		listMetaClass.add("~eNC4(5X18P30[Participant]");
+		listMetaClass.add("~v2rdXCwxCjC0[Dictionary Entity Component Classification]");
+		listMetaClass.add("~w(XYAufKOT6M[Project Deliverable]");
+		listMetaClass.add("~YXRV)88Dp0G1[Attribute]");
+		listMetaClass.add("~cHFQE4Ny(m50[Attribute <DM>]");
+		listMetaClass.add("~jdFzaq1Bkyb1[colummn]");
+		listMetaClass.add("~s8rEmjZmoe00[Operation <UML>]");
+		listMetaClass.add("~wdFzaq1Bkmc1[Index]");
+		listMetaClass.add("~VdFzZq1Bk8b1[Key]");
+		listMetaClass.add("~D7p5A4oEBnC2[Enterprise Goal]");
+		listMetaClass.add("~WmtRiDtI99C0[Offering]");
+		listMetaClass.add("~Oump8OjLIb6J[Conversation]");
+		listMetaClass.add("~WIQqh8jB9TB0[object]");
+		listMetaClass.add("~RrIc2(AJQfA5[GDPR Risk]");
+		listMetaClass.add("~WGBjQ)sVHz4K[Logical Software Realization]");
+		listMetaClass.add("~n7zRl)MfvK70[Role]");
+		listMetaClass.add("~qtv62qXBALA0[Service Point]");
+		listMetaClass.add("~cqv6TqXBAnB0[Request Point]");
+		listMetaClass.add("~dfbVXxN0QnPE[Organization Department]");
+		listMetaClass.add("~e4v3m1H9QnLB[Organization Partner]");
+		listMetaClass.add("~POj9qE31QzLU[Organizational Responsibility]");
+		listMetaClass.add("~GhbVn0O0Q9hE[Organizational Position]");	
+		
+		return listMetaClass;		
+	}	
+	 
+
+
+	public static List<String> listCollectionRootObjectThatShouldNotBeLinkedToFeatureMetaclass() {
+		List<String> listMetaClass = new ArrayList<String>();
+		listMetaClass.add("~UkPT)TNyFDK5[Business document]");
+		listMetaClass.add("~AbEujCE8GfyD[Business Document Version]");
+		listMetaClass.add("~R9OwsdWJGj2A[Element with business Document]");
+		listMetaClass.add("~KekPBSs3iS10[Diagram]");
+		listMetaClass.add("~78xw2lkYo400[Note]");
+		return listMetaClass;		
+	}	
+		
+	
+
 	
 }

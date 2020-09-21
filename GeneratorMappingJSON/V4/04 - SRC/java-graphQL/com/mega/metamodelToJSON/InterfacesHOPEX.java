@@ -2,6 +2,7 @@ package com.mega.metamodelToJSON;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import com.mega.mappingJSON.InterfacesJSON;
@@ -132,38 +133,35 @@ public class InterfacesHOPEX extends CommonAttributes {
 
 		MegaCollection oCol = megaRoot.getSelection("");
 		
-		 oCol.insert(megaRoot.getObjectFromID("~M30000000P90[Is Writable]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~210000000900[Name]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~f10000000b20[Comment]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~CFmhlMxNT1iE[ External Identifier]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~310000000D00[Absolute Identifier]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~H20000000550[_HexaIdAbs]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~510000000L00[Creation Date]"));	
-		 oCol.insert(megaRoot.getObjectFromID("~610000000P00[Modification Date]"));
-		 //oCol.insert(megaRoot.getObjectFromID("~)10000000z30[Creator Name]"));	   
-		 //oCol.insert(megaRoot.getObjectFromID("~c10000000P20[Modifier Name]"));	 
-		 oCol.insert(megaRoot.getObjectFromID("~(10000000v30[Creator]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~b10000000L20[Modifier]"));	   
-		 //oCol.insert(megaRoot.getObjectFromID(""));	   
+		
+		
+		List<String> listMetaClass = listCollectionMetaAttributeGenericObject();
+		Iterator<String> it = listMetaClass.iterator();	
+		while(it.hasNext()) {
+			String strMetaClass= it.next();
+			MegaObject objectToInsert = megaRoot.getObjectFromID(strMetaClass);
+			boolean objectexist = objectToInsert.exists();
+			if (objectexist) {
+				oCol.insert(objectToInsert);
+			}
+		}		   
 
 		return oCol;
 	}
 	
 	public static MegaCollection addCollectionMetaAttributeGenericObjectSystem(MegaRoot megaRoot) {
 
-		MegaCollection oCol = megaRoot.getSelection("");		
-		 oCol.insert(megaRoot.getObjectFromID("~M30000000P90[Is Writable]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~210000000900[Name]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~f10000000b20[Comment]"));   
-		 oCol.insert(megaRoot.getObjectFromID("~310000000D00[Absolute Identifier]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~H20000000550[_HexaIdAbs]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~510000000L00[Creation Date]"));
-		 oCol.insert(megaRoot.getObjectFromID("~610000000P00[Modification Date]"));		 
-		 //oCol.insert(megaRoot.getObjectFromID("~)10000000z30[Creator Name]"));	   
-		 //oCol.insert(megaRoot.getObjectFromID("~c10000000P20[Modifier Name]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~(10000000v30[Creator]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~b10000000L20[Modifier]"));	   
-		 //oCol.insert(megaRoot.getObjectFromID(""));	   
+		MegaCollection oCol = megaRoot.getSelection("");
+		List<String> listMetaClass = listCollectionMetaAttributeGenericObjectSystem();
+		Iterator<String> it = listMetaClass.iterator();	
+		while(it.hasNext()) {
+			String strMetaClass= it.next();
+			MegaObject objectToInsert = megaRoot.getObjectFromID(strMetaClass);
+			boolean objectexist = objectToInsert.exists();
+			if (objectexist) {
+				oCol.insert(objectToInsert);
+			}
+		}		   
 
 		return oCol;
 	}
@@ -171,16 +169,68 @@ public class InterfacesHOPEX extends CommonAttributes {
 	public static MegaCollection addCollectionMetaAttributeMetaAssociation(MegaRoot megaRoot) {
 
 		MegaCollection oCol = megaRoot.getSelection("");
-		 oCol.insert(megaRoot.getObjectFromID("~410000000H00[Order]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~C3cm9FyluS20[Link Comment]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~710000000T00[Link creation date]"));		 
-		 oCol.insert(megaRoot.getObjectFromID("~810000000X00[Link modification date]"));	   
-		 oCol.insert(megaRoot.getObjectFromID("~720000000T40[Link Creator]"));	   
-		 //oCol.insert(megaRoot.getObjectFromID("~820000000X40[Link Creator Name]"));	
-		 oCol.insert(megaRoot.getObjectFromID("~920000000b40[Link Modifier]"));	   
-		 //oCol.insert(megaRoot.getObjectFromID("~A20000000f40[Link Modifier Name]"));
-		 //oCol.insert(megaRoot.getObjectFromID(""));	   
+
+		List<String> listMetaClass = listCollectionMetaAttributeMetaAssociation();
+		Iterator<String> it = listMetaClass.iterator();	
+		while(it.hasNext()) {
+			String strMetaClass= it.next();
+			MegaObject objectToInsert = megaRoot.getObjectFromID(strMetaClass);
+			boolean objectexist = objectToInsert.exists();
+			if (objectexist) {
+				oCol.insert(objectToInsert);
+			}
+		}			
+		   
 		return oCol;
 	}	
+	
+	
+	
+	
+	
+	public static List<String> listCollectionMetaAttributeGenericObject() {
+		List<String> listMetaAttribute = new ArrayList<String>();
+		listMetaAttribute.add("~M30000000P90[Is Writable]");
+		listMetaAttribute.add("~210000000900[Name]");
+		listMetaAttribute.add("~f10000000b20[Comment]");
+		listMetaAttribute.add("~CFmhlMxNT1iE[ External Identifier]");
+		listMetaAttribute.add("~310000000D00[Absolute Identifier]");
+		listMetaAttribute.add("~H20000000550[_HexaIdAbs]");
+		listMetaAttribute.add("~510000000L00[Creation Date]");
+		listMetaAttribute.add("~610000000P00[Modification Date]");
+		listMetaAttribute.add("~(10000000v30[Creator]");
+		listMetaAttribute.add("~b10000000L20[Modifier]");	
+		return listMetaAttribute;		
+	}	
+	
+	public static List<String> listCollectionMetaAttributeGenericObjectSystem() {
+		List<String> listMetaAttribute = new ArrayList<String>();
+		listMetaAttribute.add("~M30000000P90[Is Writable]");
+		listMetaAttribute.add("~210000000900[Name]");
+		listMetaAttribute.add("~f10000000b20[Comment]");
+		listMetaAttribute.add("~310000000D00[Absolute Identifier]");
+		listMetaAttribute.add("~H20000000550[_HexaIdAbs]");
+		listMetaAttribute.add("~510000000L00[Creation Date]");
+		listMetaAttribute.add("~610000000P00[Modification Date]");
+		listMetaAttribute.add("~(10000000v30[Creator]");
+		listMetaAttribute.add("~b10000000L20[Modifier]");			
+		
+		return listMetaAttribute;		
+	}	
+	
+	
+	public static List<String> listCollectionMetaAttributeMetaAssociation() {
+		List<String> listMetaAttribute = new ArrayList<String>();
+		listMetaAttribute.add("~410000000H00[Order]");
+		listMetaAttribute.add("~C3cm9FyluS20[Link Comment]");
+		listMetaAttribute.add("~710000000T00[Link creation date]");
+		listMetaAttribute.add("~810000000X00[Link modification date]");
+		listMetaAttribute.add("~720000000T40[Link Creator]");
+		listMetaAttribute.add("~920000000b40[Link Modifier]");
+		return listMetaAttribute;		
+	}		
+	
+	
+	
 	
 } // class
