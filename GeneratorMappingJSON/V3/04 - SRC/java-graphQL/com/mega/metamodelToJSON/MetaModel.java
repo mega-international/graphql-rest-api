@@ -18,11 +18,18 @@ import com.mega.vocabulary.StaticFields;
 
 public class MetaModel  extends CommonAttributes  {
 
-	public MetaModel(MegaRoot megaRoot, String rootMetamodel,HashMap<String,String> overrideNameList) {
+	public MetaModel(MegaRoot megaRoot, String rootMetamodel,HashMap<String,String> overrideNameList) throws Exception {
 		this.megaRoot = megaRoot;
 
 		this.overrideNameList = overrideNameList;			
 		oMetamodel = megaRoot.getObjectFromID(rootMetamodel);
+		
+		if (!oMetamodel.exists()) {
+			Generator.logger.severe("The absolute identifier " + rootMetamodel + " for the metamodel is not valid. Check your JSON config file");
+			throw new Exception();
+		}
+		
+		
 		absoluteIdentifier = oMetamodel.getProp(StaticFields.absoluteIdentifier);
 	
 	} // constructor

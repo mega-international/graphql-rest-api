@@ -102,16 +102,21 @@ public class Generator {
 	private static void generateMetaModel(String metaModelName, String metaModelidAbs, String login, String password, String profile, String filePath, String fileNameOverride, String latestGeneration) {
 
 		Generator.logger.info("########## Starting : " + metaModelName);
-		
 		OpenHOPEX openHOPEX = new OpenHOPEX(login, password, "-Role:" + profile + " -TranType:Micro -OpenMode:R");
-		MegaRoot megaRoot = openHOPEX.getMegaRoot();
-	
-		String fileName = metaModelName + ".JSON";
-		HashMap<String,String> overRideNameList = new HashMap<String,String>();
-		readwriteOverRideName(filePath + fileNameOverride,overRideNameList,false);
-		generateJSON(megaRoot,metaModelidAbs,filePath+fileName,overRideNameList,openHOPEX.getName(),openHOPEX.getVersion(),latestGeneration);
-		readwriteOverRideName(filePath + fileNameOverride,overRideNameList,true);
-		openHOPEX.closeHOPEX();
+		try {		
+			MegaRoot megaRoot = openHOPEX.getMegaRoot();
+			String fileName = metaModelName + ".JSON";
+			HashMap<String,String> overRideNameList = new HashMap<String,String>();
+			readwriteOverRideName(filePath + fileNameOverride,overRideNameList,false);
+			generateJSON(megaRoot,metaModelidAbs,filePath+fileName,overRideNameList,openHOPEX.getName(),openHOPEX.getVersion(),latestGeneration);
+			readwriteOverRideName(filePath + fileNameOverride,overRideNameList,true);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			openHOPEX.closeHOPEX();
+		}
+		
 	}
 		
 	private static void readwriteOverRideName(String filePath,  HashMap<String,String> overRideNameList, boolean write) {
@@ -198,7 +203,7 @@ public class Generator {
 		
 	}
 	
-	private static void generateJSON(MegaRoot megaRoot,String rootMetaModel,String filePath,HashMap<String,String> overRideNameList, String name, String version,String latestGeneration) {
+	private static void generateJSON(MegaRoot megaRoot,String rootMetaModel,String filePath,HashMap<String,String> overRideNameList, String name, String version,String latestGeneration) throws Exception {
 
 		Generator.logger.info("Creating JSON");
 

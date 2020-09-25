@@ -50,7 +50,7 @@ public class OpenHOPEX {
 		megaEnvironment.setCurrentAdministrator(sAdministrator);
 		megaEnvironment.setCurrentPassword(sPassword);
 		Generator.logger.info("Open Session ");
-		Generator.logger.info("sAdministrator: " + sAdministrator + " - sPassword: " + sPassword);
+		Generator.logger.info("sAdministrator: " + sAdministrator + "");
 		
 		megaRoot = data.openEx(openMode);
 	
