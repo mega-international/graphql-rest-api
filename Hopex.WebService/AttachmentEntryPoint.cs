@@ -88,10 +88,12 @@ namespace Hopex.Modules.GraphQL
 
         private HopexResponse GetBusinessDocumentContent(IMegaRoot root, string documentId)
         {
-            var businessDocument = root.GetObjectFromId(documentId);
-            var path = businessDocument.CallFunctionString("~FFopcJjTGnIC[StaticDocumentFilePathGet]");
-            var fileName = Path.GetFileName(path);
-            return BuildTempFileResult(fileName, path);
+            using (var businessDocument = root.GetObjectFromId(documentId))
+            {
+                var path = businessDocument.CallFunctionString("~FFopcJjTGnIC[StaticDocumentFilePathGet]");
+                var fileName = Path.GetFileName(path);
+                return BuildTempFileResult(fileName, path);
+            }
         }      
 
         private class BusinessDocumentType

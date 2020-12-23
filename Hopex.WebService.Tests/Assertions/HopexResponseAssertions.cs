@@ -1,11 +1,9 @@
 using FluentAssertions;
 using FluentAssertions.Primitives;
-using FluentAssertions.Json;
 using Hopex.ApplicationServer.WebServices;
 using Newtonsoft.Json.Linq;
-using System.Reflection;
 using Hopex.Common.JsonMessages;
-using System;
+using System.Net;
 
 namespace Hopex.WebService.Tests.Assertions
 {
@@ -53,8 +51,8 @@ namespace Hopex.WebService.Tests.Assertions
 
         private JToken ParseJsonBody()
         {
-            var property = Subject.GetType().GetProperty("Value", BindingFlags.NonPublic | BindingFlags.Instance);
-            var actual = (string)property.GetValue(Subject);
+            Subject.Should().NotBeNull();
+            var actual = Subject.Value.ToString() ?? string.Empty;
             Subject.StatusCode.Should().Be(200, $"no error should be in {actual}");
             Subject.ContentType.Should().Be("application/json", $"JSON expected in {actual}");            
             return JToken.Parse(actual);
@@ -125,10 +123,11 @@ namespace Hopex.WebService.Tests.Assertions
             return jArray;
         }
 
-        public AndConstraint<HopexResponseAssertions> BeError(int statusCode)
+        public AndConstraint<HopexResponseAssertions> BeError(HttpStatusCode statusCode, string wildcardMessage)
         {
             var errorResponse = ParseJsonBody().ToObject<ErrorMacroResponse>();
             errorResponse.HttpStatusCode.Should().Be(statusCode);
+            errorResponse.Error.Should().Match(wildcardMessage);
             return new AndConstraint<HopexResponseAssertions>(this);
         }
     }

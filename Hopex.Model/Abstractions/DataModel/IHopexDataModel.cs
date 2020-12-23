@@ -1,8 +1,9 @@
+using Hopex.Model.Abstractions.MetaModel;
+using Hopex.Model.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hopex.Model.Abstractions.MetaModel;
-using Hopex.Model.DataModel;
+using GraphQL.Types;
 
 namespace Hopex.Model.Abstractions.DataModel
 {
@@ -21,10 +22,14 @@ namespace Hopex.Model.Abstractions.DataModel
 
     public interface IHopexDataModel : IHasCollection
     {
+        Dictionary<string, IModelElement> TemporaryMegaObjects { get; }
+
         Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType);
+        Task<List<IModelElement>> SearchAllAsync(ResolveFieldContext<IHopexDataModel> ctx);
         Task<IModelElement> CreateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters);
+        Task<IModelElement> CreateElementFromParentAsync(IClassDescription target, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters, IMegaCollection iColParent);
         Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters);
         Task<IModelElement> CreateUpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters, bool useInstanceCreator);
-        Task<IModelElement> RemoveElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool cascade);
+        Task<DeleteResultType> RemoveElementAsync(List<IMegaObject> objectsToDelete, bool isCascade = false);
     }
 }

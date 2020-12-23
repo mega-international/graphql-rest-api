@@ -13,14 +13,14 @@ namespace Hopex.WebService.Tests.Mocks
 {
     public class MockMegaRoot : MockMegaObject, IMegaRoot, ISupportsDiagnostics
     {
-        private Dictionary<MegaId, MockMegaObject> _objects = new Dictionary<MegaId, MockMegaObject>(new MegaIdComparer());
-        private Dictionary<MegaId, MockClassDescription> _classDescriptions = new Dictionary<MegaId, MockClassDescription>(new MegaIdComparer());
-        private Dictionary<MegaId, MockCollectionDescription> _collectionDescriptions = new Dictionary<MegaId, MockCollectionDescription>(new MegaIdComparer());
-        private IDictionary<MegaId, List<MegaId>> _metaLegs = new Dictionary<MegaId, List<MegaId>>(new MegaIdComparer());
+        private readonly Dictionary<MegaId, MockMegaObject> _objects = new Dictionary<MegaId, MockMegaObject>(new MegaIdComparer());
+        private readonly Dictionary<MegaId, MockClassDescription> _classDescriptions = new Dictionary<MegaId, MockClassDescription>(new MegaIdComparer());
+        private readonly Dictionary<MegaId, MockCollectionDescription> _collectionDescriptions = new Dictionary<MegaId, MockCollectionDescription>(new MegaIdComparer());
+        private readonly IDictionary<MegaId, List<MegaId>> _metaLegs = new Dictionary<MegaId, List<MegaId>>(new MegaIdComparer());
 
-        public IMegaCurrentEnvironment CurrentEnvironment => new MockCurrentEnvironment();
+        public virtual IMegaCurrentEnvironment CurrentEnvironment { get; internal set; } = new MockCurrentEnvironment();
 
-        private List<string> _generatedERQLS = new List<string>();
+        private readonly List<string> _generatedERQLS = new List<string>();
         
 
         public void AddGeneratedERQL(string erql)
@@ -32,7 +32,7 @@ namespace Hopex.WebService.Tests.Mocks
 
         public class Builder
         {
-            MockMegaRoot _root;
+            readonly MockMegaRoot _root;
 
             public Builder()
             {
@@ -78,6 +78,12 @@ namespace Hopex.WebService.Tests.Mocks
                 return this;
             }
 
+            internal Builder WithResources(IMegaResources resources)
+            {
+                ((MockCurrentEnvironment)_root.CurrentEnvironment).Resources = resources;
+                return this;
+            }
+
             internal MockMegaRoot Build()
             {
                 _root.Root = _root;
@@ -93,8 +99,7 @@ namespace Hopex.WebService.Tests.Mocks
                                     .Where(g => g.Key != null);
                 foreach (var classGroup in objectsByClassId)
                 {
-                    var collection = new MockMegaCollection(classGroup.Key);
-                    collection.Root = _root;
+                    var collection = new MockMegaCollection(classGroup.Key) {Root = _root};
                     foreach (var pair in classGroup)
                     {
                         collection.WithChildren(pair.Value);
@@ -110,7 +115,7 @@ namespace Hopex.WebService.Tests.Mocks
                 {
                     pair.Value.PropagateRoot(_root, this);
                 }                
-            }
+            }            
         }
 
         internal void AddMetaLegs(MockMegaObject child)
@@ -119,8 +124,7 @@ namespace Hopex.WebService.Tests.Mocks
             {
                 foreach (var legId in _metaLegs[child.GetClassId()])
                 {
-                    var col = new MockMegaCollection(legId);
-                    col.Root = this;
+                    var col = new MockMegaCollection(legId) {Root = this};
                     child.WithRelation(col);
                 }                    
             }
@@ -130,6 +134,21 @@ namespace Hopex.WebService.Tests.Mocks
         {
             if (_objects.TryGetValue(objectId, out var iObject))
                 return iObject;
+            return new InexistingMockMegaObject();
+        }
+
+        public virtual IMegaObject GetObjectFromIdTypeProperty(MegaId idProperty, MegaId objectId)
+        {
+            foreach(var obj in _objects)
+            {
+                var item = obj.Value;
+                var value = MegaId.Create(item.GetPropertyValue<object>(idProperty));
+                var comparer = new MegaIdComparer();
+                if (comparer.Equals(objectId, value))
+                {
+                    return item;
+                }
+            }
             return new InexistingMockMegaObject();
         }
 
@@ -155,15 +174,20 @@ namespace Hopex.WebService.Tests.Mocks
             return new MockMegaDrawingFactory();
         }
 
-        public IMegaCollection GetSelection(string query, int sortDirection1 = 1, string sortCriterion1 = null, int sortDirection2 = 1, string sortCriterion2 = null, int sortDirection3 = 1, string sortCriterion3 = null)
+        public virtual IMegaCollection GetSelection(string query, int sortDirection1 = 1, string sortCriterion1 = null, int sortDirection2 = 1, string sortCriterion2 = null, int sortDirection3 = 1, string sortCriterion3 = null)
         {
             if (IsGetObjectFromId(query, out var idMetaclass, out var idObject))
             {
                 var iObj = GetObjectFromId(idObject);
-                var col = new MockMegaCollection(idMetaclass);
-                col.Root = Root;
+                var col = new MockMegaCollection(idMetaclass) {Root = Root};
                 return col.WithChildren((MockMegaObject)iObj);
-            }                
+            }
+            else if (IsGetObjectFromIdTypeProperty(query, out idMetaclass, out var idProperty, out idObject))
+            {
+                var iObj = GetObjectFromIdTypeProperty(idProperty, idObject);
+                var col = new MockMegaCollection(idMetaclass) {Root = Root};
+                return col.WithChildren((MockMegaObject)iObj);
+            }
             throw new NotImplementedException($"Query {query}");
         }
 
@@ -181,5 +205,24 @@ namespace Hopex.WebService.Tests.Mocks
             }
             return false;
         }
+
+        private bool IsGetObjectFromIdTypeProperty(string query, out MegaId idMetaclass, out MegaId idProperty, out MegaId idObject)
+        {
+            idMetaclass = null;
+            idProperty = null;
+            idObject = null;
+            var pattern = @"SELECT (~[\w\d\(\)]{12}(\[.*\])?) WHERE (~[\w\d\(\)]{12})\[.*\]? = \""(~?[\w\d\(\)]{12}(\[.*\])?)\""";
+            var match = Regex.Match(query, pattern);
+            if (match.Success)
+            {
+                idMetaclass = MegaId.Create(match.Groups[1].Value);
+                idProperty = MegaId.Create(match.Groups[3].Value);
+                idObject = MegaId.Create(match.Groups[4].Value);
+                return true;
+            }
+            return false;
+        }
+
+        
     }
 }

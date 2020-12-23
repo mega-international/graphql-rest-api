@@ -9,7 +9,7 @@ namespace Mega.WebService.GraphQL.Utils
         string MwasUrl { get; }
         string HopexSessionToken { get; set; }
 
-        bool TryOpenSession(MwasSettings mwasSettings, MwasSessionConnectionParameters mwasSessionConnectionParameters, int nbRetry = 5, TimeSpan? durationBeforeRetry = null, bool findSession = false);
+        bool TryOpenSession(MwasSettings mwasSettings, MwasSessionConnectionParameters mwasSessionConnectionParameters, int nbRetry = 5, TimeSpan? durationBeforeRetry = null, bool findSession = false, bool useHopexApiMwas = false);
         string CallMacro(string macroId, string data = "", GenerationContext generationContext = null, TimeSpan? timeout = null);
         AsyncMacroResult CallAsyncMacroExecute(string macroId, string data = "", GenerationContext generationContext = null, TimeSpan? timeout = null);
         AsyncMacroResult CallAsyncMacroGetResult(string actionId, GenerationContext generationContext = null, TimeSpan? timeout = null);
@@ -30,9 +30,9 @@ namespace Mega.WebService.GraphQL.Utils
             _nativeService = nativeService;
         }
 
-        public bool TryOpenSession(MwasSettings mwasSettings, MwasSessionConnectionParameters mwasSessionConnectionParameters, int nbRetry = 5, TimeSpan? durationBeforeRetry = null, bool findSession = false)
+        public bool TryOpenSession(MwasSettings mwasSettings, MwasSessionConnectionParameters mwasSessionConnectionParameters, int nbRetry = 5, TimeSpan? durationBeforeRetry = null, bool findSession = false, bool useHopexApiMwas = false)
         {
-            return _nativeService.TryOpenSession(mwasSettings, mwasSessionConnectionParameters, nbRetry, durationBeforeRetry, findSession);
+            return _nativeService.TryOpenSession(mwasSettings, mwasSessionConnectionParameters, nbRetry, durationBeforeRetry, findSession, useHopexApiMwas);
         }
 
         public string CallMacro(string macroId, string data = "", GenerationContext generationContext = null, TimeSpan? timeout = null)

@@ -36,9 +36,10 @@ namespace Mega.WebService.GraphQL.Tests.Sources.FieldModels
             return value;
         }
 
-        public override string GetOutputFormat(bool showName = true)
+        protected override string GetOutputFormatInternal(bool showName, IReadOnlyDictionary<string, string> parameters)
         {
-            string outputStr = $"{(showName ? Name : "")}\n{{";
+            var parametersStr = parameters == null ? "" : BuildParametersString(parameters);
+            string outputStr = $"{(showName ? (Name + parametersStr) : "")}\n{{";
             Fields.ForEach(field => outputStr += $"{field.GetOutputFormat()}\n");
             outputStr += "}";
             return outputStr;

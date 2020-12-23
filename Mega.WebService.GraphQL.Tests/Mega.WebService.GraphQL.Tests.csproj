@@ -169,6 +169,8 @@
     <Compile Include="Models\Safety\SafeFieldJsonConverter.cs" />
     <Compile Include="Models\Safety\StringSafeField.cs" />
     <Compile Include="Models\TestModel.cs" />
+    <Compile Include="Sources\FieldModels\Classes\FieldParameters.cs" />
+    <Compile Include="Sources\FieldModels\Classes\FieldsParameters.cs" />
     <Compile Include="Sources\Filters\BasicFilterOperator.cs" />
     <Compile Include="Sources\Filters\FilterOperator.cs" />
     <Compile Include="Sources\Filters\FilterOperators.cs" />
@@ -216,6 +218,8 @@
     <Compile Include="Sources\Tests\Test19.cs" />
     <Compile Include="Sources\Tests\Test2.cs" />
     <Compile Include="Sources\Tests\Test20.cs" />
+    <Compile Include="Sources\Tests\Test21.cs" />
+    <Compile Include="Sources\Tests\Test22.cs" />
     <Compile Include="Sources\Tests\Test3.cs" />
     <Compile Include="Sources\Tests\Test4.cs" />
     <Compile Include="Sources\Tests\Test5.cs" />

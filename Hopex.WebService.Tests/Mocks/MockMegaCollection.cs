@@ -26,6 +26,12 @@ namespace Hopex.WebService.Tests.Mocks
             return _children[index - 1];
         }
 
+        public IMegaObject Item(MegaId objectId)
+        {
+            var comparer = new MegaIdComparer();
+            return _children.Find(o => comparer.Equals(o.Id, objectId));
+        }
+
         public IEnumerator<IMegaObject> GetEnumerator()
         {
             return _children.GetEnumerator();
@@ -67,6 +73,22 @@ namespace Hopex.WebService.Tests.Mocks
         {
             var comparer = new MegaIdComparer();
             _children.RemoveAll(o => comparer.Equals(o.Id, id));
+        }
+
+        public override T CallFunction<T>(MegaId methodId, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null)
+        {
+            /*var idComparer = new MegaIdComparer();
+            if(idComparer.Equals(methodId, "~GuX91iYt3z70[InstanceCreator]"))
+            {
+                IMegaWizardContext wizard = new MockMegaWizardContext(this);
+                return (T)(wizard);
+            }*/
+            return base.CallFunction<T>(methodId, arg1, arg2, arg3, arg4, arg5, arg6);
+        }
+
+        public IMegaCollection GetType(string targetMetaClassId)
+        {
+            return this;
         }
     }
 }

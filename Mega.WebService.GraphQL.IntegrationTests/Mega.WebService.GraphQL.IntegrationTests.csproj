@@ -39,6 +39,9 @@
     <Reference Include="FluentAssertions, Version=5.10.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\FluentAssertions.5.10.2\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
+    <Reference Include="FluentAssertions.Json, Version=5.5.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.Json.5.5.0\lib\net451\FluentAssertions.Json.dll</HintPath>
+    </Reference>
     <Reference Include="GraphQL.Client, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\GraphQL.Client.2.0.0\lib\net461\GraphQL.Client.dll</HintPath>
     </Reference>
@@ -109,24 +112,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppIdCard_should.cs" />
     <Compile Include="Assertions\GraphQLAssertions.cs" />
     <Compile Include="Assertions\HttpContentAssertions.cs" />
     <Compile Include="Assertions\HttpResponseAssertions.cs" />
+    <Compile Include="AsyncQueryPlayer.cs" />
     <Compile Include="AttachmentEndPoint_should.cs" />
     <Compile Include="AuditEverywhere_should.cs" />
     <Compile Include="CurrentContext_should.cs" />
+    <Compile Include="DataIdCard_should.cs" />
+    <Compile Include="DatasetEndPoint_should.cs" />
     <Compile Include="DiagramEndPoint_should.cs" />
+    <Compile Include="DTO\DeleteResult.cs" />
     <Compile Include="DTO\BasicObject.cs" />
     <Compile Include="DTO\CurrentContextResponse.cs" />
     <Compile Include="DTO\MetaclassNodesResponse.cs" />
     <Compile Include="DTO\OrderedBasicObject.cs" />
     <Compile Include="GlobalFixture.cs" />
     <Compile Include="GenericFields_should.cs" />
+    <Compile Include="Query_should.cs" />
+    <Compile Include="Mutations_should.cs" />
     <Compile Include="LinkAttributes_should.cs" />
     <Compile Include="MetamodelQueries_should.cs" />
     <Compile Include="PathAttributes_should.cs" />
     <Compile Include="QuestionnaireBuilder_should.cs" />
     <Compile Include="Utils\BaseFixture.cs" />
+    <Compile Include="Utils\ImportMgrAttribute.cs" />
+    <Compile Include="Utils\InterceptingTestFramework.cs" />
     <Compile Include="Utils\LogFileWatcher.cs" />
     <Compile Include="Utils\LogsWatcher.cs" />
     <Compile Include="Utils\MgrImporter.cs" />
@@ -147,6 +159,15 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AppIdCard_should.mgr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DataIdCard_should.mgr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DatasetEndPoint_should.mgr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="DiagramEndPoint_should.Export_a_diagram.mgr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

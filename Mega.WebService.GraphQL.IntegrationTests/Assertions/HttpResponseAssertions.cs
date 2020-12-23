@@ -1,12 +1,14 @@
 using FluentAssertions;
 using FluentAssertions.Primitives;
+using FluentAssertions.Json;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Mega.WebService.GraphQL.IntegrationTests.Assertions
-{   
+{
     class HttpResponseAssertions : ReferenceTypeAssertions<HttpResponseMessage, HttpResponseAssertions>
     {
         public HttpResponseAssertions(HttpResponseMessage instance)
@@ -24,7 +26,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests.Assertions
             parsedResponse.success.Should().Be(true);
             return new AndConstraint<HttpResponseAssertions>(this);
         }
-
+        
         public async Task<AndConstraint<HttpResponseAssertions>> BeDiagramAsync()
         {
             var svg = await Subject.Content.ReadAsStringAsync();

@@ -7,7 +7,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 {
     public class Test20 : AbstractTest
     {
-        private Dictionary<string, string> _idByName = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _idByName = new Dictionary<string, string>();
 
         public Test20(Parameters parameters) : base(parameters) { }
 
@@ -64,7 +64,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                     new ScalarField("id", "string"),
                     new ScalarField("name", "string")
                 };
-                var result = await GetFiltered(metaclassName, filterVal, inputs, outputs);
+                var result = await GetAll(metaclassName, outputs);
                 foreach(var item in result)
                 {
                     items.Value.Add(item as JObject);
@@ -202,11 +202,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
             deletedCount += (await CheckItemDeletedAsync("auditActivity", "Audit Activity 11 a 1")) ? 1 : 0;
 
-            //deletedCount += (await CheckItemDeletedAsync("personSystem", "Ernesto")) ? 1 : 0;
-            //deletedCount += (await CheckItemDeletedAsync("personSystem", "Francois")) ? 1 : 0;
-            //deletedCount += (await CheckItemDeletedAsync("personSystem", "Auditee 1")) ? 1 : 0;
-
-            CountedStep("Deletion score", deletedCount, 7);
+            CountedStep("Deletion score", deletedCount, 4);
         }
 
         private async Task<bool> CheckItemDeletedAsync(string metaclassName, string itemName)

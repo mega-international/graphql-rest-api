@@ -133,6 +133,10 @@ namespace Mega.WebService.GraphQL.Tests.Sources
             var response = client.SendAsync(httpRequestMessage);
             var strResponse = response.Result.Content.ReadAsStringAsync().Result;
             _token  = JsonConvert.DeserializeObject<Token>(strResponse);
+            if(_token.AccessToken == null)
+            {
+                throw new HttpRequestException($"Token generation failed on login: {Login} and password {Password}");
+            }
         }
 
         public async Task<GraphQLResponse> SendPostAsync(GraphQLRequest request, bool asyncMode)

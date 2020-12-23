@@ -1,0 +1,1449 @@
+
+- Execution       : Extraction (2020/08/12 08:06:37)
+- File exported   : C:\MEGA\HOPEX V3.00.04 (787_504-5547-iqa)\Environments\EnvTestsLab_787_504_iqa_5547\Db\GraphQLIntegrationTests\USER\JMV\ApplicationAppCardDemo.mgr
+- Environment     : c:\mega\hopex v3.00.04 (787_504-5547-iqa)\Environments\EnvTestsLab_787_504_iqa_5547
+- DataBase        : GraphQLIntegrationTests
+- User            : VAURY Jean-Marie
+- Options         : Définition du parcours de MetaAssociation -> M2013
+- Perimeter       : ~Bav0cNnAjyQR[Standard for export]
+- ************************************************************************************************
+
+
+- Root objects:
+-      AppCardDemoPortfolio::AppCardDemoInitiative
+-      AppCardDemo::AppCardSoftwareInstallationDemo::UsageContextDemo
+-      AppCardDemo::AppCardSoftwareInstallationDemo
+-      AppCardDemoPortfolio
+-      VAURY Jean-Marie-Portfolio Manager-AppCardDemoPortfolio
+-      VAURY Jean-Marie-Local Application Owner-AppCardDemo
+-      AppCardDemo::AppCardDemo (Default Artifact Lifecycle)
+-      METGE Alain-Local Financial Controller-AppCardDemo
+-      CANONICA Sébastien-Software Designer-AppCardDemo
+-      CRONIER Sébastien-IT Owner-AppCardDemo
+-      GIBELIN Laurent-Business Owner-AppCardDemo
+-      OrgUnitDemo2
+-      OrgUnitDemo1
+-      SiteDemo
+-      ServerDeployedDemo
+-      SoftwareTechnologyDemo
+-      STNameA
+-      STNameAB
+-      STNameB
+-      BusinessProcessDemo
+-      FunctionalityDemo
+-      Fulfillment of[FunctionalityDemo] by [AppCardDemo]
+-      BusinessCapabilityDemo
+-      AppCardDemo
+-      AppNameA-2
+-      AppNameB
+-      AppNameA-3
+-      AppNameC
+-      AppNameA-1
+-      TypeSTDemo
+-      TechnicalFunctionalityDemo
+-      CRONIER Sébastien-Local Technology Correspondent-SoftwareTechnologyDemo
+-      VAURY Jean-Marie-Local Financial Controller-SoftwareTechnologyDemo
+-      PortfolioSTDemo
+-      VAURY Jean-Marie-Portfolio Manager-PortfolioSTDemo
+- 
+- Time Period                             AppCardDemo [Preparation]
+- Time Period                             AppCardDemo [Production]
+- Time Period                             AppCardDemo [Retirement]
+- Software Technology                     SoftwareTechnologyDemo
+- Software Technology                     STNameB
+- Software Technology                     STNameAB
+- Software Technology                     STNameA
+- Application                             AppNameA-1
+- Application                             AppNameC
+- Application                             AppNameA-3
+- Application                             AppNameB
+- Application                             AppNameA-2
+- Application                             AppCardDemo
+- Business Process                        BusinessProcessDemo
+- Usage context                           AppCardDemo::AppCardSoftwareInstallationDemo::UsageContextDemo
+- Software Installation                   AppCardDemo::AppCardSoftwareInstallationDemo
+- Object Life                             AppCardDemo::AppCardDemo (Default Artifact Lifecycle)
+- Org-Unit                                OrgUnitDemo1
+- Org-Unit                                OrgUnitDemo2
+- Functionality Fulfillment               Fulfillment of[FunctionalityDemo] by [AppCardDemo]
+- Business Capability Fulfillment         Realization of[BusinessCapabilityDemo] by [AppCardDemo]
+- Functionality                           FunctionalityDemo
+- Business Capability                     BusinessCapabilityDemo
+- Site                                    SiteDemo
+- Initiative                              AppCardDemoPortfolio::AppCardDemoInitiative
+- Portfolio                               AppCardDemoPortfolio
+- Server (Deployed)                       ServerDeployedDemo
+- Responsibility Assignment               GIBELIN Laurent-Business Owner-AppCardDemo
+- Responsibility Assignment               METGE Alain-Local Financial Controller-AppCardDemo
+- Responsibility Assignment               CRONIER Sébastien-IT Owner-AppCardDemo
+- Responsibility Assignment               CANONICA Sébastien-Software Designer-AppCardDemo
+- Responsibility Assignment               VAURY Jean-Marie-Local Application Owner-AppCardDemo
+- Responsibility Assignment               VAURY Jean-Marie-Portfolio Manager-AppCardDemoPortfolio
+- _Type                                   TypeSTDemo
+- Initiative                              PortfolioSTDemo::InitiativeSTDemo
+- Portfolio                               PortfolioSTDemo
+- Technical Functionality                 TechnicalFunctionalityDemo
+- Technical Functionality Fulfillment     Fulfillment of[TechnicalFunctionalityDemo] by [SoftwareTechnologyDemo]
+- Responsibility Assignment               VAURY Jean-Marie-Local Financial Controller-SoftwareTechnologyDemo
+- Responsibility Assignment               CRONIER Sébastien-Local Technology Correspondent-SoftwareTechnologyDemo
+- Responsibility Assignment               VAURY Jean-Marie-Portfolio Manager-PortfolioSTDemo
+
+-  "Time Period" "A13CA6125F3254CD"
+.Create ."~7ChrtiDo4vb0[Time Period]" "A13CA6125F3254CD" -
+        .CHK "7nJeIOgCVrCLC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/11 14:07:14" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 14:07:14" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~DNS5)lXo4jC0[Absolute Start Date]"                "2020/08/11 12:00:00" -
+        ."~kKS50nXo4fE0[Absolute End Date]"                  "2020/08/11 12:00:00" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Time Period" "A13CA6125F3254EF"
+.Create ."~7ChrtiDo4vb0[Time Period]" "A13CA6125F3254EF" -
+        .CHK "fnJeIOgCVzELC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/11 14:07:14" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 14:07:15" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~DNS5)lXo4jC0[Absolute Start Date]"                "2020/08/11 12:00:00" -
+        ."~kKS50nXo4fE0[Absolute End Date]"                  "2020/08/12 12:00:00" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Time Period" "A13CA6135F325520"
+.Create ."~7ChrtiDo4vb0[Time Period]" "A13CA6135F325520" -
+        .CHK "SoJeJOgCV1ILC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/11 14:07:15" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 14:07:15" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~DNS5)lXo4jC0[Absolute Start Date]"                "2020/08/12 12:00:00" -
+        ."~kKS50nXo4fE0[Absolute End Date]"                  "2020/08/12 12:00:00" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Software Technology" "DEC514BD5F2852C2"
+.Create ."~FN8AHc2gITnL[Software Technology]" "DEC514BD5F2852C2" -
+        .CHK "FKitzI1AV9iKC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:44:29" -
+        ."~610000000P00[Modification Date]"                  "2020/08/03 13:44:29" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "SoftwareTechnologyDemo[0000000000000000]" -
+        ."~LDku1d4JIbsV[Technology Code]"                    "codeDemo" -
+        ."~)4UwO20HID0H[Company Standard]"                   "E" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/03 13:44:29"
+
+-  "Software Technology" "DEC514BD5F2852C2"
+.Update ."~FN8AHc2gITnL[Software Technology]" "DEC514BD5F2852C2" -
+        .CHK "FKitzI1AV9iK" -
+        ."~610000000P00[Modification Date]"                  "2020/08/21 13:37:40" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/21 13:37:40" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00361N6HoN31cCdDcJI0mGo1vRMrlT6vbPKGW2czj001z
+.
+
+-  "Software Technology" "4CD595535F3E0DCB"
+.Create ."~FN8AHc2gITnL[Software Technology]" "4CD595535F3E0DCB" -
+        .CHK "(LDJJLfFVjS3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 15:22:59" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 15:24:06" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "STNameB[0000000000000000]" -
+        ."~LDku1d4JIbsV[Technology Code]"                    "codeAB" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/20 15:22:59"
+
+-  "Software Technology" "4CD5955C5F3E0DE6"
+.Create ."~FN8AHc2gITnL[Software Technology]" "4CD5955C5F3E0DE6" -
+        .CHK "YMDJSLfFVPU3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 15:23:08" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 15:23:50" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "STNameAB[0000000000000000]" -
+        ."~LDku1d4JIbsV[Technology Code]"                    "codeB" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/20 15:23:08"
+
+-  "Software Technology" "4CD5936D5F3E0D9A"
+.Create ."~FN8AHc2gITnL[Software Technology]" "4CD5936D5F3E0D9A" -
+        .CHK "bLDJjDfFVfP3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 15:14:53" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 15:22:32" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "STNameA[0000000000000000]" -
+        ."~LDku1d4JIbsV[Technology Code]"                    "codeA" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/20 15:14:53"
+
+-  "Application" "0A3C0B0C5F317D2E"
+.Create ."~MrUiM9B5iyM0[Application]" "0A3C0B0C5F317D2E" -
+        .CHK "OoZ2CiGCVvIVC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/10 08:53:32" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 08:59:41" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~2yUL4SsRp4B0[Application Code]"                   "CodeC" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 08:59:41" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppNameA-1[0000000000000000]"
+
+-  "Application" "0A3C0B0C5F317D2E"
+.Update ."~MrUiM9B5iyM0[Application]" "0A3C0B0C5F317D2E" -
+        .CHK "OoZ2CiGCVvIV" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 08:59:41" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 08:59:41" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00242N6HoN31cCdDcGo0mRMrlT6vb07qA
+.
+
+-  "Application" "0A3C0B685F317E6B"
+.Create ."~MrUiM9B5iyM0[Application]" "0A3C0B685F317E6B" -
+        .CHK "omZ2ejGCVjcVC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/10 08:55:04" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 09:00:19" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~2yUL4SsRp4B0[Application Code]"                   "B" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 09:00:19" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppNameC[0000000000000000]"
+
+-  "Application" "0A3C0B685F317E6B"
+.Update ."~MrUiM9B5iyM0[Application]" "0A3C0B685F317E6B" -
+        .CHK "omZ2ejGCVjcV" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 09:00:19" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 09:00:19" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00321N6HoN31cCdDcJI0mGo1vRMrlT6vb2a4W001z
+.
+
+-  "Application" "0A3C0B875F317F83"
+.Create ."~MrUiM9B5iyM0[Application]" "0A3C0B875F317F83" -
+        .CHK "gnZ27kGCVDuVC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/10 08:55:35" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 08:59:59" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~2yUL4SsRp4B0[Application Code]"                   "CodeB" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 08:59:59" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppNameA-3[0000000000000000]"
+
+-  "Application" "0A3C0B875F317F83"
+.Update ."~MrUiM9B5iyM0[Application]" "0A3C0B875F317F83" -
+        .CHK "gnZ27kGCVDuV" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 08:59:59" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 08:59:59" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00321N6HoN31cCdDcJI0mGo1vRMrlT6vb2a8W001z
+.
+
+-  "Application" "0A3C0AF55F317AFE"
+.Create ."~MrUiM9B5iyM0[Application]" "0A3C0AF55F317AFE" -
+        .CHK "DnZ2rhGCVvlUC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/10 08:53:09" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 09:00:09" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~2yUL4SsRp4B0[Application Code]"                   "A" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 09:00:09" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppNameB[0000000000000000]"
+
+-  "Application" "0A3C0AF55F317AFE"
+.Update ."~MrUiM9B5iyM0[Application]" "0A3C0AF55F317AFE" -
+        .CHK "DnZ2rhGCVvlU" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 09:00:09" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 09:00:09" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00321N6HoN31cCdDcJI0mGo1vRMrlT6vb2a4W001z
+.
+
+-  "Application" "0A3C0AFF5F317C16"
+.Create ."~MrUiM9B5iyM0[Application]" "0A3C0AFF5F317C16" -
+        .CHK "nnZ2)hGCVP1VC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/10 08:53:19" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 08:56:31" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~2yUL4SsRp4B0[Application Code]"                   "CodeA" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 08:56:08" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppNameA-2[0000000000000000]"
+
+-  "Application" "0A3C0AFF5F317C16"
+.Update ."~MrUiM9B5iyM0[Application]" "0A3C0AFF5F317C16" -
+        .CHK "nnZ2)hGCVP1V" -
+        ."~610000000P00[Modification Date]"                  "2020/08/10 08:56:31" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/10 08:56:08" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00321N6HoN31cCdDcJI0mOo1vRMrlT6vb2a4W001z
+.
+
+-  "Application" "DEC5DFFF5F274B19"
+.Create ."~MrUiM9B5iyM0[Application]" "DEC5DFFF5F274B19" -
+        .CHK "hLit))z9VbnIC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 09:59:27" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 14:20:22" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~2yUL4SsRp4B0[Application Code]"                   "CodeDemo" -
+        ."~Rqe9IW3eJLX5[Cloud Computing]"                    "4CS" -
+        ."~KyUL4SsRpCC0[Version Number]"                     "VersionDemo" -
+        ."~)Sgoy)ygu020[Application Type]"                   "S" -
+        ."~JD3SZXviFzA1[Freeze past Time Period]"            "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/03 10:00:22" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppCardDemo[0000000000000000]"
+
+-  "Business Process" "DEC514645F28526D"
+.Create ."~pj)grmQ9pG90[Business Process]" "DEC514645F28526D" -
+        .CHK "XLitaH1AVrcKC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:43:00" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 07:00:42" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~m5On8ZEuPLFJ[GDPR - Code]"                        "529" -
+        ."~g20000000f60[Generic Local name]"                 "BusinessProcessDemo[0000000000000000]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 07:00:42"
+
+-  "Business Process" "DEC514645F28526D"
+.Update ."~pj)grmQ9pG90[Business Process]" "DEC514645F28526D" -
+        .CHK "XLitaH1AVrcK" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 07:00:42" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 07:00:42" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00520N6HoN31cCdDcJI0mGY1vQNDrSsLkSb1pPMDl87DpRMz3RcLjVGfq
+.
+
+-  "Usage context" "DEC5E0205F274D7E"
+.Create ."~izXOyeMZFb54[Usage context]" "DEC5E0205F274D7E" -
+        .CHK "qNitW0(9VvNJC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 10:00:00" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 08:03:42" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "UsageContextDemo[DEC5E01E5F274C4D]" -
+        ."~xBVnsRBjFzXT[Number of users]"                    "2" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 08:02:19"
+
+-  "Software Installation" "DEC5E01E5F274C4D"
+.Create ."~x)XO7rMZFXj4[Software Installation]" "DEC5E01E5F274C4D" -
+        .CHK "0NitU0(9Vr4JC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 09:59:58" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 08:00:08" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppCardSoftwareInstallationDemo[DEC5DFFF5F274B19]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 08:00:08"
+
+-  "Object Life" "A13CA6135F32555C"
+.Create ."~C)p4hjNaF9eC[Object Life]" "A13CA6135F32555C" -
+        .CHK "OpJeJOgCVnLLC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/11 14:07:15" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 14:07:15" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppCardDemo (Default Artifact Lifecycle)[DEC5DFFF5F274B19]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/11 14:07:15"
+
+-  "Org-Unit" "DEC517775F2854D0"
+.Create ."~QrUiM9B5iCN0[Org-Unit]" "DEC517775F2854D0" -
+        .CHK "SNittT1AV1DLC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:56:07" -
+        ."~610000000P00[Modification Date]"                  "2020/08/03 13:56:08" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "OrgUnitDemo1[0000000000000000]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/03 13:56:08"
+
+-  "Org-Unit" "DEC517835F285523"
+.Create ."~QrUiM9B5iCN0[Org-Unit]" "DEC517835F285523" -
+        .CHK "yKit3U1AVDILC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:56:19" -
+        ."~610000000P00[Modification Date]"                  "2020/08/03 13:56:19" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "OrgUnitDemo2[0000000000000000]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/03 13:56:19"
+
+-  "Business Capability Fulfillment" "DEC513BB5F2851E5"
+.Create ."~Cd9LMSs9BnE1[Business Capability Fulfillment]" "DEC513BB5F2851E5" -
+        .CHK "kKitxE1AVLUKC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:40:11" -
+        ."~610000000P00[Modification Date]"                  "2020/08/03 13:40:11" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/11 13:49:29"
+
+-  "Functionality" "DEC514485F285243"
+.Create ."~IbJwFdE5iOZ0[Functionality]" "DEC514485F285243" -
+        .CHK "RKit8H1AVDaKC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:42:32" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 06:59:46" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "FunctionalityDemo[0000000000000000]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 06:59:46"
+
+-  "Functionality" "DEC514485F285243"
+.Update ."~IbJwFdE5iOZ0[Functionality]" "DEC514485F285243" -
+        .CHK "RKit8H1AVDaK" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 06:59:46" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 06:59:46" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00481N6HoN31cCdDcJI0mHY1vOsvrRsbqR65kUNHfRqCWPMrj2dHk001z
+.
+
+-  "Functionality Fulfillment" "E2E8E6B45F3C601C"
+.Create ."~37lzQOh1FHv8[Functionality Fulfillment]" "E2E8E6B45F3C601C" -
+        .CHK "xXkuqQEFVn1OC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/19 08:45:40" -
+        ."~610000000P00[Modification Date]"                  "2020/08/19 08:46:02" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~4aGY)ouNI1YL[Composite Realization Name]"         "FunctionalityFulfillmentDemo"
+
+-  "Business Capability" "DEC513CC5F28520A"
+.Create ."~IcfsZhjW9T90[Business Capability]" "DEC513CC5F28520A" -
+        .CHK "bLitCF1AVfWKC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:40:28" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 06:58:17" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "BusinessCapabilityDemo[0000000000000000]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 06:58:17"
+
+-  "Business Capability" "DEC513CC5F28520A"
+.Update ."~IcfsZhjW9T90[Business Capability]" "DEC513CC5F28520A" -
+        .CHK "bLitCF1AVfWK" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 06:58:17" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/12 06:58:17" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00561N6HoN31cCdDcJI0mGY1vQNDrSsLkGo1pON1XR6bYUNHfRqCWPMrj2dHk001z
+.
+
+-  "Site" "DEC516EC5F285498"
+.Create ."~5tUiX9B5iCT0[Site]" "DEC516EC5F285498" -
+        .CHK "OKitiR1AVX9LC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:53:48" -
+        ."~610000000P00[Modification Date]"                  "2020/08/03 13:53:48" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "SiteDemo[0000000000000000]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/03 13:53:48"
+
+-  "Initiative" "DEC5E08E5F274F7D"
+.Create ."~rpv6Fon2ErGB[Initiative]" "DEC5E08E5F274F7D" -
+        .CHK "ZLitE2(9VrtJC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 10:01:50" -
+        ."~610000000P00[Modification Date]"                  "2020/08/03 10:02:31" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "]AppCardDemoInitiative[DEC5E08E5F274F7D]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/03 10:02:31"
+
+-  "Portfolio" "A9E5B6F15F327A45"
+.Create ."~8A8iK3B1ETM6[Portfolio]" "A9E5B6F15F327A45" -
+        .CHK "5MUgnRhCVLaUC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/11 15:19:13" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 15:19:13" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0" -
+        ."~g20000000f60[Generic Local name]"                 "AppCardDemoPortfolio[0000000000000000]" -
+        ."~VsbsJdnUFbLM[Study End Date]"                     "2020/12/31 12:00:00" -
+        ."~trbs5dnUFzJM[Study Start Date]"                   "2020/01/01 12:00:00" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/11 15:19:13"
+
+-  "Server (Deployed)" "ServerDeployedDemo"
+.Create ."~dXqsNtTBHnW1[Server (Deployed)]" "ServerDeployedDemo" -
+        .CHK "6KitER1AVLwKC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/03 13:53:18" -
+        ."~610000000P00[Modification Date]"                  "2020/08/03 13:53:27" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/03 13:53:27"
+
+-  "Responsibility Assignment" "918B94915F33268F"
+.Create ."~030000000240[Responsibility Assignment]" "918B94915F33268F" -
+        .CHK "8kOaHIvCVze9C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/12 07:04:49" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 07:04:49" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Responsibility Assignment" "918BA09B5F33271E"
+.Create ."~030000000240[Responsibility Assignment]" "918BA09B5F33271E" -
+        .CHK "kiOaR2wCVvn9C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/12 07:56:11" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 07:56:11" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Responsibility Assignment" "918B94B05F3326C4"
+.Create ."~030000000240[Responsibility Assignment]" "918B94B05F3326C4" -
+        .CHK "SlOamIvCVHi9C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/12 07:05:20" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 07:05:20" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Responsibility Assignment" "918B94BF5F3326F0"
+.Create ."~030000000240[Responsibility Assignment]" "918B94BF5F3326F0" -
+        .CHK "NiOa)IvCV1l9C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/12 07:05:35" -
+        ."~610000000P00[Modification Date]"                  "2020/08/12 07:05:35" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Responsibility Assignment" "A9E5AF815F3279DA"
+.Create ."~030000000240[Responsibility Assignment]" "A9E5AF815F3279DA" -
+        .CHK "YMUg1(gCVfTUC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/11 14:47:29" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 14:47:29" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "_Type" "TypeSTDemo"
+.Create ."~yHhHxRKym020[_Type]" "TypeSTDemo" -
+        .CHK "zLDJf4gFVP(3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 16:13:29" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 16:13:29" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~FpDyR5uj6WZC[Name (English)]"                     "TypeSTDemo" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/20 16:13:29" -
+        ."~c4Z7zM2OxaL0[LanguageUpdateDate (English)]"       "2020/08/20 16:13:29"
+
+-  "Initiative" "4CD59CEE5F3E0E37"
+.Create ."~rpv6Fon2ErGB[Initiative]" "4CD59CEE5F3E0E37" -
+        .CHK "DMDJkpfFVTZ3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 15:55:26" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 15:56:03" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "InitiativeSTDemo[4CD59CEE5F3E0E37]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/20 15:56:03"
+
+-  "Portfolio" "4CD59DAD5F3E0E8F"
+.Create ."~8A8iK3B1ETM6[Portfolio]" "4CD59DAD5F3E0E8F" -
+        .CHK "bMDJjsfFVze3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 15:58:37" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 15:58:37" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "PortfolioSTDemo[0000000000000000]" -
+        ."~trbs5dnUFzJM[Study Start Date]"                   "2020/01/01 12:00:00" -
+        ."~VsbsJdnUFbLM[Study End Date]"                     "2020/12/31 12:00:00" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/20 15:58:37"
+
+-  "Responsibility Assignment" "A9E5B6E55F327A44"
+.Create ."~030000000240[Responsibility Assignment]" "A9E5B6E55F327A44" -
+        .CHK "uLUgbRhCVHaUC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/11 15:19:13" -
+        ."~610000000P00[Modification Date]"                  "2020/08/11 15:19:13" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "30840" -
+        ."~620000000P40[Update Version]"                     "30840" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Converted Name Version]"             "0"
+
+-  "Technical Functionality" "4CD59F105F3E0FA9"
+.Create ."~CZ6EgcpaOXlP[Technical Functionality]" "4CD59F105F3E0FA9" -
+        .CHK "bKDJGyfFVbw3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 16:04:32" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 16:04:32" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "TechnicalFunctionalityDemo[0000000000000000]" -
+        ."~a20000000H60[Language Update Date]"               "2020/08/20 16:04:32"
+
+-  "Technical Functionality Fulfillment" "4CD59EFA5F3E0F79"
+.Create ."~PW6EUepaOzyP[Technical Functionality Fulfillment]" "4CD59EFA5F3E0F79" -
+        .CHK "UNDJwxfFVbt3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 16:04:10" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 16:04:36" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~4aGY)ouNI1YL[Composite Realization Name]"         "TechnicalFunctionalityFulfillmentDemo"
+
+-  "Responsibility Assignment" "4CD59E235F3E0EF9"
+.Create ."~030000000240[Responsibility Assignment]" "4CD59E235F3E0EF9" -
+        .CHK "6MDJZufFVbl3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 16:00:35" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 16:00:35" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Responsibility Assignment" "4CD59E335F3E0F26"
+.Create ."~030000000240[Responsibility Assignment]" "4CD59E335F3E0F26" -
+        .CHK "4NDJpufFVPo3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 16:00:51" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 16:00:51" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Responsibility Assignment" "4CD59DA35F3E0E8E"
+.Create ."~030000000240[Responsibility Assignment]" "4CD59DA35F3E0E8E" -
+        .CHK "QMDJZsfFVve3C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/08/20 15:58:37" -
+        ."~610000000P00[Modification Date]"                  "2020/08/20 15:58:37" -
+        ."~(10000000v30[Creator]"                            "zTcUyq7ETbI9" -
+        ."~b10000000L20[Modifier]"                           "zTcUyq7ETbI9" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Time Period" "A13CA6125F3254CD"
+-  "Following Period" "A13CA6125F3254EF"
+.Connect ."~7ChrtiDo4vb0[Time Period]" "A13CA6125F3254CD" ."~rEl)R)VD6z60[Following Period]" "A13CA6125F3254EF" -
+        .CHK "7nJeIOgCVrCLfnJeIOgCVzEL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:15" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:15" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Period" "A13CA6125F3254CD"
+-  "Lifecycle State" "ADF9D75149750785"
+.Connect ."~7ChrtiDo4vb0[Time Period]" "A13CA6125F3254CD" ."~xcDwIA488Xh1[Lifecycle State]" "ADF9D75149750785" -
+        .CHK "7nJeIOgCVrCLOaVhHTTT9Lu1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:14" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:14" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Period" "A13CA6125F3254EF"
+-  "Following Period" "A13CA6135F325520"
+.Connect ."~7ChrtiDo4vb0[Time Period]" "A13CA6125F3254EF" ."~rEl)R)VD6z60[Following Period]" "A13CA6135F325520" -
+        .CHK "fnJeIOgCVzELSoJeJOgCV1IL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:15" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:15" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Period" "A13CA6125F3254EF"
+-  "Lifecycle State" "ADF9D7654975081B"
+.Connect ."~7ChrtiDo4vb0[Time Period]" "A13CA6125F3254EF" ."~xcDwIA488Xh1[Lifecycle State]" "ADF9D7654975081B" -
+        .CHK "fnJeIOgCVzEL3dVhbTTT9j12" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:14" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:14" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Period" "A13CA6135F325520"
+-  "Lifecycle State" "ADF9D774497508B0"
+.Connect ."~7ChrtiDo4vb0[Time Period]" "A13CA6135F325520" ."~xcDwIA488Xh1[Lifecycle State]" "ADF9D774497508B0" -
+        .CHK "SoJeJOgCV1ILdbVhqTTT91B2" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:15" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:15" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "0A3C0B0C5F317D2E"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "0A3C0B0C5F317D2E" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "OoZ2CiGCVvIVLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/10 08:53:34" -
+        ."~810000000X00[Link modification date]"             "2020/08/10 08:53:34" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "0A3C0B685F317E6B"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "0A3C0B685F317E6B" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "omZ2ejGCVjcVLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/10 08:55:05" -
+        ."~810000000X00[Link modification date]"             "2020/08/10 08:55:05" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "0A3C0B875F317F83"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "0A3C0B875F317F83" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "gnZ27kGCVDuVLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/10 08:55:36" -
+        ."~810000000X00[Link modification date]"             "2020/08/10 08:55:36" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "0A3C0AF55F317AFE"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "0A3C0AF55F317AFE" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "DnZ2rhGCVvlULcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/10 08:53:12" -
+        ."~810000000X00[Link modification date]"             "2020/08/10 08:53:12" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "0A3C0AFF5F317C16"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "0A3C0AFF5F317C16" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "nnZ2)hGCVP1VLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/10 08:53:20" -
+        ."~810000000X00[Link modification date]"             "2020/08/10 08:53:20" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Dependent Element" "DEC5DFFF5F274B19"
+-  "Period Of Validity" "A13CA6125F3254CD"
+.Connect ."~sEhryhDo4ba0[Time Dependent Element]" "DEC5DFFF5F274B19" ."~YChrYpDo4ri0[Period Of Validity]" "A13CA6125F3254CD" -
+        .CHK "hLit))z9VbnI7nJeIOgCVrCL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:14" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:14" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Dependent Element" "DEC5DFFF5F274B19"
+-  "Period Of Validity" "A13CA6125F3254EF"
+.Connect ."~sEhryhDo4ba0[Time Dependent Element]" "DEC5DFFF5F274B19" ."~YChrYpDo4ri0[Period Of Validity]" "A13CA6125F3254EF" -
+        .CHK "hLit))z9VbnIfnJeIOgCVzEL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:14" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:14" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Dependent Element" "DEC5DFFF5F274B19"
+-  "Period Of Validity" "A13CA6135F325520"
+.Connect ."~sEhryhDo4ba0[Time Dependent Element]" "DEC5DFFF5F274B19" ."~YChrYpDo4ri0[Period Of Validity]" "A13CA6135F325520" -
+        .CHK "hLit))z9VbnISoJeJOgCV1IL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:15" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:15" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Element providing a Functionality" "DEC5DFFF5F274B19"
+-  "Functionality" "DEC514485F285243"
+.Connect ."~2mGONo8UE9cI[Element providing a Functionality]" "DEC5DFFF5F274B19" ."~GucoDji9pS60[Functionality]" "DEC514485F285243" -
+        .CHK "hLit))z9VbnIRKit8H1AVDaK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:42:32" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:42:32" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class of Enterprise Artifact External Structure" "DEC5DFFF5F274B19"
+-  "Owned Functionality Fulfillment" "E2E8E6B45F3C601C"
+.Connect ."~gW6ECSqaOfjS[Class of Enterprise Artifact External Structure]" "DEC5DFFF5F274B19" ."~In1gORBbOffU[Owned Functionality Fulfillment]" "E2E8E6B45F3C601C" -
+        .CHK "hLit))z9VbnIxXkuqQEFVn1O" -
+        ."~710000000T00[Link creation date]"                 "2020/08/19 08:45:40" -
+        ."~810000000X00[Link modification date]"             "2020/08/19 08:45:40" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Functionality Fulfillment" "E2E8E6B45F3C601C"
+-  "Fulfilled Functionality" "DEC514485F285243"
+.Connect ."~37lzQOh1FHv8[Functionality Fulfillment]" "E2E8E6B45F3C601C" ."~F6lzDSh1Fj69[Fulfilled Functionality]" "DEC514485F285243" -
+        .CHK "xXkuqQEFVn1ORKit8H1AVDaK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/19 08:45:57" -
+        ."~810000000X00[Link modification date]"             "2020/08/19 08:45:57" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "DEC5DFFF5F274B19"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "DEC5DFFF5F274B19" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "hLit))z9VbnILcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:15" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:15" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class of Enterprise Agent External Structure" "DEC5DFFF5F274B19"
+-  "Owned Business Capability Fulfillment" "DEC513BB5F2851E5"
+.Connect ."~r2tIU7zRBvu0[Class of Enterprise Agent External Structure]" "DEC5DFFF5F274B19" ."~JdRdxwf6EX5P[Owned Business Capability Fulfillment]" "DEC513BB5F2851E5" -
+        .CHK "hLit))z9VbnIkKitxE1AVLUK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:40:11" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:40:11" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Application" "DEC5DFFF5F274B19"
+-  "Software Installation" "DEC5E01E5F274C4D"
+.Connect ."~MrUiM9B5iyM0[Application]" "DEC5DFFF5F274B19" ."~F9jxGA)gFPRN[Software Installation]" "DEC5E01E5F274C4D" -
+        .CHK "hLit))z9VbnI0NitU0(9Vr4J" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 09:59:58" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 09:59:58" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Application" "DEC5DFFF5F274B19"
+-  "Used Technology" "DEC514BD5F2852C2"
+.Connect ."~MrUiM9B5iyM0[Application]" "DEC5DFFF5F274B19" ."~hpXxA(koITK1[Used Technology]" "DEC514BD5F2852C2" -
+        .CHK "hLit))z9VbnIFKitzI1AV9iK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:44:29" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:44:29" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Business Process" "DEC514645F28526D"
+-  "Application" "DEC5DFFF5F274B19"
+.Connect ."~pj)grmQ9pG90[Business Process]" "DEC514645F28526D" ."~i4n)MzlZpO00[Application]" "DEC5DFFF5F274B19" -
+        .CHK "XLitaH1AVrcKhLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:43:00" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:43:00" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Application Deployment Context" "DEC5E0205F274D7E"
+-  "Deployment User" "DEC517775F2854D0"
+.Connect ."~VPwlwzCBHTVF[Application Deployment Context]" "DEC5E0205F274D7E" ."~hOwl5JDBH5tF[Deployment User]" "DEC517775F2854D0" -
+        .CHK "qNitW0(9VvNJSNittT1AV1DL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:56:07" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:56:08" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Application Deployment Context" "DEC5E0205F274D7E"
+-  "Deployment User" "DEC517835F285523"
+.Connect ."~VPwlwzCBHTVF[Application Deployment Context]" "DEC5E0205F274D7E" ."~hOwl5JDBH5tF[Deployment User]" "DEC517835F285523" -
+        .CHK "qNitW0(9VvNJyKit3U1AVDIL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:56:19" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:56:19" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "DEC5E0205F274D7E"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "DEC5E0205F274D7E" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "qNitW0(9VvNJLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 10:00:01" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 10:00:01" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Application deployed Object" "DEC5E01E5F274C4D"
+-  "Application Deployment Context" "DEC5E0205F274D7E"
+.Connect ."~hBRT2s7BHviU[Application deployed Object]" "DEC5E01E5F274C4D" ."~AOwlS)CBHzZF[Application Deployment Context]" "DEC5E0205F274D7E" -
+        .CHK "0NitU0(9Vr4JqNitW0(9VvNJ" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 10:00:00" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 10:00:00" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Deployed Object" "DEC5E01E5F274C4D"
+-  "Deployment Support" "ServerDeployedDemo"
+.Connect ."~G)XOTAMZFPc3[Deployed Object]" "DEC5E01E5F274C4D" ."~jbcS1FNZFrIL[Deployment Support]" "ServerDeployedDemo" -
+        .CHK "0NitU0(9Vr4J6KitER1AVLwK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:53:18" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:53:18" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Deployed Object" "DEC5E01E5F274C4D"
+-  "Deployment Support" "DEC516EC5F285498"
+.Connect ."~G)XOTAMZFPc3[Deployed Object]" "DEC5E01E5F274C4D" ."~jbcS1FNZFrIL[Deployment Support]" "DEC516EC5F285498" -
+        .CHK "0NitU0(9Vr4JOKitiR1AVX9L" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:53:48" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:53:48" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "DEC5E01E5F274C4D"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "DEC5E01E5F274C4D" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "0NitU0(9Vr4JLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 10:00:00" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 10:00:00" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Object Life" "A13CA6135F32555C"
+-  "Time Dependent Element" "DEC5DFFF5F274B19"
+.Connect ."~C)p4hjNaF9eC[Object Life]" "A13CA6135F32555C" ."~HI(G0eKbFPiT[Time Dependent Element]" "DEC5DFFF5F274B19" -
+        .CHK "OpJeJOgCVnLLhLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:15" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:15" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Object Life" "A13CA6135F32555C"
+-  "Time Period" "A13CA6125F3254CD"
+.Connect ."~C)p4hjNaF9eC[Object Life]" "A13CA6135F32555C" ."~KJ(GMcKbFHdT[Time Period]" "A13CA6125F3254CD" -
+        .CHK "OpJeJOgCVnLL7nJeIOgCVrCL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:16" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:16" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Object Life" "A13CA6135F32555C"
+-  "Time Period" "A13CA6125F3254EF"
+.Connect ."~C)p4hjNaF9eC[Object Life]" "A13CA6135F32555C" ."~KJ(GMcKbFHdT[Time Period]" "A13CA6125F3254EF" -
+        .CHK "OpJeJOgCVnLLfnJeIOgCVzEL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:16" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:16" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Object Life" "A13CA6135F32555C"
+-  "Time Period" "A13CA6135F325520"
+.Connect ."~C)p4hjNaF9eC[Object Life]" "A13CA6135F32555C" ."~KJ(GMcKbFHdT[Time Period]" "A13CA6135F325520" -
+        .CHK "OpJeJOgCVnLLSoJeJOgCV1IL" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:07:16" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:07:16" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Business Capability Fulfillment" "DEC513BB5F2851E5"
+-  "Fulfilled Business Capability" "DEC513CC5F28520A"
+.Connect ."~Cd9LMSs9BnE1[Business Capability Fulfillment]" "DEC513BB5F2851E5" ."~od9L6Ys9Bzf1[Fulfilled Business Capability]" "DEC513CC5F28520A" -
+        .CHK "kKitxE1AVLUKbLitCF1AVfWK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:40:28" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:40:28" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Initiative" "DEC5E08E5F274F7D"
+-  "Element with Initiative" "DEC5DFFF5F274B19"
+.Connect ."~rpv6Fon2ErGB[Initiative]" "DEC5E08E5F274F7D" ."~Mpv6Mpn2ETQB[Element with Initiative]" "DEC5DFFF5F274B19" -
+        .CHK "ZLitE2(9VrtJhLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 10:01:51" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 10:01:51" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Portfolio" "A9E5B6F15F327A45"
+-  "Initiative owned" "DEC5E08E5F274F7D"
+.Connect ."~8A8iK3B1ETM6[Portfolio]" "A9E5B6F15F327A45" ."~Ynv6pon2EPLB[Initiative owned]" "DEC5E08E5F274F7D" -
+        .CHK "5MUgnRhCVLaUZLitE2(9VrtJ" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 15:19:13" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 15:19:13" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "ServerDeployedDemo"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "ServerDeployedDemo" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "6KitER1AVLwKLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/08/03 13:53:28" -
+        ."~810000000X00[Link modification date]"             "2020/08/03 13:53:28" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94915F33268F"
+-  "Assigned Object" "DEC5DFFF5F274B19"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94915F33268F" ."~hCr81RIpEvMH[Assigned Object]" "DEC5DFFF5F274B19" -
+        .CHK "8kOaHIvCVze9hLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:04:49" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:04:49" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94915F33268F"
+-  "Assigned Person" "GIBELIN Laurent"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94915F33268F" ."~L2000000Ca80[Assigned Person]" "GIBELIN Laurent" -
+        .CHK "8kOaHIvCVze9NV03Ao09kmD0" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:04:49" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:04:49" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94915F33268F"
+-  "Business Role" "Business Owner"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94915F33268F" ."~M2000000Ce80[Business Role]" "Business Owner" -
+        .CHK "8kOaHIvCVze9fd5niMC6H1iC" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:04:49" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:04:49" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918BA09B5F33271E"
+-  "Assigned Object" "DEC5DFFF5F274B19"
+.Connect ."~030000000240[Responsibility Assignment]" "918BA09B5F33271E" ."~hCr81RIpEvMH[Assigned Object]" "DEC5DFFF5F274B19" -
+        .CHK "kiOaR2wCVvn9hLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:56:11" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:56:11" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918BA09B5F33271E"
+-  "Assigned Person" "METGE Alain"
+.Connect ."~030000000240[Responsibility Assignment]" "918BA09B5F33271E" ."~L2000000Ca80[Assigned Person]" "METGE Alain" -
+        .CHK "kiOaR2wCVvn9UCmW8VO4P9ON" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:56:11" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:56:11" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918BA09B5F33271E"
+-  "Business Role" "Local Financial Controller"
+.Connect ."~030000000240[Responsibility Assignment]" "918BA09B5F33271E" ."~M2000000Ce80[Business Role]" "Local Financial Controller" -
+        .CHK "kiOaR2wCVvn9Ua5nyMC6HLkC" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:56:11" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:56:11" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94B05F3326C4"
+-  "Assigned Object" "DEC5DFFF5F274B19"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94B05F3326C4" ."~hCr81RIpEvMH[Assigned Object]" "DEC5DFFF5F274B19" -
+        .CHK "SlOamIvCVHi9hLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:05:20" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:05:20" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94B05F3326C4"
+-  "Assigned Person" "CRONIER Sébastien"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94B05F3326C4" ."~L2000000Ca80[Assigned Person]" "CRONIER Sébastien" -
+        .CHK "SlOamIvCVHi9XgCp3syUNLAH" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:05:20" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:05:20" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94B05F3326C4"
+-  "Business Role" "IT Owner"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94B05F3326C4" ."~M2000000Ce80[Business Role]" "IT Owner" -
+        .CHK "SlOamIvCVHi9ic5nTMC6H9fC" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:05:20" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:05:20" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94BF5F3326F0"
+-  "Assigned Object" "DEC5DFFF5F274B19"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94BF5F3326F0" ."~hCr81RIpEvMH[Assigned Object]" "DEC5DFFF5F274B19" -
+        .CHK "NiOa)IvCV1l9hLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:05:35" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:05:35" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94BF5F3326F0"
+-  "Assigned Person" "CANONICA Sébastien"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94BF5F3326F0" ."~L2000000Ca80[Assigned Person]" "CANONICA Sébastien" -
+        .CHK "NiOa)IvCV1l9wE8YYbeQ1b10" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:05:35" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:05:35" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "918B94BF5F3326F0"
+-  "Business Role" "Software Designer"
+.Connect ."~030000000240[Responsibility Assignment]" "918B94BF5F3326F0" ."~M2000000Ce80[Business Role]" "Software Designer" -
+        .CHK "NiOa)IvCV1l9DlXOuCQhOva8" -
+        ."~710000000T00[Link creation date]"                 "2020/08/12 07:05:35" -
+        ."~810000000X00[Link modification date]"             "2020/08/12 07:05:35" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "A9E5AF815F3279DA"
+-  "Assigned Object" "DEC5DFFF5F274B19"
+.Connect ."~030000000240[Responsibility Assignment]" "A9E5AF815F3279DA" ."~hCr81RIpEvMH[Assigned Object]" "DEC5DFFF5F274B19" -
+        .CHK "YMUg1(gCVfTUhLit))z9VbnI" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:47:30" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:47:30" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "A9E5AF815F3279DA"
+-  "Assigned Person" "VAURY Jean-Marie"
+.Connect ."~030000000240[Responsibility Assignment]" "A9E5AF815F3279DA" ."~L2000000Ca80[Assigned Person]" "VAURY Jean-Marie" -
+        .CHK "YMUg1(gCVfTUzTcUyq7ETbI9" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:47:30" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:47:30" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "A9E5AF815F3279DA"
+-  "Business Role" "Local Application Owner"
+.Connect ."~030000000240[Responsibility Assignment]" "A9E5AF815F3279DA" ."~M2000000Ce80[Business Role]" "Local Application Owner" -
+        .CHK "YMUg1(gCVfTUWzF2lb0yGb2U" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 14:47:30" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 14:47:30" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "A9E5B6E55F327A44"
+-  "Assigned Object" "A9E5B6F15F327A45"
+.Connect ."~030000000240[Responsibility Assignment]" "A9E5B6E55F327A44" ."~hCr81RIpEvMH[Assigned Object]" "A9E5B6F15F327A45" -
+        .CHK "uLUgbRhCVHaU5MUgnRhCVLaU" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 15:19:13" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 15:19:13" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "A9E5B6E55F327A44"
+-  "Assigned Person" "VAURY Jean-Marie"
+.Connect ."~030000000240[Responsibility Assignment]" "A9E5B6E55F327A44" ."~L2000000Ca80[Assigned Person]" "VAURY Jean-Marie" -
+        .CHK "uLUgbRhCVHaUzTcUyq7ETbI9" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 15:19:13" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 15:19:13" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "A9E5B6E55F327A44"
+-  "Business Role" "Portfolio Manager"
+.Connect ."~030000000240[Responsibility Assignment]" "A9E5B6E55F327A44" ."~M2000000Ce80[Business Role]" "Portfolio Manager" -
+        .CHK "uLUgbRhCVHaUC)F2Dw0yG97U" -
+        ."~710000000T00[Link creation date]"                 "2020/08/11 15:19:13" -
+        ."~810000000X00[Link modification date]"             "2020/08/11 15:19:13" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+
+-  "Initiative" "4CD59CEE5F3E0E37"
+-  "Element with Initiative" "DEC514BD5F2852C2"
+.Connect ."~rpv6Fon2ErGB[Initiative]" "4CD59CEE5F3E0E37" ."~Mpv6Mpn2ETQB[Element with Initiative]" "DEC514BD5F2852C2" -
+        .CHK "DMDJkpfFVTZ3FKitzI1AV9iK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 15:55:26" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 15:55:26" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Portfolio" "4CD59DAD5F3E0E8F"
+-  "Initiative owned" "4CD59CEE5F3E0E37"
+.Connect ."~8A8iK3B1ETM6[Portfolio]" "4CD59DAD5F3E0E8F" ."~Ynv6pon2EPLB[Initiative owned]" "4CD59CEE5F3E0E37" -
+        .CHK "bMDJjsfFVze3DMDJkpfFVTZ3" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 15:58:37" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 15:58:37" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class of Technical Artifact External Structure" "DEC514BD5F2852C2"
+-  "Owned Technical Functionality Fulfillment" "4CD59EFA5F3E0F79"
+.Connect ."~CY6EeSqaOznS[Class of Technical Artifact External Structure]" "DEC514BD5F2852C2" ."~fhg(Wm)gOj(E[Owned Technical Functionality Fulfillment]" "4CD59EFA5F3E0F79" -
+        .CHK "FKitzI1AV9iKUNDJwxfFVbt3" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:04:10" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:04:10" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Software Technology" "DEC514BD5F2852C2"
+-  "_Type" "TypeSTDemo"
+.Connect ."~FN8AHc2gITnL[Software Technology]" "DEC514BD5F2852C2" ."~e3jEF74gILuJ[_Type]" "TypeSTDemo" -
+        .CHK "FKitzI1AV9iKzLDJf4gFVP(3" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:13:29" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:13:29" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Technical Functionality Fulfillment" "4CD59EFA5F3E0F79"
+-  "Fullfilled Technical Functionality" "4CD59F105F3E0FA9"
+.Connect ."~PW6EUepaOzyP[Technical Functionality Fulfillment]" "4CD59EFA5F3E0F79" ."~qW6EHgpaOP7Q[Fullfilled Technical Functionality]" "4CD59F105F3E0FA9" -
+        .CHK "UNDJwxfFVbt3bKDJGyfFVbw3" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:04:32" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:04:32" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59E235F3E0EF9"
+-  "Assigned Object" "DEC514BD5F2852C2"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59E235F3E0EF9" ."~hCr81RIpEvMH[Assigned Object]" "DEC514BD5F2852C2" -
+        .CHK "6MDJZufFVbl3FKitzI1AV9iK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:00:35" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:00:35" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59E235F3E0EF9"
+-  "Assigned Person" "VAURY Jean-Marie"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59E235F3E0EF9" ."~L2000000Ca80[Assigned Person]" "VAURY Jean-Marie" -
+        .CHK "6MDJZufFVbl3zTcUyq7ETbI9" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:00:35" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:00:35" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59E235F3E0EF9"
+-  "Business Role" "Local Financial Controller"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59E235F3E0EF9" ."~M2000000Ce80[Business Role]" "Local Financial Controller" -
+        .CHK "6MDJZufFVbl3Ua5nyMC6HLkC" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:00:35" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:00:35" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59E335F3E0F26"
+-  "Assigned Object" "DEC514BD5F2852C2"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59E335F3E0F26" ."~hCr81RIpEvMH[Assigned Object]" "DEC514BD5F2852C2" -
+        .CHK "4NDJpufFVPo3FKitzI1AV9iK" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:00:51" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:00:51" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59E335F3E0F26"
+-  "Assigned Person" "CRONIER Sébastien"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59E335F3E0F26" ."~L2000000Ca80[Assigned Person]" "CRONIER Sébastien" -
+        .CHK "4NDJpufFVPo3XgCp3syUNLAH" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:00:51" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:00:51" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59E335F3E0F26"
+-  "Business Role" "Local Technology Correspondent"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59E335F3E0F26" ."~M2000000Ce80[Business Role]" "Local Technology Correspondent" -
+        .CHK "4NDJpufFVPo3mUf1133HITGX" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 16:00:51" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 16:00:51" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59DA35F3E0E8E"
+-  "Assigned Object" "4CD59DAD5F3E0E8F"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59DA35F3E0E8E" ."~hCr81RIpEvMH[Assigned Object]" "4CD59DAD5F3E0E8F" -
+        .CHK "QMDJZsfFVve3bMDJjsfFVze3" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 15:58:37" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 15:58:37" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59DA35F3E0E8E"
+-  "Assigned Person" "VAURY Jean-Marie"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59DA35F3E0E8E" ."~L2000000Ca80[Assigned Person]" "VAURY Jean-Marie" -
+        .CHK "QMDJZsfFVve3zTcUyq7ETbI9" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 15:58:37" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 15:58:37" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "4CD59DA35F3E0E8E"
+-  "Business Role" "Portfolio Manager"
+.Connect ."~030000000240[Responsibility Assignment]" "4CD59DA35F3E0E8E" ."~M2000000Ce80[Business Role]" "Portfolio Manager" -
+        .CHK "QMDJZsfFVve3C)F2Dw0yG97U" -
+        ."~710000000T00[Link creation date]"                 "2020/08/20 15:58:37" -
+        ."~810000000X00[Link modification date]"             "2020/08/20 15:58:37" -
+        ."~720000000T40[Link Creator]"                       "zTcUyq7ETbI9" -
+        ."~920000000b40[Link Modifier]"                      "zTcUyq7ETbI9" -
+        ."~410000000H00[Order]"                              "9999"

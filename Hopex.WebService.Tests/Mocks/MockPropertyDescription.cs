@@ -1,6 +1,4 @@
 using Mega.Macro.API;
-using System;
-using System.Collections.Generic;
 
 namespace Hopex.WebService.Tests.Mocks
 {

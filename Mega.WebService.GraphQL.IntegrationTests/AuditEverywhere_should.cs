@@ -184,7 +184,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             var (finding, recommendation) = await Create_a_recommendation_on_a_finding();
             var request = new GraphQLRequest()
             {
-                Query = @"mutation{ deleteFinding(id:""" + finding.Id + @""" idType:INTERNAL cascade:true) { id }}"
+                Query = @"mutation{ deleteFinding(id:""" + finding.Id + @""" idType:INTERNAL cascade:true) { deletedCount }}"
             };
 
             var response = await _graphQLClient.SendQueryAsync<DeleteFindingResponse>(request);
@@ -199,7 +199,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             var (finding, recommendation) = await Create_a_recommendation_on_a_finding();
             var request = new GraphQLRequest()
             {
-                Query = @"mutation{ deleteAuditActivity(id:""" + IDs.AUDIT_ACTIVITY_INTERNAL + @""" idType:INTERNAL cascade:true) { id }}"
+                Query = @"mutation{ deleteAuditActivity(id:""" + IDs.AUDIT_ACTIVITY_INTERNAL + @""" idType:INTERNAL cascade:true) { deletedCount }}"
             };
 
             var response = await _graphQLClient.SendQueryAsync<DeleteAuditActivityResponse>(request);
@@ -257,12 +257,12 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
         public class DeleteAuditActivityResponse
         {
-            public BasicObject DeleteAuditActivity { get; set; }
+            public DeleteResult DeleteAuditActivity { get; set; }
         }
 
         public class DeleteFindingResponse
         {
-            public BasicObject DeleteFinding { get; set; }
+            public DeleteResult DeleteFinding { get; set; }
         }
 
         public class FindingResponse
@@ -318,26 +318,26 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             var request = new GraphQLRequest()
             {
                 Query = @"mutation deleteAll {                            
-                            deleteAuditActivity(id:""" + IDs.AUDIT_ACTIVITY_INTERNAL + @""" idType:INTERNAL) { id }
-                            deleteFinding(id:""" + IDs.FINDING_EXTERNAL + @""" idType:EXTERNAL) { id }
-                            deleteRecommendation(id: """ + IDs.RECOMMENDATION_EXTERNAL + @""" idType: EXTERNAL) { id }
-                            deleteBusinessDocument(id: """ + IDs.BUSINESS_DOCUMENT_EXTERNAL + @""" idType: EXTERNAL) { id }                            
+                            deleteAuditActivity(id:""" + IDs.AUDIT_ACTIVITY_INTERNAL + @""" idType:INTERNAL) { deletedCount }
+                            deleteFinding(id:""" + IDs.FINDING_EXTERNAL + @""" idType:EXTERNAL) { deletedCount }
+                            deleteRecommendation(id: """ + IDs.RECOMMENDATION_EXTERNAL + @""" idType: EXTERNAL) { deletedCount }
+                            deleteBusinessDocument(id: """ + IDs.BUSINESS_DOCUMENT_EXTERNAL + @""" idType: EXTERNAL) { deletedCount }                            
                           }"
             };
             var response = await client.SendQueryAsync<DeleteAllResponse>(request);
             var data = response.Data;
-            data.DeleteAuditActivity.Should().BeNull();
-            data.DeleteFinding.Should().BeNull();
-            data.DeleteRecommendation.Should().BeNull();
-            data.DeleteBusinessDocument.Should().BeNull();
+            data.DeleteAuditActivity?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteFinding?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteRecommendation?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteBusinessDocument?.DeletedCount.Should().BeGreaterOrEqualTo(0);
         }
 
         public class DeleteAllResponse
         {
-            public BasicObject DeleteAuditActivity { get; set; }
-            public BasicObject DeleteFinding { get; set; }
-            public BasicObject DeleteRecommendation { get; set; }
-            public BasicObject DeleteBusinessDocument { get; set; }
+            public DeleteResult DeleteAuditActivity { get; set; }
+            public DeleteResult DeleteFinding { get; set; }
+            public DeleteResult DeleteRecommendation { get; set; }
+            public DeleteResult DeleteBusinessDocument { get; set; }
         }
     }
 }

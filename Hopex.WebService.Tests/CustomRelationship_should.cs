@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Hopex.WebService.Tests.Assertions;
 using Hopex.WebService.Tests.Mocks;
 using Mega.Macro.API;

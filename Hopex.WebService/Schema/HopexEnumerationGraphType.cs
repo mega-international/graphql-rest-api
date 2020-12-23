@@ -8,10 +8,5 @@ namespace Hopex.Modules.GraphQL.Schema
         {
             return value;
         }
-
-        public override object ParseValue(object value)
-        {
-            return base.ParseValue(value);
-        }
     }
 }

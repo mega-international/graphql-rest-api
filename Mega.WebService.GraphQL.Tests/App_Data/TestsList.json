@@ -139,6 +139,20 @@
             "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test20",
             "description": "Delete all existing audit plan including all audit, audit activity and assignation attached from target repository",
             "hideSourceRepository": true
+        },
+        {
+            "name": "test21",
+            "nameDisplay": "Diagnostic on profiles",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test21",
+            "description": "Check connection on sessions on multiple users and profiles",
+            "hideSourceRepository": true
+        },
+        {
+            "name": "test22",
+            "nameDisplay": "Incident confidentiality",
+            "namespace": "Mega.WebService.GraphQL.Tests.Sources.Tests.Test22",
+            "description": "Read incidents from Hopex Customizer and compare number of items with other profiles submitted to confidentiality rules",
+            "hideSourceRepository": true
         }
     ]
 }

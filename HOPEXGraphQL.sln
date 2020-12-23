@@ -11,16 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "V3", "V3", "{29E56CCD-E7E5-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mega.WebService.GraphQL", "Mega.WebService.GraphQL\Mega.WebService.GraphQL.csproj", "{41BC7E91-8409-4C8D-A26C-C59A1BA777F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hopex.Model", "Hopex.Model\Hopex.Model.csproj", "{20580587-1C19-45B9-9AE6-806751B4371E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hopex.Model", "Hopex.Model\Hopex.Model.csproj", "{20580587-1C19-45B9-9AE6-806751B4371E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hopex.WebService", "Hopex.WebService\Hopex.WebService.csproj", "{F546ED7B-4093-4F58-B424-32C93F82A894}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hopex.WebService", "Hopex.WebService\Hopex.WebService.csproj", "{F546ED7B-4093-4F58-B424-32C93F82A894}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hopex.WebService.Tests", "Hopex.WebService.Tests\Hopex.WebService.Tests.csproj", "{567FF750-FAF0-4AE5-B0B6-4AF27755661D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hopex.WebService.Tests", "Hopex.WebService.Tests\Hopex.WebService.Tests.csproj", "{567FF750-FAF0-4AE5-B0B6-4AF27755661D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mega.WebService.GraphQL.Tests", "Mega.WebService.GraphQL.Tests\Mega.WebService.GraphQL.Tests.csproj", "{12A07F31-936F-4DE8-9260-A66842AC203C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E79F70BE-4742-4D7D-82B4-74AC3612A560}"
 	ProjectSection(SolutionItems) = preProject
+		azure-build-pipeline.yaml = azure-build-pipeline.yaml
 		AzureDevOpsCodeCoverage.runsettings = AzureDevOpsCodeCoverage.runsettings
 		DevSkipInittIntegrationTesting.runsettings = DevSkipInittIntegrationTesting.runsettings
 		HOWTO_BUILD.md = HOWTO_BUILD.md
@@ -28,9 +29,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mega.WebService.GraphQL.V3.UnitTests", "Mega.WebService.GraphQL.V3.UnitTests\Mega.WebService.GraphQL.V3.UnitTests.csproj", "{187AAB01-3AD5-4739-B9CE-86D745277496}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hopex.Common", "Hopex.Common\Hopex.Common.csproj", "{43369561-0052-477A-B23F-61FC57B8466F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hopex.Common", "Hopex.Common\Hopex.Common.csproj", "{43369561-0052-477A-B23F-61FC57B8466F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mega.WebService.GraphQL.IntegrationTests", "Mega.WebService.GraphQL.IntegrationTests\Mega.WebService.GraphQL.IntegrationTests.csproj", "{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hopex.WebService.API", "Hopex.WebService.API\Hopex.WebService.API.csproj", "{D15D2D20-379C-4E07-9BF8-D3128252949B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hopex.WebService.IDE", "Hopex.WebService.IDE\Hopex.WebService.IDE.csproj", "{62DCD570-D094-4E30-997E-4A16F48C8399}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -148,6 +153,30 @@ Global
 		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|x64.Build.0 = Release|Any CPU
 		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|x86.ActiveCfg = Release|Any CPU
 		{DE02F041-74F4-44ED-BD45-E2B7FC3BB3CB}.Release|x86.Build.0 = Release|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Debug|x64.Build.0 = Debug|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Debug|x86.Build.0 = Debug|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Release|x64.ActiveCfg = Release|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Release|x64.Build.0 = Release|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Release|x86.ActiveCfg = Release|Any CPU
+		{D15D2D20-379C-4E07-9BF8-D3128252949B}.Release|x86.Build.0 = Release|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Debug|x64.Build.0 = Debug|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Debug|x86.Build.0 = Debug|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Release|x64.ActiveCfg = Release|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Release|x64.Build.0 = Release|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Release|x86.ActiveCfg = Release|Any CPU
+		{62DCD570-D094-4E30-997E-4A16F48C8399}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

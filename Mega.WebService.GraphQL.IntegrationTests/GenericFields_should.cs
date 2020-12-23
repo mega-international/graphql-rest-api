@@ -14,7 +14,8 @@ using Xunit.Abstractions;
 namespace Mega.WebService.GraphQL.IntegrationTests
 {
     [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Local deserialization only")]
-    public class GenericFields_should : BaseFixture, IClassFixture<QueryEndPointFixture>
+    [ImportMgr("QueryAssessmentNode.mgr")]
+    public class GenericFields_should : BaseFixture
     {
         public GenericFields_should(GlobalFixture fixture, ITestOutputHelper output)
             : base(fixture, output)
@@ -362,15 +363,6 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                 public string Name { get; set; }
                 public string CustomField { get; set; }
             }
-        }
-    }
-
-    [Collection("Global")]
-    public class QueryEndPointFixture
-    {
-        public QueryEndPointFixture(GlobalFixture fx)
-        {
-            fx.MgrImporter.Import("QueryAssessmentNode.mgr");
         }
     }
 }

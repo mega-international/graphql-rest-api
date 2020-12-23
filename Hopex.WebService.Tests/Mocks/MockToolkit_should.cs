@@ -1,6 +1,4 @@
 using FluentAssertions;
-using FluentAssertions.Json;
-using Hopex.WebService.Tests.Assertions;
 using Mega.Macro.API;
 using Xunit;
 

@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common.JsonMessages;
 using Hopex.Model.Abstractions;
@@ -8,6 +7,7 @@ using Hopex.WebService.Tests.Mocks;
 using Hopex.WebService.Tests.Mocks.Drawings;
 using Mega.Macro.API.Enums;
 using Moq;
+using System.Net;
 using Xunit;
 
 namespace Hopex.WebService.Tests
@@ -92,7 +92,7 @@ namespace Hopex.WebService.Tests
 
             var actual = await entryPoint.Execute(new DiagramExportArguments { Format = ImageFormat.Png });
 
-            actual.Should().BeError(500);
+            actual.Should().BeError(HttpStatusCode.InternalServerError, "Diagram cannot be opened*");
         }
     }
 

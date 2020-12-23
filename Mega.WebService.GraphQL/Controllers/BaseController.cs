@@ -26,7 +26,7 @@ namespace Mega.WebService.GraphQL.Controllers
         protected static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         protected virtual int WaitStepMilliseconds => 100;
 
-        private readonly IConfigurationManager _configurationManager;
+        protected readonly IConfigurationManager _configurationManager;
         private readonly IHopexServiceFinder _hopexServiceFinder;
         
         public BaseController()
@@ -52,7 +52,7 @@ namespace Mega.WebService.GraphQL.Controllers
             var macroResult = "";
             try
             {
-                macroResult = hopexService.CallMacro(macroId, data);
+                macroResult = hopexService.CallMacro(macroId, data, new GenerationContext {GenerationMode = "anywhere"});
             }
             catch (Exception ex)
             {
@@ -98,6 +98,7 @@ namespace Mega.WebService.GraphQL.Controllers
             var userInfo = (UserInfo)Request.Properties["UserInfo"];
 
             // Get values from x-hopex-context
+            CompleteHeadersFromWebConfig();
             HopexContext hopexContext;
             if (Request.Headers.Contains("x-hopex-environment-id") && Request.Headers.Contains("x-hopex-repository-id") && Request.Headers.Contains("x-hopex-profile-id"))
             {
@@ -156,7 +157,7 @@ namespace Mega.WebService.GraphQL.Controllers
             var hopexServiceCopy = hopexService;
             try
             {
-                bool FuncTryOpenSession() => hopexServiceCopy.TryOpenSession(mwasSettings, mwasSessionConnectionParameters, findSession: !closeSession);
+                bool FuncTryOpenSession() => hopexServiceCopy.TryOpenSession(mwasSettings, mwasSessionConnectionParameters, findSession: !closeSession, useHopexApiMwas: hopexSessionType == HopexSessionType.API);
                 if (!ExecuteTimedOut("TryOpenSession", FuncTryOpenSession, out var sessionOpened, out error))
                 {
                     return false;
@@ -183,7 +184,7 @@ namespace Mega.WebService.GraphQL.Controllers
                 return FormatResult(error);
 
             // Call the execution of the macro in async mode
-            var asyncMacroResult = hopexService.CallAsyncMacroExecute(macroId, data);
+            var asyncMacroResult = hopexService.CallAsyncMacroExecute(macroId, data, new GenerationContext {GenerationMode = "anywhere"});
 
             // If error occurs
             if(asyncMacroResult.Status != "InProgress")
@@ -230,9 +231,9 @@ namespace Mega.WebService.GraphQL.Controllers
                 // Call the execution result of the macro in async mode
                 stopwatch.Restart();
                 Logger.Info("CallAsyncMacroGetResult");
-                var asyncMacroResult = hopexService.CallAsyncMacroGetResult(hopexTask);
-                Logger.Info("CallAsyncMacroGetResult ended: " + Math.Round(stopwatch.Elapsed.TotalMilliseconds) + " ms");
-                wait = wait - stopwatch.Elapsed;
+                var asyncMacroResult = hopexService.CallAsyncMacroGetResult(hopexTask, new GenerationContext {GenerationMode = "anywhere"});
+                Logger.Info("CallAsyncMacroGetResult ended: " + stopwatch.ElapsedMilliseconds + " ms");
+                wait -= stopwatch.Elapsed;
 
                 // Return status if action is not finished and wait time is over
                 if(asyncMacroResult.Status == "InProgress")
@@ -383,6 +384,22 @@ namespace Mega.WebService.GraphQL.Controllers
                 default:
                     return InternalServerError(new Exception($"{result.ErrorType}: {result.Content}"));
             }
+        }
+
+        protected void CompleteHeadersFromWebConfig()
+        {
+            if (!Request.Headers.Contains("x-hopex-context"))
+            {
+                AddMissingHeaderFromWebConfig("x-hopex-environment-id", "EnvironmentId");
+                AddMissingHeaderFromWebConfig("x-hopex-repository-id", "RepositoryId");
+                AddMissingHeaderFromWebConfig("x-hopex-profile-id", "ProfileId");                
+            }
+        }
+
+        private void AddMissingHeaderFromWebConfig(string header, string setting)
+        {
+            if (!Request.Headers.Contains(header) && _configurationManager.AppSettings[setting] != null)
+                Request.Headers.Add(header, _configurationManager.AppSettings[setting]);
         }
     }
 }

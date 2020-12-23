@@ -17,21 +17,19 @@ namespace Hopex.Modules.GraphQL.Schema
     {
         private static GraphQLSchemaManager Instance;
 
-        public async Task<GraphQLSchemaManager> GetInstanceAsync(ILogger logger, IHopexContext hopexContext, string version)
+        public virtual async Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, IMegaRoot megaRoot, ILogger logger)
         {
             if (Instance == null)
             {
                 WriteLogFilenameToMegaErr(hopexContext);
-                logger.LogInformation("Initializing schemas.");
                 var hopexSchemaManager = new HopexMetaModelManager(CreateSchemaLoader(), ctx => new PivotConvertor(ctx));
                 await hopexSchemaManager.LoadAllAsync(version);
-                Instance = new GraphQLSchemaManager(hopexSchemaManager, logger);
-                logger.LogInformation("Schemas initialized.");
+                Instance = new GraphQLSchemaManager(hopexSchemaManager, megaRoot, logger);
             }
             return Instance;
         }
 
-        private IPivotSchemaLoader CreateSchemaLoader()
+        protected IPivotSchemaLoader CreateSchemaLoader()
         {
             var folder = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\CONFIG";
             if (!Directory.Exists(folder))

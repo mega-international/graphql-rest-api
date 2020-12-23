@@ -1,5 +1,6 @@
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace Mega.WebService.GraphQL.Tests.Sources.FieldModels
 {
@@ -30,9 +31,10 @@ namespace Mega.WebService.GraphQL.Tests.Sources.FieldModels
             return value;
         }
 
-        public override string GetOutputFormat(bool showName)
+        protected override string GetOutputFormatInternal(bool showName, IReadOnlyDictionary<string, string> parameters)
         {
-            return $"{(showName ? Name : "")} {Field.GetOutputFormat(false)}";
+            var parametersStr = parameters == null ? "" : BuildParametersString(parameters);
+            return $"{(showName ? (Name + parametersStr) : "")} {Field.GetOutputFormat(false)}";
         }
 
         public override string ToString()

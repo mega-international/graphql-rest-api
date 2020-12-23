@@ -17,13 +17,13 @@ namespace Hopex.Modules.GraphQL.Schema
             _filterArgumentBuilder = builder;
         }
 
-        internal QueryArguments BuildRelationshipArguments(IRelationshipDescription link)
+        internal QueryArguments BuildRelationshipArguments(IRelationshipDescription link, HopexEnumerationGraphType languagesType)
         {
             var arguments = new QueryArguments();
 
             var addErqlFilterArguments = !(link.RoleId == MAEID_DESCRIBEDELEMENT_ABSTRACTDIAGRAM || link.RoleId == MAEID_METACLASS_SUBMETACLASS || link.RoleId == MAEID_METACLASS_SUPERMETACLASS);
             if (addErqlFilterArguments)
-                _filterArgumentBuilder.AddFilterArguments(arguments, link.TargetClass);
+                _filterArgumentBuilder.AddFilterArguments(arguments, link.TargetClass, languagesType);
 
             var addSchemaFilterArgument = link.RoleId == MAEID_METACLASS_SUBMETACLASS || link.RoleId == MAEID_METACLASS_SUPERMETACLASS;
             if (addSchemaFilterArgument)

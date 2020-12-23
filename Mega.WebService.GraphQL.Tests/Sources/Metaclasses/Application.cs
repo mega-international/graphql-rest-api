@@ -7,7 +7,26 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Metaclasses
 
         public override List<string> GetBlackListedFields()
         {
-            return new List<string> { "costperUser", "expenses", "capitalExpenses", "operatingExpenses", "globalExpense" };
+            var fields = base.GetBlackListedFields();
+            fields.AddRange(new List<string> {
+                "costperUser",
+                "expenses",
+                "capitalExpenses",
+                "operatingExpenses",
+                "globalExpense",
+                "cASTHighlightID",
+                "softwareResiliencyScoreCASTHighligh",
+                "softwareAgilityScore",
+                "softwareEleganceScoreCASTHighligh",
+                "cloudReadyScoreCASTHighlight",
+                "cloudReadyScanCASTHighlight",
+                "technicalDebtCast",
+                "numberOfLinesOfCodeCast",
+                "numberOfFilesCast",
+                "backFiredFunctionPointsCASTHighlight",
+                "workflowStatusITAndBusinessData",
+                "workflowStatusFinancial"});
+            return fields;
         }
 
         protected override string GetSingleNameStartingWithUpperCase()

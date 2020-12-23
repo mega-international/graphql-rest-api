@@ -40,15 +40,16 @@ namespace Hopex.Model.PivotSchema.Loaders
         public Task<Models.PivotSchema> ReadAsync(SchemaReference schemaRef)
         {
             string fileName = null;
+
             if (!schemaRef.IgnoreCustom && schemaRef.Version != null)
             {
                 var customFolder = Path.Combine(_basePath, schemaRef.Version, "Custom");
                 if (Directory.Exists(customFolder))
                 {
-                    fileName = Path.Combine(customFolder, $"{ schemaRef.EnvironmentId}_{ schemaRef.SchemaName}.json");
+                    fileName = Path.Combine(customFolder, $"{schemaRef.EnvironmentId}_{schemaRef.SchemaName}.json");
                     if (!File.Exists(fileName))
                     {
-                        fileName = Path.Combine(customFolder, $"{ schemaRef.SchemaName}.json");
+                        fileName = Path.Combine(customFolder, $"{schemaRef.SchemaName}.json");
                         if (!File.Exists(fileName))
                         {
                             fileName = null;
@@ -56,6 +57,7 @@ namespace Hopex.Model.PivotSchema.Loaders
                     }
                 }
             }
+
             if (fileName == null)
             {
                 fileName = Path.Combine(_basePath, schemaRef.Version, "Standard", schemaRef.SchemaName + ".json");

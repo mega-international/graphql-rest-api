@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,8 @@ namespace Mega.WebService.GraphQL.Filters
 
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
         {
+            var challenge = new AuthenticationHeaderValue("Basic");
+            context.Result = new AddChallengeOnUnauthorizedResult(challenge, context.Result);
             return Task.FromResult(0);
         }
 
@@ -68,8 +71,7 @@ namespace Mega.WebService.GraphQL.Filters
             }
             else
             {
-                context.ErrorResult = new AuthenticationFailureResult("\"x-hopex-environment-id\" header must be sent", request);
-                return;
+                environmentId = ConfigurationManager.AppSettings["EnvironmentId"];
             }
 
             using (var tokenClient = new TokenClient($"{UasUrl}/connect/token", clientId, clientSecret, null, AuthenticationStyle.PostValues))
@@ -98,5 +100,5 @@ namespace Mega.WebService.GraphQL.Filters
                 context.Request.Properties.Add("UserInfo", userInfo);
             }
         }
-    }
+    }    
 }

@@ -1,0 +1,17 @@
+{
+    "ModuleType": "AddOn",
+    "Version": "1.0.0",
+    "Id": "hopex.rest.api",
+    "Name": "HOPEX REST API",
+    "Description": "A list of REST services (graphQL, attachment, dataset, diagram)",
+    "PathPrefix": "hopexgraphql",
+    "EnabledOnSettingsMode": false,
+    "ShowInPortal": false,
+    "IgnoreSynchronization": false,
+    "Author": "Mega International",
+    "Kind": "Site",
+    "RequireLicenseAcceptance": false,
+    "Dependencies": [
+        { "Id": "hopex.graphql" }
+    ]
+}

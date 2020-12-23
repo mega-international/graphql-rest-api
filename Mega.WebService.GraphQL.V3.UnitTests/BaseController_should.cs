@@ -33,7 +33,7 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
             mockHopexServiceFinder.Setup(s => s.GetService("https://mymwas", "mySecureKey")).Returns(mockHopexService.Object).Verifiable();
             mockHopexServiceFinder.Setup(s => s.GetMwasService("https://mymwas", "mySessionToken")).Returns(mockHopexService.Object);
 
-            mockHopexService.Setup(s => s.CallMacro("AAC8AB1E5D25678E", "", null, null)).Returns("macro result");
+            mockHopexService.Setup(s => s.CallMacro("AAC8AB1E5D25678E", "", It.IsAny<GenerationContext>(), null)).Returns("macro result");
             mockHopexService.Setup(s => s.HopexSessionToken).Returns("mySessionToken");
             mockHopexService.Setup(s => s.MwasUrl).Returns("https://mymwas");
 
@@ -79,9 +79,23 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         {
             request.Headers.Add("x-hopex-context", @"{""EnvironmentId"":""myEnv"",""RepositoryId"":""myDb"",""ProfileId"":""myProf""}");
             mockHopexServiceFinder.Setup(s => s.FindSession("https://myssp", "mySecureKey", "myEnv", null, null, "myProf", null, "RW", true)).Returns("https://mymwas");
-            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), true))
+            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), true, true))
                 .Returns(true);
             
+            var actual = controller.PublicCallMacro("AAC8AB1E5D25678E");
+
+            actual.ErrorType.Should().Be("None");
+            actual.Content.Should().Contain("macro result");
+        }
+
+        [Fact]
+        public void Call_a_macro_synchronously_using_hopex_context_in_web_config()
+        {
+            PutHopexContextInWebConfig();
+            mockHopexServiceFinder.Setup(s => s.FindSession("https://myssp", "mySecureKey", "myEnv", null, null, "myProf", null, "RW", true)).Returns("https://mymwas");
+            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), true, true))
+                .Returns(true);
+
             var actual = controller.PublicCallMacro("AAC8AB1E5D25678E");
 
             actual.ErrorType.Should().Be("None");
@@ -95,7 +109,7 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         {
             request.Headers.Add("x-hopex-context", @"{""EnvironmentId"":""myEnv"",""RepositoryId"":""myDb"",""ProfileId"":""myProf""}");
             mockHopexServiceFinder.Setup(s => s.FindSession("https://myssp", "mySecureKey", "myEnv", null, null, "myProf", null, "RW", true)).Returns("https://mymwas");
-            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), !closeSession))
+            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), !closeSession, true))
                 .Returns(true);
 
             var actual = controller.PublicCallMacro("AAC8AB1E5D25678E", closeSession: closeSession);
@@ -150,7 +164,7 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         {
             request.Headers.Add("x-hopex-context", @"{""EnvironmentId"":""myEnv"",""RepositoryId"":""myDb"",""ProfileId"":""myProf""}");
             mockHopexServiceFinder.Setup(s => s.FindSession("https://myssp", "mySecureKey", "myEnv", null, null, "myProf", null, "RW", true)).Returns("https://mymwas");
-            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>()))
+            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>(), true))
                 .Throws(new TaskCanceledException());
 
             var actual = controller.PublicCallAsyncMacroExecute("AAC8AB1E5D25678E");
@@ -165,17 +179,17 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
 
             actual.Response.Headers.GetValues("x-hopex-task").First().Should().Be("myActionId");
         }
+        
 
-        private ResponseMessageResult LaunchInProgressMacro()
+        [Fact]
+        public void Call_a_macro_asynchronously_using_hopex_context_in_web_config()
         {
-            request.Headers.Add("x-hopex-context", @"{""EnvironmentId"":""myEnv"",""RepositoryId"":""myDb"",""ProfileId"":""myProf""}");
-            mockHopexServiceFinder.Setup(s => s.FindSession("https://myssp", "mySecureKey", "myEnv", null, null, "myProf", null, "RW", true)).Returns("https://mymwas");
-            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), true))
-                .Returns(true);
-            mockHopexService.Setup(s => s.CallAsyncMacroExecute("AAC8AB1E5D25678E", "", null, null)).Returns(inProgress);
+            PutHopexContextInWebConfig();
+            
+            var actual = LaunchInProgressMacroWithoutContextHeader();
 
-            return (ResponseMessageResult)controller.PublicCallAsyncMacroExecute("AAC8AB1E5D25678E");
-        }
+            actual.Response.Headers.GetValues("x-hopex-task").First().Should().Be("myActionId");
+        }        
 
         [Fact]
         public void Fail_to_retrieve_async_macro_result_if_session_token_not_forwarded()
@@ -193,7 +207,7 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         {
             var partialResult = LaunchInProgressMacro();
             request.Headers.Add("x-hopex-sessiontoken", partialResult.Response.Headers.GetValues("x-hopex-sessiontoken").First());
-            mockHopexService.Setup(s => s.CallAsyncMacroGetResult("myActionId", null, null)).Returns(inProgress);
+            mockHopexService.Setup(s => s.CallAsyncMacroGetResult("myActionId", It.IsAny<GenerationContext>(), null)).Returns(inProgress);
 
             var actual = (ResponseMessageResult) controller.PublicCallAsyncMacroGetResult("myActionId", false);
 
@@ -205,7 +219,7 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         {
             var partialResult = LaunchInProgressMacro();
             request.Headers.Add("x-hopex-sessiontoken", partialResult.Response.Headers.GetValues("x-hopex-sessiontoken").First());
-            mockHopexService.Setup(s => s.CallAsyncMacroGetResult("myActionId", null, null)).Returns(terminated);
+            mockHopexService.Setup(s => s.CallAsyncMacroGetResult("myActionId", It.IsAny<GenerationContext>(), null)).Returns(terminated);
 
             var actual = (OkNegotiatedContentResult<string>)controller.PublicCallAsyncMacroGetResult("myActionId", false);
 
@@ -218,11 +232,11 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
             var partialResult = LaunchInProgressMacro();
             request.Headers.Add("x-hopex-sessiontoken", partialResult.Response.Headers.GetValues("x-hopex-sessiontoken").First());
             request.Headers.Add("x-hopex-wait", "10");
-            mockHopexService.Setup(s => s.CallAsyncMacroGetResult("myActionId", null, null)).Returns(inProgress);
+            mockHopexService.Setup(s => s.CallAsyncMacroGetResult("myActionId", It.IsAny<GenerationContext>(), null)).Returns(inProgress);
 
             var actual = (ResponseMessageResult)controller.PublicCallAsyncMacroGetResult("myActionId", false);
 
-            mockHopexService.Verify(s => s.CallAsyncMacroGetResult("myActionId", null, null), Times.AtLeast(2));
+            mockHopexService.Verify(s => s.CallAsyncMacroGetResult("myActionId", It.IsAny<GenerationContext>(), null), Times.AtLeast(2));
         }
 
         [Theory]
@@ -234,16 +248,43 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
 
             actual.Should().BeError(httpStatusCode, "message");
         }
+
+        private void PutHopexContextInWebConfig()
+        {
+            var appSettings = controller._fakeConfigurationManager.appSettings;
+            appSettings.Add("EnvironmentId", "myEnv");
+            appSettings.Add("RepositoryId", "myDb");
+            appSettings.Add("ProfileId", "myProf");
+        }
+
+        private ResponseMessageResult LaunchInProgressMacro()
+        {
+            request.Headers.Add("x-hopex-context", @"{""EnvironmentId"":""myEnv"",""RepositoryId"":""myDb"",""ProfileId"":""myProf""}");
+            return LaunchInProgressMacroWithoutContextHeader();
+        }
+
+        private ResponseMessageResult LaunchInProgressMacroWithoutContextHeader()
+        {
+            mockHopexServiceFinder.Setup(s => s.FindSession("https://myssp", "mySecureKey", "myEnv", null, null, "myProf", null, "RW", true)).Returns("https://mymwas");
+            mockHopexService.Setup(s => s.TryOpenSession(It.IsAny<MwasSettings>(), It.IsAny<MwasSessionConnectionParameters>(), It.IsAny<int>(), It.IsAny<TimeSpan?>(), true, true))
+                .Returns(true);
+            mockHopexService.Setup(s => s.CallAsyncMacroExecute("AAC8AB1E5D25678E", "", It.IsAny<GenerationContext>(), null)).Returns(inProgress);
+
+            return (ResponseMessageResult)controller.PublicCallAsyncMacroExecute("AAC8AB1E5D25678E");
+        }
     }
 
    
     class TestableBaseController : BaseController
     {
         protected override int WaitStepMilliseconds => 5;
+        internal readonly FakeConfigurationManager _fakeConfigurationManager;
         
         internal TestableBaseController(IHopexServiceFinder hopexServiceFinder) :
             base(new FakeConfigurationManager(), hopexServiceFinder)
-        { }
+        {
+            _fakeConfigurationManager = (FakeConfigurationManager)_configurationManager;
+        }
 
         internal WebServiceResult PublicCallMacro(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
         {
@@ -273,13 +314,14 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
 
     class FakeConfigurationManager : IConfigurationManager
     {
-        public NameValueCollection AppSettings { get
-            {
-                var col = new NameValueCollection();
-                col.Add("MegaSiteProvider", "https://myssp");
-                return col;
-            }
+        internal NameValueCollection appSettings = new NameValueCollection();
+
+        internal FakeConfigurationManager()
+        {
+            appSettings.Add("MegaSiteProvider", "https://myssp");
         }
+
+        public NameValueCollection AppSettings => appSettings;
 
         public object GetSection(string sectionName)
         {

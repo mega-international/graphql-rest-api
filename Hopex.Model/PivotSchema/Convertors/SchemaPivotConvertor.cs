@@ -148,7 +148,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                 {
                     existing.Description = rel.Description ?? existing.Description;
                 }
-                var targetClass = cd.MetaModel.GetClassDescription(rel.Path.Last().MetaClassName);
+                var targetClass = cd.MetaModel.FindClassDescriptionById(rel.Path.Last().MetaClassId);
                 // TODO BUG dans json Implements est tjs null
                 rel.Implements = "relationship"; // A virer qd le json est bon
                 // END bug
@@ -156,7 +156,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                 {
                     if (_interfaces.TryGetValue(rel.Implements, out var intf)
                         && intf.Properties != null
-                        && saw.Add(rel.Path.Last().MetaClassName))
+                        && saw.Add(rel.Path.Last().MetaClassId))
                     {
                         ReadProperties(intf.Properties, targetClass, PropertyScope.Relationship);
                     }
@@ -178,7 +178,6 @@ namespace Hopex.Model.PivotSchema.Convertors
 
                         ReadProperties(p.Properties, extendedClass, PropertyScope.TargetClass);
                     }
-
                     return newPath;
                 }));
             }

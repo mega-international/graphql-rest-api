@@ -27,7 +27,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Metaclasses
     {
         public const string id = "id";
         public const string name = "name";
-        public const string externalIdentifier = "externalIdentifier";
+        public const string externalIdentifier = "externalId";
         public const string filter = "filter";
         public const string hexaIdAbs = "hexaIdAbs";
     }
@@ -38,7 +38,28 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Metaclasses
 
         public virtual List<string> GetBlackListedFields()
         {
-            return new List<string>();
+            return new List<string> { "customField",
+                                    "linkComment",
+                                    "linkCreatorId",
+                                    "linkModifierId",
+                                    "linkCreatorName",
+                                    "linkModifierName",
+                                    "linkCreationDate",
+                                    "linkModificationDate",
+                                    "order"};
+        }
+
+        public List<Field> OutputFieldsWrittable()
+        {
+            var result = new List<Field>();
+            foreach(var field in Fields)
+            {
+                if(InputFields.Exists(input => input.Name == field.Name))
+                {
+                    result.Add(field);
+                }
+            }
+            return result;
         }
 
         public string GetSingleName(bool lowerCase = false)

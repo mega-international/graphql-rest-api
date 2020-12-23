@@ -8,7 +8,6 @@ using Moq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -121,19 +120,13 @@ namespace Mega.WebService.GraphQL.V3.UnitTests
         }
 
         [Fact]
-        public async void Execute_async_query()
+        public async void Execute_async_diagram_query()
         {
             mockMacro.Setup(m => m.CallMacro("AAC8AB1E5D25678E", It.IsAny<string>()))
                 .Returns(Ok($@"{{""contentType"": ""image/svg+xml"", ""content"":""PHN2Zz5hYmNkPC9zdmc+"", ""fileName"":""Library diagram.svg""}}"));
             controller.Request.Headers.Accept.ParseAdd("image/svg+xml");
 
-            var result = controller.AsyncGetImage("BGZ4uPrgG(Up");
-
-            var content = result as ResponseMessageResult;
-            var taskId = content.Response.Headers.GetValues("x-hopex-task").First();
-            controller.Request.Headers.Add("x-hopex-task", taskId);
-
-            result = controller.AsyncGetImage("BGZ4uPrgG(Up");
+            var result = AsyncRequestHelper.PlayAsyncRequest(controller, () => controller.AsyncGetImage("BGZ4uPrgG(Up"));
 
             var content2 = ((ResponseMessageResult)result).Response.Content;
             content2.Headers.ContentType.ToString().Should().Be("image/svg+xml");

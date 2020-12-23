@@ -197,9 +197,9 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
             var deleteResponse = await _itpmClient.SendQueryAsync<DeleteBusinessProcessResponse>(
                 @"mutation {
-                    deleteBusinessProcess(id: ""Support_translated_names"" idType: EXTERNAL) { id }
+                    deleteBusinessProcess(id: ""Support_translated_names"" idType: EXTERNAL) { deletedCount }
                   }");
-            deleteResponse.Data.DeleteBusinessProcess.Should().BeNull();
+            deleteResponse.Data.DeleteBusinessProcess?.DeletedCount.Should().BeGreaterOrEqualTo(0);
 
             await base.DisposeAsync();
         }
@@ -239,7 +239,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
         public class DeleteBusinessProcessResponse
         {
-            public BasicObject DeleteBusinessProcess { get; set; }
+            public DeleteResult DeleteBusinessProcess { get; set; }
         }
 
         public class TranslatedBasicObject : BasicObject

@@ -18,12 +18,18 @@ namespace Hopex.WebService.Tests
         MockEntryPoint ws;
 
         [Theory]
-        [InlineData("query {application(filter:{id: \"bGMnovy8NP27\"}) {  id}}", "SELECT ~MrUiM9B5iyM0[Application] WHERE ~310000000D00[Absolute Identifier] = \"bGMnovy8NP27\"")]
+        [InlineData(
+            "query {application(filter:{id: \"bGMnovy8NP27\"}) {  id}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~310000000D00[Absolute Identifier] = \"bGMnovy8NP27\""
+        )]
         //[InlineData(
         //    "query{application(filter:{ id: \"bGMnovy8NP27\", modificationDate: \"2019-01-01\"}) {id}}",
         //    "SELECT ~MrUiM9B5iyM0[Application] WHERE (~310000000D00[Absolute Identifier] = \"bGMnovy8NP27\"  AND ~610000000P00[ModificationDate] = ~G2H9KK2qI100{D}[2019/01/01] )"
         //)]
-        [InlineData("query {application(filter:{id_not: \"bGMnovy8NP27\"}) {  id}}", "SELECT ~MrUiM9B5iyM0[Application] WHERE ~310000000D00[Absolute Identifier] Not= \"bGMnovy8NP27\"")]
+        [InlineData(
+            "query {application(filter:{id_not: \"bGMnovy8NP27\"}) {  id}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~310000000D00[Absolute Identifier] Not= \"bGMnovy8NP27\""
+        )]
         [InlineData(
             "query {application(filter:{ or: {id: \"bGMnovy8NP27\" name_contains: \"Virtual\"}}) {  id}}",
             "SELECT ~MrUiM9B5iyM0[Application] WHERE (~Z20000000D60[Name] Like \"#Virtual#\"  or ~310000000D00[Absolute Identifier] = \"bGMnovy8NP27\" )"
@@ -34,11 +40,11 @@ namespace Hopex.WebService.Tests
         )]
         [InlineData(
             "query {application(filter:{businessProcess_some: {name:\"nom du process\"}}) {id name businessProcess {id name}}}",
-            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess]:~pj)grmQ9pG90[BusinessProcess].(~Z20000000D60[Name] = \"nom du process\" )"
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess]:~pj)grmQ9pG90[BusinessProcess].((~Z20000000D60[Name] = \"nom du process\" ))"
         )]
         [InlineData(
             "query { application(filter:{businessCapability_some:{name: \"nom de la capa\"}}) {	id  name  businessCapability { id  name }}}",
-            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~JdRdxwf6EX5P[OwnedBusinessCapabilityFulfillment]:~Cd9LMSs9BnE1[BusinessCapabilityFulfillment].~od9L6Ys9Bzf1[FulfilledBusinessCapability]:~IcfsZhjW9T90[BusinessCapability].(~Z20000000D60[Name] = \"nom de la capa\" )"
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~JdRdxwf6EX5P[OwnedBusinessCapabilityFulfillment]:~Cd9LMSs9BnE1[BusinessCapabilityFulfillment].(~od9L6Ys9Bzf1[FulfilledBusinessCapability]:~IcfsZhjW9T90[BusinessCapability].(~Z20000000D60[Name] = \"nom de la capa\" ))"
         )]
         [InlineData(
             "query { application{ id name businessProcess(filter:{name: \"Financial\"}) {order id  name } }}",
@@ -48,10 +54,26 @@ namespace Hopex.WebService.Tests
             "query { application{ id name businessCapability(filter:{name: \"Financial\"}) {id name order} }}",
             "SELECT ~IcfsZhjW9T90[BusinessCapability] WHERE ~Z20000000D60[Name] = \"Financial\"  AND ~nd9L6Ys9Bvf1[BusinessCapabilityFulfillment]:~Cd9LMSs9BnE1[BusinessCapabilityFulfillment].~IdRdxwf6ET5P[FulfillingEnterpriseAgent]:~MrUiM9B5iyM0[Application].~310000000D00[AbsoluteIdentifier] = \"application-100\""
         )]
+        [InlineData(
+            "query { application(filter:{id: \"bGMnovy8NP27\"}) { businessProcess(filter:{linkComment:\"comment\"}) { linkComment } } }",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~310000000D00[Absolute Identifier] = \"bGMnovy8NP27\"",
+            "SELECT ~pj)grmQ9pG90[BusinessProcess] WHERE ~i4n)MzlZpO00[Application]:~MrUiM9B5iyM0[Application].(~C3cm9FyluS20[LinkComment] = \"comment\" AND ~310000000D00[AbsoluteIdentifier] = \"application-100\") AND ~i4n)MzlZpO00[Application]:~MrUiM9B5iyM0[Application].~310000000D00[AbsoluteIdentifier] = \"application-100\""
+        )]
+        [InlineData(
+            "query { application{ id name businessProcess(filter:{costContributionKeyBusinessProcess: 10}) {id name costContributionKeyBusinessProcess} }}",
+            "SELECT ~pj)grmQ9pG90[BusinessProcess] WHERE ~i4n)MzlZpO00[Application]:~MrUiM9B5iyM0[Application].(~wdTPcZMsI1(O[CostContributionKeyBusinessProcess] = \"10\" AND ~310000000D00[AbsoluteIdentifier] = \"application-100\") AND ~i4n)MzlZpO00[Application]:~MrUiM9B5iyM0[Application].~310000000D00[AbsoluteIdentifier] = \"application-100\""
+        )]
+        [InlineData(
+            "query {application(filter:{iTOwner_PersonSystem_some: {name:\"nom de la personne\"}}) {id name iTOwner_PersonSystem {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~ic5nTMC6H9fC\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].(~210000000900[Name] = \"nom de la personne\" ))"
+        )]
+        [InlineData(
+            "query {application(filter:{applicationOwner_PersonSystem_some:{email_contains:\"webeval\"}}) {id name}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~WzF2lb0yGb2U\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].(~Sy64inney0Y5[Email] Like \"#webeval#\" ))"
+        )]
         public async Task Query_with_filter(string query, params string[] expectedERQLs)
         {
-            var res = await ExecuteQueryAsync(@query);
-            
+            await ExecuteQueryAsync(@query);
             var erqls = (ws.GetMegaRoot() as ISupportsDiagnostics).GeneratedERQLs;
             erqls.Should().BeEquivalentTo(expectedERQLs);
         }
@@ -177,12 +199,12 @@ namespace Hopex.WebService.Tests
             collection.Should().NotContain(a => a.GetValue<string>("Name", null, null).Contains("xxxxx"));
         }
 
-        //[Fact]
-        //public async Task APIDiagnostic_should_return_values()
-        //{
-        //    var result = await ExecuteQueryAsync("query { _APIdiagnostic { platformBuild } }");
-        //    result.StatusCode.Should().Be(200);
-        //}
+        [Fact]
+        public async Task APIDiagnostic_should_return_values()
+        {
+            var result = await ExecuteQueryAsync("query { _APIdiagnostic { platformBuild } }");
+            result.StatusCode.Should().Be(200);
+        }
 
         private async Task<HopexResponse> ExecuteQueryAsync(string query, string schema = "ITPM")
         {

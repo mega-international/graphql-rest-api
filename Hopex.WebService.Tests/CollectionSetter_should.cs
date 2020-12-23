@@ -1,6 +1,10 @@
 using FluentAssertions;
+using Hopex.Model.Abstractions;
 using Hopex.WebService.Tests.Assertions;
 using Hopex.WebService.Tests.Mocks;
+using Mega.Macro.API;
+using Moq;
+using System;
 using Xunit;
 
 namespace Hopex.WebService.Tests
@@ -11,6 +15,8 @@ namespace Hopex.WebService.Tests
         private const string MCID_BUSINESS_PROCESS = "pj)grmQ9pG90";
         private const string MAEID_APPLICATION_BUSINESS_PROCESSS = "h4n)MzlZpK00";
         private const string MAID_ORDER = "~410000000H00";
+        private const string MAID_NAME = "~Z20000000D60";
+        private const string MAID_EXTERNAL_ID = "~CFmhlMxNT1iE";
 
         private readonly MockMegaObject process;
         private readonly MockMegaCollection processesOfApplication;
@@ -113,6 +119,70 @@ namespace Hopex.WebService.Tests
 
             resp.Should().MatchGraphQL("data.updateApplication.id", "Se2QhWMcU100");
             processesOfApplication.Should().BeEquivalentTo(processToAdd);
+        }
+
+
+        [Theory]
+        [InlineData("RAW")]
+        [InlineData("BUSINESS")]
+        public async void Create_new_instance_in_relationship_and_set_class_attributes(string creationMode)
+        {
+            var businessProcesses = new Mock<MockMegaCollection>(MegaId.Create(MAEID_APPLICATION_BUSINESS_PROCESSS)) { CallBase = true };
+            var wizard = new Mock<MockMegaWizardContext>(MockBehavior.Strict, businessProcesses.Object, "~3h2QHZMcU500[Child process]");
+
+            var root = new MockMegaRoot.Builder()
+                .WithObject(new MockMegaObject("~Se2QhWMcU100[Parent application]", MCID_APPLICATION)
+                    .WithRelation(businessProcesses.Object))
+                .Build();
+
+            businessProcesses.Setup(c => c.CallFunction<IMegaWizardContext>("~GuX91iYt3z70[InstanceCreator]", null, null, null, null, null, null)).Returns(wizard.Object);
+
+            var resp = await ExecuteQueryAsync(root, @"mutation {
+                updateApplication(id: ""Se2QhWMcU100"" application: {                                
+                    businessProcess: {
+                        action: ADD
+                        list:[{name:""createdProcess"" creationMode:" + creationMode + @"}]
+                    }
+                }) {
+                        id
+                        businessProcess {
+                            name
+                        }
+                }}", "ITPM");
+
+            resp.Should().HaveNoGraphQLError();
+            resp.Should().MatchGraphQL("data.updateApplication.id", "Se2QhWMcU100");
+            resp.Should().ContainsGraphQLCount("data.updateApplication.businessProcess", 1);
+            resp.Should().MatchGraphQL("data.updateApplication.businessProcess[0].name", "createdProcess");
+        }
+
+        [Fact]
+        public async void Create_new_instance_in_relationship_when_inexisting_external_id()
+        {
+            var root = new MockMegaRoot.Builder()
+                .WithObject(new MockMegaObject("~Se2QhWMcU100[Parent application]", MCID_APPLICATION)
+                    .WithRelation(processesOfApplication)
+                        .WithProperty(MAID_EXTERNAL_ID, Convert.ToDouble(0)))
+                            .Build();
+
+            var resp = await ExecuteQueryAsync(root, @"mutation {
+                updateApplication(id: ""Se2QhWMcU100"" application: {                                
+                    businessProcess: {
+                        action: ADD
+                        list:[{name:""createdProcess"" idType: EXTERNAL id: ""~3h2QHZMcU500[Child process]""}]
+                    }
+                }) {
+                    id
+                    businessProcess
+                    {
+                        externalId
+                    }
+                }}", "ITPM");
+
+            resp.Should().HaveNoGraphQLError();
+            resp.Should().MatchGraphQL("data.updateApplication.id", "Se2QhWMcU100");
+            resp.Should().ContainsGraphQLCount("data.updateApplication.businessProcess", 1);
+            resp.Should().MatchGraphQL("data.updateApplication.businessProcess[0].externalId", "~3h2QHZMcU500[Child process]");
         }
     }
 }

@@ -1,9 +1,9 @@
 {
 	"version": {
-		"jsonVersion": "V20.6.12",
+		"jsonVersion": "V20.7.23",
 		"platformVersion": "HOPEX V3.00.04",
 		"metamodelVersion": "787.5533",
-		"latestGeneration": "2020-06-12 11:38:39"
+		"latestGeneration": "2020-07-23 21:40:34"
 	},
 	"metaclass": [
 		{
@@ -67100,32 +67100,6 @@
 					}
 				},
 				{
-					"id": ")10000000z30",
-					"name": "CreatorName",
-					"description": "",
-					"constraints": {
-						"type": "String",
-						"mandatory": false,
-						"maxLength": "63",
-						"readOnly": true,
-						"translatable": false,
-						"formattedText": false
-					}
-				},
-				{
-					"id": "c10000000P20",
-					"name": "ModifierName",
-					"description": "",
-					"constraints": {
-						"type": "String",
-						"mandatory": false,
-						"maxLength": "63",
-						"readOnly": true,
-						"translatable": false,
-						"formattedText": false
-					}
-				},
-				{
 					"id": "(10000000v30",
 					"name": "Creator",
 					"description": "absolute identifier of the user who created the object",
@@ -67263,32 +67237,6 @@
 					}
 				},
 				{
-					"id": ")10000000z30",
-					"name": "CreatorName",
-					"description": "",
-					"constraints": {
-						"type": "String",
-						"mandatory": false,
-						"maxLength": "63",
-						"readOnly": true,
-						"translatable": false,
-						"formattedText": false
-					}
-				},
-				{
-					"id": "c10000000P20",
-					"name": "ModifierName",
-					"description": "",
-					"constraints": {
-						"type": "String",
-						"mandatory": false,
-						"maxLength": "63",
-						"readOnly": true,
-						"translatable": false,
-						"formattedText": false
-					}
-				},
-				{
 					"id": "(10000000v30",
 					"name": "Creator",
 					"description": "absolute identifier of the user who created the object",
@@ -67386,19 +67334,6 @@
 					}
 				},
 				{
-					"id": "820000000X40",
-					"name": "LinkCreatorName",
-					"description": "",
-					"constraints": {
-						"type": "String",
-						"mandatory": false,
-						"maxLength": "63",
-						"readOnly": true,
-						"translatable": false,
-						"formattedText": false
-					}
-				},
-				{
 					"id": "920000000b40",
 					"name": "LinkModifier",
 					"description": "",
@@ -67406,19 +67341,6 @@
 						"type": "Id",
 						"mandatory": false,
 						"maxLength": "16",
-						"readOnly": true,
-						"translatable": false,
-						"formattedText": false
-					}
-				},
-				{
-					"id": "A20000000f40",
-					"name": "LinkModifierName",
-					"description": "",
-					"constraints": {
-						"type": "String",
-						"mandatory": false,
-						"maxLength": "63",
 						"readOnly": true,
 						"translatable": false,
 						"formattedText": false

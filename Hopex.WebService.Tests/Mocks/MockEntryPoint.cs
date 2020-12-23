@@ -1,12 +1,16 @@
-using System.Collections.Generic;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
+using Hopex.Model.MetaModel;
 using Hopex.Model.Mocks;
+using Hopex.Model.PivotSchema.Convertors;
 using Hopex.Modules.GraphQL;
 using Hopex.Modules.GraphQL.Schema;
 using Mega.Macro.API;
+using Moq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Hopex.WebService.Tests.Mocks
 {
@@ -43,20 +47,47 @@ namespace Hopex.WebService.Tests.Mocks
         }
     }
 
-    class TestableSchemaManagerProvider : SchemaManagerProvider
+    public class TestableSchemaManagerProvider : SchemaManagerProvider
     {
+        private bool _generateNewSchema { get; set; } = false;
+
+        public TestableSchemaManagerProvider(bool generateNewSchema = false)
+        {
+            _generateNewSchema = generateNewSchema;
+        }
+
+        public override async Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, IMegaRoot megaRoot, ILogger logger)
+        {
+            if (_generateNewSchema)
+            {
+                var hopexSchemaManager = new HopexMetaModelManager(CreateSchemaLoader(), ctx => new PivotConvertor(ctx));
+                await hopexSchemaManager.LoadAllAsync(version);
+                return new GraphQLSchemaManager(hopexSchemaManager, megaRoot, logger);
+            }
+            return await base.GetInstanceAsync(hopexContext, version, megaRoot, logger);
+        }
+
         protected override void WriteLogFilenameToMegaErr(IHopexContext hopexContext) { }
     }
 
     class TestableLanguageProvider : ILanguagesProvider
     {
-        public Dictionary<string, string> GetLanguages(object nativeRoot)
+        public Dictionary<string, IMegaObject> GetLanguages(ILogger logger, IMegaRoot root)
         {
-            return new Dictionary<string, string>
+            var mockEnglishLanguage = new Mock<IMegaObject>();
+            mockEnglishLanguage.SetupGet(x => x.Id).Returns("~00(6wlHmk400");
+            var mockFrenchLanguage = new Mock<IMegaObject>();
+            mockFrenchLanguage.SetupGet(x => x.Id).Returns("~B0SNPuLckCQ3");
+            return new Dictionary<string, IMegaObject>
             {
-                {"EN", "~00(6wlHmk400[X]"},
-                {"FR", "~B0SNPuLckCQ3[X]"}
+                {"EN", mockEnglishLanguage.Object},
+                {"FR", mockFrenchLanguage.Object}
             };
+        }
+
+        public List<string> GetCurrencies(ILogger logger, IMegaRoot root)
+        {
+            return new List<string> {"USD", "EUR"};
         }
     }
 }

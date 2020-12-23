@@ -1,7 +1,6 @@
 using Hopex.Model.Abstractions;
 using Mega.Macro.API;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Hopex.WebService.Tests.Mocks
 {

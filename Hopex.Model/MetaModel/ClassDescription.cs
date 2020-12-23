@@ -53,9 +53,12 @@ namespace Hopex.Model.MetaModel
             foreach (PropertyDescription prop in _properties.Values)
             {
                 PropertyDescription p = new PropertyDescription(this, prop.Name, prop.Id, prop.Description, prop.PropertyTypeName, prop.IsRequired, prop.IsReadOnly, prop.IsTranslatable, prop.IsFormattedText);
-                foreach (IEnumDescription e in p.EnumValues)
+                if (p.EnumValues != null)
                 {
-                    p.AddEnumValue(new EnumDescription(e.Name, e.Id, e.Description, e.InternalValue));
+                    foreach (IEnumDescription e in p.EnumValues)
+                    {
+                        p.AddEnumValue(new EnumDescription(e.Name, e.Id, e.Description, e.InternalValue));
+                    }
                 }
                 clone.AddProperty(p);
             }

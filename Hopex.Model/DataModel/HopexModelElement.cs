@@ -22,6 +22,10 @@ namespace Hopex.Model.DataModel
         private IMegaRoot _iRoot;
         public IMegaObject Parent { get; private set; }
 
+        private readonly List<Exception> _errors = new List<Exception>();
+        public IEnumerable<Exception> Errors { get => _errors; }
+
+        public IMegaObject Language { get; set; }
 
         public HopexModelElement(IHopexDataModel domainModel, IClassDescription schema, MegaObject megaObject, MegaId id = null)
         {
@@ -112,10 +116,11 @@ namespace Hopex.Model.DataModel
 
         public T GetValue<T>(IPropertyDescription property, Dictionary<string, object> arguments = null, string format = null)
         {
+            CheckRelationship(property);
             var permissions = GetPropertyCrud(property);
             if (!permissions.IsReadable)
             {
-                return (T)Convert.ChangeType(null, typeof(T));
+                throw new ExecutionError($"You are not allowed to read the property ({property.Name}) on {ClassDescription.Name}: {MegaObject.MegaField}");
             }
 
             var propertyGetterFormat = format ?? property.GetterFormat ?? PropertyDescription.DefaultGetterFormat;
@@ -166,16 +171,19 @@ namespace Hopex.Model.DataModel
                             }
                         }
                     }
-                    var languageId = "";
-                    if (arguments != null && arguments.ContainsKey("language"))
-                    {
-                        languageId = arguments["language"].ToString();
-                    }
-                    if (!string.IsNullOrEmpty(languageId))
+                    if (arguments != null && arguments.TryGetValue("language", out var languageValue) && languageValue is IMegaObject language)
                     {
                         var attribute = IMegaObject.GetAttribute(propertyId);
-                        var translatedAttribute = attribute.Translate(languageId).Value();
-                        return (T)Convert.ChangeType(translatedAttribute, typeof(T));
+                        var translatedAttribute = attribute.Translate(language.Id);
+                        //propertyId = translatedAttribute.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier).ToString();
+                        return (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
+                    }
+                    if (Language != null)
+                    {
+                        var attribute = IMegaObject.GetAttribute(propertyId);
+                        var translatedAttribute = attribute.Translate(Language.Id);
+                        //propertyId = translatedAttribute.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier).ToString();
+                        return (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
                     }
                     if (format != null)
                     {
@@ -197,12 +205,12 @@ namespace Hopex.Model.DataModel
                             select x.Name;
                     return (T)Convert.ChangeType(q.FirstOrDefault(), typeof(T));
                 case PropertyType.Date:
-                    var dateResult = MegaObject.GetPropertyValue<T>(property.Id);
+                    var dateResult = IMegaObject.GetPropertyValue<T>(property.Id);
                     if (dateResult.ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
-                    if (propertyGetterFormat != "ASCII" && MegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
+                    if (propertyGetterFormat != "ASCII" && IMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
@@ -210,12 +218,12 @@ namespace Hopex.Model.DataModel
                 case PropertyType.Int:
                 case PropertyType.Long:
                 case PropertyType.Double:
-                    var numericResult = MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+                    var numericResult = IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
                     if (numericResult.ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
-                    if (propertyGetterFormat != "ASCII" && MegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
+                    if (propertyGetterFormat != "ASCII" && IMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
                         return (T)Convert.ChangeType(null, typeof(T));
                     }
@@ -228,7 +236,7 @@ namespace Hopex.Model.DataModel
                     }
                     return amountResult;
                 default:
-                    return MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+                    return IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
             }
         }
 
@@ -314,7 +322,7 @@ namespace Hopex.Model.DataModel
                 {
                     format = "HTML";
                 }
-                IMegaObject.SetPropertyValue(property.Id, value, format ?? property.SetterFormat ?? PropertyDescription.DefaultSetterFormat);
+                IMegaObject.SetPropertyValue(property.Id, (object)value ?? "", format ?? property.SetterFormat ?? PropertyDescription.DefaultSetterFormat);
             }
         }
 
@@ -327,9 +335,14 @@ namespace Hopex.Model.DataModel
 
             foreach (ISetter setter in setters)
             {
-                //_domainModel.LogInformation("before setter");
-                await setter.UpdateElementAsync(DomainModel, this);                                   
-                //_domainModel.LogInformation("after setter");
+                try
+                {
+                    await setter.UpdateElementAsync(DomainModel, this);
+                }
+                catch(Exception ex)
+                {
+                    _errors.Add(ex);
+                }                             
             }
         }                       
       
@@ -348,7 +361,23 @@ namespace Hopex.Model.DataModel
         {
             return CrudComputer.GetPropertyCrud(IMegaObject, property);
         }
-        
+
+        private void CheckRelationship(IPropertyDescription property)
+        {
+            if(property.Scope == PropertyScope.Relationship && ( !(MegaObject.Relationship?.Exists ?? false)))
+            {
+                throw new ExecutionError($"Reading property {property.Name} from an inexisting relationship is forbidden.");
+            }
+        }
+
+        public void AddErrors(IModelElement subElement)
+        {
+            foreach(var error in subElement.Errors)
+            {
+                _errors.Add(error);
+            }
+        }
+
         public bool IsConfidential => IMegaObject.IsConfidential;
 
         public bool IsAvailable => IMegaObject.IsAvailable;

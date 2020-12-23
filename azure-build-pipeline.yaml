@@ -1,0 +1,111 @@
+pool:
+  name: Paris-CodeQuality
+  demands:
+  - msbuild
+  - visualstudio
+  - vstest
+
+#Your build pipeline references an undefined variable named ‘Parameters.solution’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references the ‘BuildPlatform’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
+#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
+
+steps:
+- powershell: |
+   $ccmdevurn = "\\ntas\data\ccmdev"
+   
+   $drivesletters = net use
+   
+   $deletedriveletter = $false
+   $createdriveletter = $true
+   $drivesletters | %{
+     if ($_ -match "^\s*W:\s+([^\s]+)") {
+       $remote = $matches[1]
+       write-host "found W: drive mapped to $remote"
+       if ($remote -ne "$ccmdevurn") {
+         $deletedriveletter = $true
+         $createdriveletter = $true
+       }
+       else {
+         $deletedriveletter = $false
+         $createdriveletter = $false
+       }
+     }
+   }
+   
+   if ($deletedriveletter) {
+     write-host "delete W: drive"
+     net use /delete W:
+   }
+   
+   if ($createdriveletter) {
+     write-host "create W: drive mapped to $ccmdevurn"
+     net use W: $ccmdevurn
+   }
+   
+  displayName: 'Set Up w:\sdk access'
+  enabled: false
+
+- powershell: |
+   Push-Location ..
+   If (! (Test-Path exeRelease\Assemblies)) {
+       New-Item exeRelease\Assemblies -Type Directory
+   }
+   $SourceDir = "\\ntas\data\ccmwa\wa\code-787_505.dev\exerelease\Assemblies"
+   Copy-Item "$SourceDir\Mega.Bridge.dll" exeRelease\Assemblies -Force
+   Copy-Item "$SourceDir\Hopex.ApplicationServer.WebServices.dll" exeRelease\Assemblies -Force
+   Copy-Item "$SourceDir\Mega.Macro.Executor.dll" exeRelease\Assemblies -Force
+   Copy-Item "$SourceDir\Mega.Macro.Wrapper.dll" exeRelease\Assemblies -Force
+   Copy-Item "$SourceDir\Mega.UAS.Client.dll" exeRelease\Assemblies -Force
+   
+   Pop-Location
+   
+  displayName: 'Copy external dependencies'
+
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 5.7.0'
+  inputs:
+    versionSpec: 5.7.0
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(Parameters.solution)'
+    restoreDirectory: '..\..\packages'
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '$(Parameters.solution)'
+    msbuildArgs: '/p:RunWixToolsOutOfProc=true'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'Test Assemblies'
+  inputs:
+    testAssemblyVer2: |
+     **\$(BuildConfiguration)\**\*Tests.dll
+     !**\obj\**
+    testFiltercriteria: 'Category!=Integration'
+    runSettingsFile: HOPEXGraphQL/AzureDevOpsCodeCoverage.runsettings
+    pathtoCustomTestAdapters: ../packages/
+    runTestsInIsolation: true
+    codeCoverageEnabled: true
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: PublishSymbols@2
+  displayName: 'Publish symbols path'
+  inputs:
+    SearchPattern: '**\bin\**\*.pdb'
+    PublishSymbols: false
+  enabled: false
+  continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: '$(Parameters.ArtifactName)'
+  enabled: false
+  condition: succeededOrFailed()

@@ -127,9 +127,6 @@
         </ComponentGroup>
 
         <ComponentGroup Id="WebServiceBinFiles" Directory="BinFolder">
-            <Component Id="Hopex.Common.dll" Guid="{8FC0AA80-DAD5-43C9-BB2E-8A3900E6C920}">
-                <File Id="Hopex.Common.dll" Name="Hopex.Common.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Hopex.Common.dll" />
-            </Component>
             <Component Id="IdentityModel.dll" Guid="{14413225-5C6A-4AFB-8C74-DFF1A77ECFC8}">
                 <File Id="IdentityModel.dll" Name="IdentityModel.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)IdentityModel.dll" />
             </Component>
@@ -139,23 +136,152 @@
             <Component Id="Mega.Bridge.dll" Guid="{5ED7242C-8BFA-4EE4-8BBF-ED2B43B92163}">
                 <File Id="Mega.Bridge.dll" Name="Mega.Bridge.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Mega.Bridge.dll" />
             </Component>
+            <Component Id="Mega.UAS.Client.dll" Guid="">
+                <File Id="Mega.UAS.Client.dll" Name="Mega.UAS.Client.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Mega.UAS.Client.dll" />
+            </Component>
             <Component Id="Mega.WebService.GraphQL.dll" Guid="{C5533388-8112-4433-AA80-25756D17AFDF}">
                 <File Id="Mega.WebService.GraphQL.dll" Name="Mega.WebService.GraphQL.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Mega.WebService.GraphQL.dll" />
             </Component>
             <Component Id="Microsoft.Web.Infrastructure.dll" Guid="{50AB5CF3-C314-448C-A70E-F9A448DD3BB7}">
                 <File Id="Microsoft.Web.Infrastructure.dll" Name="Microsoft.Web.Infrastructure.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Microsoft.Web.Infrastructure.dll" />
             </Component>
+            <Component Id="Microsoft.Win32.Primitives.dll" Guid="{6354B0BC-2A36-45EE-BB40-175CAA7AAFF5}">
+                <File Id="Microsoft.Win32.Primitives.dll" Name="Microsoft.Win32.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Microsoft.Win32.Primitives.dll" />
+            </Component>
+            <Component Id="netstandard.dll" Guid="{30ED301E-CB7C-487E-BD44-38CF2DD11425}">
+                <File Id="netstandard.dll" Name="netstandard.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)netstandard.dll" />
+            </Component>
             <Component Id="Newtonsoft.Json.dll" Guid="{79E9DED8-F018-4F49-B2D1-6D1E5278C646}">
                 <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Newtonsoft.Json.dll" />
+            </Component>
+            <Component Id="System.AppContext.dll" Guid="{07949F51-0531-4297-BE74-56CFCB2BBF8B}">
+                <File Id="System.AppContext.dll" Name="System.AppContext.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.AppContext.dll" />
+            </Component>
+            <Component Id="System.Collections.Concurrent.dll" Guid="{6A3110F3-36E3-49CC-AA04-19B6F39426AE}">
+                <File Id="System.Collections.Concurrent.dll" Name="System.Collections.Concurrent.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Collections.Concurrent.dll" />
+            </Component>
+            <Component Id="System.Collections.dll" Guid="{F8D1E3AA-D38A-4BD1-821E-931CB21C96DA}">
+                <File Id="System.Collections.dll" Name="System.Collections.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Collections.dll" />
+            </Component>
+            <Component Id="System.Collections.NonGeneric.dll" Guid="{E8730B60-0427-42BF-A11D-368E0A7DC997}">
+                <File Id="System.Collections.NonGeneric.dll" Name="System.Collections.NonGeneric.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Collections.NonGeneric.dll" />
+            </Component>
+            <Component Id="System.Collections.Specialized.dll" Guid="{8669E2FE-C69E-41CF-809F-B917513A8F6F}">
+                <File Id="System.Collections.Specialized.dll" Name="System.Collections.Specialized.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Collections.Specialized.dll" />
             </Component>
             <Component Id="System.ComponentModel.DataAnnotations.dll" Guid="{E4901813-9090-4E2D-AE06-83074694981A}">
                 <File Id="System.ComponentModel.DataAnnotations.dll" Name="System.ComponentModel.DataAnnotations.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ComponentModel.DataAnnotations.dll" />
             </Component>
+            <Component Id="System.ComponentModel.dll" Guid="{53346DE5-120E-46A6-9615-4AE9EEBDCDA2}">
+                <File Id="System.ComponentModel.dll" Name="System.ComponentModel.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ComponentModel.dll" />
+            </Component>
+            <Component Id="System.ComponentModel.EventBasedAsync.dll" Guid="{344F9AE8-BCB9-4EB4-B659-D9594E2336DC}">
+                <File Id="System.ComponentModel.EventBasedAsync.dll" Name="System.ComponentModel.EventBasedAsync.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ComponentModel.EventBasedAsync.dll" />
+            </Component>
+            <Component Id="System.ComponentModel.Primitives.dll" Guid="{7BD00D00-2545-414F-866C-40EBD9B4CECC}">
+                <File Id="System.ComponentModel.Primitives.dll" Name="System.ComponentModel.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ComponentModel.Primitives.dll" />
+            </Component>
+            <Component Id="System.ComponentModel.TypeConverter.dll" Guid="{FA6B8CCF-5159-4E51-8CFA-044A0622C99E}">
+                <File Id="System.ComponentModel.TypeConverter.dll" Name="System.ComponentModel.TypeConverter.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ComponentModel.TypeConverter.dll" />
+            </Component>
             <Component Id="System.Configuration.dll" Guid="{CAAE2C60-431B-4A8B-8752-7ED39A123730}">
                 <File Id="System.Configuration.dll" Name="System.Configuration.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Configuration.dll" />
             </Component>
+            <Component Id="System.Console.dll" Guid="{EE205083-FFD8-4761-BFAA-2A1A702A380E}">
+                <File Id="System.Console.dll" Name="System.Console.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Console.dll" />
+            </Component>
+            <Component Id="System.Data.Common.dll" Guid="{A62FF1CA-23C7-4290-98CC-4FD383005B95}">
+                <File Id="System.Data.Common.dll" Name="System.Data.Common.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Data.Common.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.Contracts.dll" Guid="{74B9CEBC-BE90-4E21-B2D9-41DABB45AB4C}">
+                <File Id="System.Diagnostics.Contracts.dll" Name="System.Diagnostics.Contracts.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.Contracts.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.Debug.dll" Guid="{629590F9-D254-4765-AFE6-4EE4E05DACE1}">
+                <File Id="System.Diagnostics.Debug.dll" Name="System.Diagnostics.Debug.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.Debug.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.FileVersionInfo.dll" Guid="{8200327B-59B8-4685-AC88-CD882F38C29B}">
+                <File Id="System.Diagnostics.FileVersionInfo.dll" Name="System.Diagnostics.FileVersionInfo.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.FileVersionInfo.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.Process.dll" Guid="{4F5DF26D-187B-4F56-BAFC-B08C4972890B}">
+                <File Id="System.Diagnostics.Process.dll" Name="System.Diagnostics.Process.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.Process.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.StackTrace.dll" Guid="{57D3EFA2-09BA-4704-BA85-757833C602C5}">
+                <File Id="System.Diagnostics.StackTrace.dll" Name="System.Diagnostics.StackTrace.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.StackTrace.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.TextWriterTraceListener.dll" Guid="{D986C011-3359-4334-99AB-F19BB7C97DDE}">
+                <File Id="System.Diagnostics.TextWriterTraceListener.dll" Name="System.Diagnostics.TextWriterTraceListener.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.TextWriterTraceListener.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.Tools.dll" Guid="{75533BE0-3E27-4A94-9234-678C12F864E7}">
+                <File Id="System.Diagnostics.Tools.dll" Name="System.Diagnostics.Tools.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.Tools.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.TraceSource.dll" Guid="{A992C2C7-0F80-4210-A9B5-AC970C1A987C}">
+                <File Id="System.Diagnostics.TraceSource.dll" Name="System.Diagnostics.TraceSource.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.TraceSource.dll" />
+            </Component>
+            <Component Id="System.Diagnostics.Tracing.dll" Guid="{C69B2097-9E54-4A60-A399-16F717FB3E22}">
+                <File Id="System.Diagnostics.Tracing.dll" Name="System.Diagnostics.Tracing.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Diagnostics.Tracing.dll" />
+            </Component>
             <Component Id="System.dll" Guid="{4504C6D5-6CAB-438C-AC21-997522E62CB8}">
                 <File Id="System.dll" Name="System.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.dll" />
+            </Component>
+            <Component Id="System.Drawing.Primitives.dll" Guid="{091C76C9-9C94-4E4B-B061-20EE70AF6E2B}">
+                <File Id="System.Drawing.Primitives.dll" Name="System.Drawing.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Drawing.Primitives.dll" />
+            </Component>
+            <Component Id="System.Dynamic.Runtime.dll" Guid="{D69EEBDE-C1E9-4B39-909D-7E02FF64A7B5}">
+                <File Id="System.Dynamic.Runtime.dll" Name="System.Dynamic.Runtime.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Dynamic.Runtime.dll" />
+            </Component>
+            <Component Id="System.Globalization.Calendars.dll" Guid="{A41A34C0-5834-4B4A-A233-9449451850F8}">
+                <File Id="System.Globalization.Calendars.dll" Name="System.Globalization.Calendars.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Globalization.Calendars.dll" />
+            </Component>
+            <Component Id="System.Globalization.dll" Guid="{BF2FC957-88FC-478C-8656-675F4D0ABE95}">
+                <File Id="System.Globalization.dll" Name="System.Globalization.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Globalization.dll" />
+            </Component>
+            <Component Id="System.Globalization.Extensions.dll" Guid="{BB58AAB3-86DE-4518-A077-2424D2B4076B}">
+                <File Id="System.Globalization.Extensions.dll" Name="System.Globalization.Extensions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Globalization.Extensions.dll" />
+            </Component>
+            <Component Id="System.IO.Compression.dll" Guid="{993F7F97-7F49-43CE-B2B9-B6D169A8FB95}">
+                <File Id="System.IO.Compression.dll" Name="System.IO.Compression.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.Compression.dll" />
+            </Component>
+            <Component Id="System.IO.Compression.ZipFile.dll" Guid="{0433EC86-4A11-4BB6-B06A-15178A71A46A}">
+                <File Id="System.IO.Compression.ZipFile.dll" Name="System.IO.Compression.ZipFile.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.Compression.ZipFile.dll" />
+            </Component>
+            <Component Id="System.IO.dll" Guid="{28114FFE-A626-41F1-9F2B-110EE59CEFDE}">
+                <File Id="System.IO.dll" Name="System.IO.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.dll" />
+            </Component>
+            <Component Id="System.IO.FileSystem.dll" Guid="{6BB05E26-D231-47E3-9F13-C86F9BB0934B}">
+                <File Id="System.IO.FileSystem.dll" Name="System.IO.FileSystem.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.FileSystem.dll" />
+            </Component>
+            <Component Id="System.IO.FileSystem.DriveInfo.dll" Guid="{ABAA2966-38B8-4BD0-8C25-4E11B8C4FA59}">
+                <File Id="System.IO.FileSystem.DriveInfo.dll" Name="System.IO.FileSystem.DriveInfo.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.FileSystem.DriveInfo.dll" />
+            </Component>
+            <Component Id="System.IO.FileSystem.Primitives.dll" Guid="{978835B0-F20F-4838-903E-9F631B942730}">
+                <File Id="System.IO.FileSystem.Primitives.dll" Name="System.IO.FileSystem.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.FileSystem.Primitives.dll" />
+            </Component>
+            <Component Id="System.IO.FileSystem.Watcher.dll" Guid="{8657B929-3760-40AA-BFAD-B67923D6D0EC}">
+                <File Id="System.IO.FileSystem.Watcher.dll" Name="System.IO.FileSystem.Watcher.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.FileSystem.Watcher.dll" />
+            </Component>
+            <Component Id="System.IO.IsolatedStorage.dll" Guid="{42F5553F-F085-4098-B6CA-B5D406D15A96}">
+                <File Id="System.IO.IsolatedStorage.dll" Name="System.IO.IsolatedStorage.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.IsolatedStorage.dll" />
+            </Component>
+            <Component Id="System.IO.MemoryMappedFiles.dll" Guid="{60A943BA-C37B-406A-9F7B-3748CE007044}">
+                <File Id="System.IO.MemoryMappedFiles.dll" Name="System.IO.MemoryMappedFiles.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.MemoryMappedFiles.dll" />
+            </Component>
+            <Component Id="System.IO.Pipes.dll" Guid="{A8947B29-5268-4922-A572-63AF9CA0CD10}">
+                <File Id="System.IO.Pipes.dll" Name="System.IO.Pipes.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.Pipes.dll" />
+            </Component>
+            <Component Id="System.IO.UnmanagedMemoryStream.dll" Guid="{A1A6121F-8A3E-43D9-9C92-C8AF2343000F}">
+                <File Id="System.IO.UnmanagedMemoryStream.dll" Name="System.IO.UnmanagedMemoryStream.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.IO.UnmanagedMemoryStream.dll" />
+            </Component>
+            <Component Id="System.Linq.dll" Guid="{F6FDFB45-0C2B-446E-8E7E-0669470239C6}">
+                <File Id="System.Linq.dll" Name="System.Linq.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Linq.dll" />
+            </Component>
+            <Component Id="System.Linq.Expressions.dll" Guid="{D1039D25-9CD1-4CC6-A34F-C09A99E2BC45}">
+                <File Id="System.Linq.Expressions.dll" Name="System.Linq.Expressions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Linq.Expressions.dll" />
+            </Component>
+            <Component Id="System.Linq.Parallel.dll" Guid="{E355D8C4-5F3B-4DBA-AB32-194F8589FF0F}">
+                <File Id="System.Linq.Parallel.dll" Name="System.Linq.Parallel.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Linq.Parallel.dll" />
+            </Component>
+            <Component Id="System.Linq.Queryable.dll" Guid="{E4B35442-B84C-48D6-8182-D439BB981AA0}">
+                <File Id="System.Linq.Queryable.dll" Name="System.Linq.Queryable.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Linq.Queryable.dll" />
             </Component>
             <Component Id="System.Net.Http.dll" Guid="{74967D04-6D89-4B20-BDC3-5429E249796B}">
                 <File Id="System.Net.Http.dll" Name="System.Net.Http.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Http.dll" />
@@ -166,11 +292,152 @@
             <Component Id="System.Net.Http.WebRequest.dll" Guid="{4A57EB2A-38BF-4659-817D-62DDD9B2E97E}">
                 <File Id="System.Net.Http.WebRequest.dll" Name="System.Net.Http.WebRequest.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Http.WebRequest.dll" />
             </Component>
+            <Component Id="System.Net.NameResolution.dll" Guid="{EC51B84E-ADC7-4946-87B9-56A2456A7C8F}">
+                <File Id="System.Net.NameResolution.dll" Name="System.Net.NameResolution.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.NameResolution.dll" />
+            </Component>
+            <Component Id="System.Net.NetworkInformation.dll" Guid="{F0CD4A07-A98E-4D5B-A529-033A8C2B4073}">
+                <File Id="System.Net.NetworkInformation.dll" Name="System.Net.NetworkInformation.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.NetworkInformation.dll" />
+            </Component>
+            <Component Id="System.Net.Ping.dll" Guid="{D14BD559-10C7-4C50-8AE8-E185C68A1DBE}">
+                <File Id="System.Net.Ping.dll" Name="System.Net.Ping.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Ping.dll" />
+            </Component>
+            <Component Id="System.Net.Primitives.dll" Guid="{82BAC5A7-A43C-4840-B663-6B77D371C93E}">
+                <File Id="System.Net.Primitives.dll" Name="System.Net.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Primitives.dll" />
+            </Component>
+            <Component Id="System.Net.Requests.dll" Guid="{1E8D06F9-F357-4BD6-9B26-5254DB2A6E7A}">
+                <File Id="System.Net.Requests.dll" Name="System.Net.Requests.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Requests.dll" />
+            </Component>
+            <Component Id="System.Net.Security.dll" Guid="{E43298DE-9C62-49D5-B8D9-6E49BD0326C4}">
+                <File Id="System.Net.Security.dll" Name="System.Net.Security.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Security.dll" />
+            </Component>
+            <Component Id="System.Net.Sockets.dll" Guid="{B09CA78C-907B-414D-91FF-B4519FCBA75F}">
+                <File Id="System.Net.Sockets.dll" Name="System.Net.Sockets.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.Sockets.dll" />
+            </Component>
+            <Component Id="System.Net.WebHeaderCollection.dll" Guid="{E085903E-6A08-4612-93D0-04B2C4D81788}">
+                <File Id="System.Net.WebHeaderCollection.dll" Name="System.Net.WebHeaderCollection.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.WebHeaderCollection.dll" />
+            </Component>
+            <Component Id="System.Net.WebSockets.Client.dll" Guid="{BBB71B10-D0F1-4327-92C8-15A9482A11A1}">
+                <File Id="System.Net.WebSockets.Client.dll" Name="System.Net.WebSockets.Client.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.WebSockets.Client.dll" />
+            </Component>
+            <Component Id="System.Net.WebSockets.dll" Guid="{243D6C63-FD28-4085-8D46-A16B7FDCCFC7}">
+                <File Id="System.Net.WebSockets.dll" Name="System.Net.WebSockets.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Net.WebSockets.dll" />
+            </Component>
+            <Component Id="System.ObjectModel.dll" Guid="{08D82ABD-E85B-44FB-96D2-0353A88E2D3B}">
+                <File Id="System.ObjectModel.dll" Name="System.ObjectModel.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ObjectModel.dll" />
+            </Component>
+            <Component Id="System.Reflection.dll" Guid="{66D79F03-DD2C-444D-B786-5CAFDF118F71}">
+                <File Id="System.Reflection.dll" Name="System.Reflection.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Reflection.dll" />
+            </Component>
+            <Component Id="System.Reflection.Extensions.dll" Guid="{0A039CF0-DDD3-410C-806E-353E26AF13EA}">
+                <File Id="System.Reflection.Extensions.dll" Name="System.Reflection.Extensions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Reflection.Extensions.dll" />
+            </Component>
+            <Component Id="System.Reflection.Primitives.dll" Guid="{7EF3B9B0-AC41-46CF-A51D-3DAA59F5573C}">
+                <File Id="System.Reflection.Primitives.dll" Name="System.Reflection.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Reflection.Primitives.dll" />
+            </Component>
+            <Component Id="System.Resources.Reader.dll" Guid="{F34E0988-1DF7-412C-85E5-5358E62C7E9A}">
+                <File Id="System.Resources.Reader.dll" Name="System.Resources.Reader.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Resources.Reader.dll" />
+            </Component>
+            <Component Id="System.Resources.ResourceManager.dll" Guid="{726C6E14-F841-4F11-8AB2-B786071875DA}">
+                <File Id="System.Resources.ResourceManager.dll" Name="System.Resources.ResourceManager.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Resources.ResourceManager.dll" />
+            </Component>
+            <Component Id="System.Resources.Writer.dll" Guid="{D4FD815A-0287-41BF-9CB9-81283646CC25}">
+                <File Id="System.Resources.Writer.dll" Name="System.Resources.Writer.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Resources.Writer.dll" />
+            </Component>
+            <Component Id="System.Runtime.CompilerServices.VisualC.dll" Guid="{E35F74AC-557F-4703-998E-1ABBE5FCB4BF}">
+                <File Id="System.Runtime.CompilerServices.VisualC.dll" Name="System.Runtime.CompilerServices.VisualC.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.CompilerServices.VisualC.dll" />
+            </Component>
+            <Component Id="System.Runtime.dll" Guid="{A8AB7E49-30C3-4D57-9B21-31352148CDC6}">
+                <File Id="System.Runtime.dll" Name="System.Runtime.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.dll" />
+            </Component>
+            <Component Id="System.Runtime.Extensions.dll" Guid="{328905B1-EAF3-44EE-99CA-640FCAFC6B41}">
+                <File Id="System.Runtime.Extensions.dll" Name="System.Runtime.Extensions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Extensions.dll" />
+            </Component>
+            <Component Id="System.Runtime.Handles.dll" Guid="{C1DA8C5B-CB49-4E8E-95C2-39DCDADAB24F}">
+                <File Id="System.Runtime.Handles.dll" Name="System.Runtime.Handles.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Handles.dll" />
+            </Component>
+            <Component Id="System.Runtime.InteropServices.dll" Guid="{2B9C324A-A544-4011-8330-58609819C238}">
+                <File Id="System.Runtime.InteropServices.dll" Name="System.Runtime.InteropServices.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.InteropServices.dll" />
+            </Component>
+            <Component Id="System.Runtime.InteropServices.RuntimeInformation.dll" Guid="{AE650F46-E7F5-4B89-8795-C2FEADC0D9FC}">
+                <File Id="System.Runtime.InteropServices.RuntimeInformation.dll" Name="System.Runtime.InteropServices.RuntimeInformation.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.InteropServices.RuntimeInformation.dll" />
+            </Component>
+            <Component Id="System.Runtime.Numerics.dll" Guid="{90197795-BCE7-4C44-8BD5-55A96545E47B}">
+                <File Id="System.Runtime.Numerics.dll" Name="System.Runtime.Numerics.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Numerics.dll" />
+            </Component>
             <Component Id="System.Runtime.Serialization.dll" Guid="{09C326A2-432C-4EF4-B4D3-3307EB977142}">
                 <File Id="System.Runtime.Serialization.dll" Name="System.Runtime.Serialization.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Serialization.dll" />
             </Component>
+            <Component Id="System.Runtime.Serialization.Formatters.dll" Guid="{653CF5B7-63AD-4B61-ACF7-82FAA66DC848}">
+                <File Id="System.Runtime.Serialization.Formatters.dll" Name="System.Runtime.Serialization.Formatters.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Serialization.Formatters.dll" />
+            </Component>
+            <Component Id="System.Runtime.Serialization.Json.dll" Guid="{F68C5682-849C-4F85-82AA-F1EEC822E09F}">
+                <File Id="System.Runtime.Serialization.Json.dll" Name="System.Runtime.Serialization.Json.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Serialization.Json.dll" />
+            </Component>
+            <Component Id="System.Runtime.Serialization.Primitives.dll" Guid="{CA10847F-A585-4B8C-AC6A-0B19D42C8009}">
+                <File Id="System.Runtime.Serialization.Primitives.dll" Name="System.Runtime.Serialization.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Serialization.Primitives.dll" />
+            </Component>
+            <Component Id="System.Runtime.Serialization.Xml.dll" Guid="{37969CF8-455E-443E-86E2-F653F05193C6}">
+                <File Id="System.Runtime.Serialization.Xml.dll" Name="System.Runtime.Serialization.Xml.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Runtime.Serialization.Xml.dll" />
+            </Component>
+            <Component Id="System.Security.Claims.dll" Guid="{79C7E2F9-C675-4B17-B98A-A174C500C478}">
+                <File Id="System.Security.Claims.dll" Name="System.Security.Claims.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.Claims.dll" />
+            </Component>
+            <Component Id="System.Security.Cryptography.Algorithms.dll" Guid="{A4879CD4-C12A-41D7-A7F6-8A80E8BF7B4E}">
+                <File Id="System.Security.Cryptography.Algorithms.dll" Name="System.Security.Cryptography.Algorithms.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.Cryptography.Algorithms.dll" />
+            </Component>
+            <Component Id="System.Security.Cryptography.Csp.dll" Guid="{C53C1C1B-30E3-402F-8E3D-1C7B7FA7AA29}">
+                <File Id="System.Security.Cryptography.Csp.dll" Name="System.Security.Cryptography.Csp.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.Cryptography.Csp.dll" />
+            </Component>
+            <Component Id="System.Security.Cryptography.Encoding.dll" Guid="{3115D89F-B076-40AD-9928-0E689EC2D772}">
+                <File Id="System.Security.Cryptography.Encoding.dll" Name="System.Security.Cryptography.Encoding.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.Cryptography.Encoding.dll" />
+            </Component>
+            <Component Id="System.Security.Cryptography.Primitives.dll" Guid="{19D69268-FED8-4F42-A4B2-A582480B7662}">
+                <File Id="System.Security.Cryptography.Primitives.dll" Name="System.Security.Cryptography.Primitives.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.Cryptography.Primitives.dll" />
+            </Component>
+            <Component Id="System.Security.Cryptography.X509Certificates.dll" Guid="{A498AAD7-E5AF-4A4A-9241-144E5A0AB065}">
+                <File Id="System.Security.Cryptography.X509Certificates.dll" Name="System.Security.Cryptography.X509Certificates.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.Cryptography.X509Certificates.dll" />
+            </Component>
+            <Component Id="System.Security.Principal.dll" Guid="{54D7BEFC-4755-4896-B69C-B52F99598330}">
+                <File Id="System.Security.Principal.dll" Name="System.Security.Principal.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.Principal.dll" />
+            </Component>
+            <Component Id="System.Security.SecureString.dll" Guid="{77352DC6-C55B-4F1D-9CEB-FA0EADBA230F}">
+                <File Id="System.Security.SecureString.dll" Name="System.Security.SecureString.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Security.SecureString.dll" />
+            </Component>
             <Component Id="System.Text.Encoding.dll" Guid="{6F1AE932-FA4C-49E2-9AE9-DF4275E08BEA}">
                 <File Id="System.Text.Encoding.dll" Name="System.Text.Encoding.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Text.Encoding.dll" />
+            </Component>
+            <Component Id="System.Text.Encoding.Extensions.dll" Guid="{AA44E6EB-8F7E-420C-9062-B98FE89835CD}">
+                <File Id="System.Text.Encoding.Extensions.dll" Name="System.Text.Encoding.Extensions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Text.Encoding.Extensions.dll" />
+            </Component>
+            <Component Id="System.Text.Encodings.Web.dll" Guid="{D1BE721C-2558-4997-B5E4-2BE25A6925EC}">
+                <File Id="System.Text.Encodings.Web.dll" Name="System.Text.Encodings.Web.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Text.Encodings.Web.dll" />
+            </Component>
+            <Component Id="System.Text.RegularExpressions.dll" Guid="{CDBE8510-4E9C-482C-8BAA-3BF8FCFD0EDF}">
+                <File Id="System.Text.RegularExpressions.dll" Name="System.Text.RegularExpressions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Text.RegularExpressions.dll" />
+            </Component>
+            <Component Id="System.Threading.dll" Guid="{EEF666FD-7516-45D5-9AE8-9DBAE3B5F05C}">
+                <File Id="System.Threading.dll" Name="System.Threading.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Threading.dll" />
+            </Component>
+            <Component Id="System.Threading.Overlapped.dll" Guid="{9E8F6461-2BFD-433A-8146-30CFEF364A95}">
+                <File Id="System.Threading.Overlapped.dll" Name="System.Threading.Overlapped.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Threading.Overlapped.dll" />
+            </Component>
+            <Component Id="System.Threading.Tasks.dll" Guid="{7E6E92A1-7C2E-4FFA-9C59-495188C6E11C}">
+                <File Id="System.Threading.Tasks.dll" Name="System.Threading.Tasks.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Threading.Tasks.dll" />
+            </Component>
+            <Component Id="System.Threading.Tasks.Parallel.dll" Guid="{7F5EBA44-F2F1-4B3C-A491-94D475736AAB}">
+                <File Id="System.Threading.Tasks.Parallel.dll" Name="System.Threading.Tasks.Parallel.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Threading.Tasks.Parallel.dll" />
+            </Component>
+            <Component Id="System.Threading.Thread.dll" Guid="{5C7F6F35-5812-4D1B-95EE-3B85FB9F1420}">
+                <File Id="System.Threading.Thread.dll" Name="System.Threading.Thread.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Threading.Thread.dll" />
+            </Component>
+            <Component Id="System.Threading.ThreadPool.dll" Guid="{1C0A34A8-23C3-483F-8207-64D791DDFC80}">
+                <File Id="System.Threading.ThreadPool.dll" Name="System.Threading.ThreadPool.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Threading.ThreadPool.dll" />
+            </Component>
+            <Component Id="System.Threading.Timer.dll" Guid="{B7CEE00D-522E-4157-89C9-407AB9446D06}">
+                <File Id="System.Threading.Timer.dll" Name="System.Threading.Timer.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Threading.Timer.dll" />
+            </Component>
+            <Component Id="System.ValueTuple.dll" Guid="{F05AE0EE-5B29-414E-9712-CCB1FB0AFAAE}">
+                <File Id="System.ValueTuple.dll" Name="System.ValueTuple.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.ValueTuple.dll" />
             </Component>
             <Component Id="System.Web.Abstractions.dll" Guid="{DE3853ED-84F5-44ED-9462-122E2F7F02CF}">
                 <File Id="System.Web.Abstractions.dll" Name="System.Web.Abstractions.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Web.Abstractions.dll" />
@@ -216,6 +483,24 @@
             </Component>
             <Component Id="System.Xml.Linq.dll" Guid="{46DF478B-B218-46AC-BF10-78F203C56F2F}">
                 <File Id="System.Xml.Linq.dll" Name="System.Xml.Linq.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.Linq.dll" />
+            </Component>
+            <Component Id="System.Xml.ReaderWriter.dll" Guid="{EFCDCE2F-5FA3-4044-B320-370724525B5E}">
+                <File Id="System.Xml.ReaderWriter.dll" Name="System.Xml.ReaderWriter.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.ReaderWriter.dll" />
+            </Component>
+            <Component Id="System.Xml.XDocument.dll" Guid="{A5FB3ADD-32B6-4EEE-8D89-3D69E7262673}">
+                <File Id="System.Xml.XDocument.dll" Name="System.Xml.XDocument.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.XDocument.dll" />
+            </Component>
+            <Component Id="System.Xml.XmlDocument.dll" Guid="{29281860-818D-4C6A-B25E-D3FFBB703F1D}">
+                <File Id="System.Xml.XmlDocument.dll" Name="System.Xml.XmlDocument.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.XmlDocument.dll" />
+            </Component>
+            <Component Id="System.Xml.XmlSerializer.dll" Guid="{FDB24BF4-ED9B-4E64-912B-29A89A8D808C}">
+                <File Id="System.Xml.XmlSerializer.dll" Name="System.Xml.XmlSerializer.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.XmlSerializer.dll" />
+            </Component>
+            <Component Id="System.Xml.XPath.dll" Guid="{740D58A5-7EBB-45D9-8673-86752F1F43EA}">
+                <File Id="System.Xml.XPath.dll" Name="System.Xml.XPath.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.XPath.dll" />
+            </Component>
+            <Component Id="System.Xml.XPath.XDocument.dll" Guid="{2305CB02-FA42-46A3-BCA3-1ECE18095F5B}">
+                <File Id="System.Xml.XPath.XDocument.dll" Name="System.Xml.XPath.XDocument.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)System.Xml.XPath.XDocument.dll" />
             </Component>
         </ComponentGroup>
 

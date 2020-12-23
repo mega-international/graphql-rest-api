@@ -1,5 +1,4 @@
 using FluentAssertions;
-using FluentAssertions.Json;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common.JsonMessages;
 using Hopex.Model.Abstractions;

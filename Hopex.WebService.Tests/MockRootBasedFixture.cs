@@ -1,4 +1,4 @@
-﻿using Hopex.ApplicationServer.WebServices;
+using Hopex.ApplicationServer.WebServices;
 using Hopex.Common;
 using Hopex.Model.Abstractions;
 using Hopex.Modules.GraphQL;
@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-
+using Hopex.Modules.GraphQL.Schema;
 using static Hopex.WebService.Tests.Assertions.MegaIdMatchers;
 
 namespace Hopex.WebService.Tests
@@ -29,14 +29,18 @@ namespace Hopex.WebService.Tests
             return spyRoot;
         }
 
-        protected async Task<HopexResponse> ExecuteQueryAsync(IMegaRoot root, string query, string schema = "ITPM", object variables = null)
+        protected async Task<HopexResponse> ExecuteQueryAsync(IMegaRoot root, string query, string schema = "ITPM", object variables = null, ISchemaManagerProvider schemaManagerProvider = null)
         {
-            ws = new TestableEntryPoint(root, schema);
+            if (schemaManagerProvider == null)
+            {
+                schemaManagerProvider = new TestableSchemaManagerProvider();
+            }
+            ws = new TestableEntryPoint(root, schema, schemaManagerProvider);
             var args = new InputArguments
             {
-                Query = query
+                Query = query,
+                Variables = ConvertAnonymousToDictionary(variables)
             };
-            args.Variables = ConvertAnonymousToDictionary(variables);
             return await ws.Execute(args);
         }
 
@@ -59,8 +63,8 @@ namespace Hopex.WebService.Tests
             private readonly MockraphQLRequest _request;
             private readonly IMegaRoot _megaRoot;
 
-            public TestableEntryPoint(IMegaRoot root, string schema)
-                    : base(new TestableSchemaManagerProvider(), new TestableLanguageProvider())
+            public TestableEntryPoint(IMegaRoot root, string schema, ISchemaManagerProvider schemaManagerProvider)
+                    : base(schemaManagerProvider, new TestableLanguageProvider())
             {
                 _request = new MockraphQLRequest(schema);
                 _megaRoot = root;

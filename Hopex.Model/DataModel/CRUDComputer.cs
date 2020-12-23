@@ -5,12 +5,7 @@ using Mega.Macro.API;
 namespace Hopex.Model.DataModel
 {
     public class CrudComputer
-    {
-        public static CrudResult GetCrud(MegaObject obj)
-        {
-            return new CrudResult(obj.CallFunction<MegaWrapperObject>("~R2mHVReGFP46[WFQuery]", "CRUD"));
-        }
-
+    {        
         public static CrudResult GetCrud(IMegaObject obj)
         {
             return new CrudResult(obj.CallFunctionString("~R2mHVReGFP46[WFQuery]", "CRUD"));
@@ -36,7 +31,11 @@ namespace Hopex.Model.DataModel
 
         public static CrudResult GetCollectionMetaPermission(IMegaRoot root, string collectionMegaId)
         {
-            return new CrudResult(root.GetCollectionDescription(collectionMegaId).CallFunctionString("~f8pQpjMDK1SP[GetMetaPermission]"));            
+            using (var collection = root.GetCollectionDescription(collectionMegaId))
+            {
+                var crudString = collection.CallFunctionString("~f8pQpjMDK1SP[GetMetaPermission]");
+                return new CrudResult(crudString);
+            }
         }
     }
 
@@ -57,6 +56,6 @@ namespace Hopex.Model.DataModel
                 _crudString = crudString;
         }
 
-        private string _crudString = "";
+        private readonly string _crudString = "";
     }
 }

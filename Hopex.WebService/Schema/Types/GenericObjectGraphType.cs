@@ -11,18 +11,21 @@ namespace Hopex.Modules.GraphQL.Schema.Types
     internal class GenericObjectInterface : InterfaceGraphType<IModelElement>
     {
         private readonly IGraphType _languagesType;
-        private readonly GenericObjectGraphType _wildcardType;
+        private readonly IGraphType _currenciesType;
         private readonly Dictionary<MegaId, ObjectGraphType<IModelElement>> _concreteGraphTypes = new Dictionary<MegaId, ObjectGraphType<IModelElement>>();
 
         private static readonly Dictionary<string, object> NO_ARGUMENTS = new Dictionary<string, object>();
 
-        internal GenericObjectInterface(global::GraphQL.Types.Schema schema, IGraphType languagesType)
+        public GenericObjectGraphType WildcardType { get; set; }
+
+        internal GenericObjectInterface(global::GraphQL.Types.Schema schema, IGraphType languagesType, IGraphType currenciesType)
         {
             _languagesType = languagesType;
-            _wildcardType = new GenericObjectGraphType();
+            _currenciesType = currenciesType;
+            WildcardType = new GenericObjectGraphType();
 
             schema.RegisterType(this);
-            schema.RegisterType(_wildcardType);
+            schema.RegisterType(WildcardType);
 
             Name = "GraphQLObjectInterface";
             Field<StringGraphType>("id", "Absolute identifier", resolve: ctx => ctx.Source.GetGenericValue(MetaAttributeLibrary.AbsoluteIdentifier, ctx.Arguments ?? NO_ARGUMENTS));
@@ -35,7 +38,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
 
             ResolveType = obj => ResolveConcreteType((IModelElement)obj);
 
-            ImplementInType(_wildcardType);            
+            ImplementInType(WildcardType);            
         }
 
         private IObjectGraphType ResolveConcreteType(IModelElement modelElement)
@@ -46,7 +49,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
             var matchedConcreteType = _concreteGraphTypes.FirstOrDefault(pair => toolkit.IsSameId(pair.Key, metaclassId));
             if (matchedConcreteType.Key != null)
                 return matchedConcreteType.Value;
-            return _wildcardType;
+            return WildcardType;
         }
 
         internal void ImplementInConcreteType(string metaclassId, ObjectGraphType<IModelElement> typeToEnrich)

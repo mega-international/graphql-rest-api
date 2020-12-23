@@ -73,7 +73,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                 });
         }
 
-        private async Task<CreateAllResponse> CreateAllTestObjects()
+        private async Task CreateAllTestObjects()
         {
             var request = new GraphQLRequest()
             {
@@ -102,7 +102,6 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             data.BusinessCapabilityBC2.ExternalId.Should().Be("TEST_OGD_BC2");
             data.Application.ExternalId.Should().Be("TEST_OGD_APP5");
             data.Application.BusinessCapability.Should().BeEquivalentTo( new OrderedBasicObject { ExternalId = "TEST_OGD_BC1" });
-            return data;
         }
 
         public override async Task DisposeAsync()
@@ -110,16 +109,16 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             var request = new GraphQLRequest()
             {
                 Query = @"mutation deleteAll {                            
-                            deletaApp: deleteApplication(id:""TEST_OGD_APP5"" idType:EXTERNAL) { id }
-                            deleteBC1: deleteBusinessCapability(id: ""TEST_OGD_BC1"" idType: EXTERNAL) { id }
-                            deleteBC2: deleteBusinessCapability(id: ""TEST_OGD_BC2"" idType: EXTERNAL) { id }
+                            deleteApp: deleteApplication(id:""TEST_OGD_APP5"" idType:EXTERNAL) { deletedCount }
+                            deleteBC1: deleteBusinessCapability(id: ""TEST_OGD_BC1"" idType: EXTERNAL) { deletedCount }
+                            deleteBC2: deleteBusinessCapability(id: ""TEST_OGD_BC2"" idType: EXTERNAL) { deletedCount }
                         }"
             };
             var response = await _graphQLClient.SendQueryAsync<DeleteAllResponse>(request);
             var data = response.Data;
-            data.DeleteApp.Should().BeNull();
-            data.DeleteBC1.Should().BeNull();
-            data.DeleteBC2.Should().BeNull();
+            data.DeleteApp?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteBC1?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteBC2?.DeletedCount.Should().BeGreaterOrEqualTo(0);
 
             await base.DisposeAsync();
         }
@@ -144,9 +143,9 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
         public class DeleteAllResponse
         {
-            public BasicObject DeleteApp { get; set; }
-            public BasicObject DeleteBC1 { get; set; }
-            public BasicObject DeleteBC2 { get; set; }            
+            public DeleteResult DeleteApp { get; set; }
+            public DeleteResult DeleteBC1 { get; set; }
+            public DeleteResult DeleteBC2 { get; set; }            
         }
 
         public class Fulfillment : OrderedBasicObject

@@ -5,8 +5,6 @@ using Hopex.Model.Abstractions.MetaModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hopex.Modules.GraphQL.Schema.Types;
-using Mega.Macro.API.Library;
 
 namespace Hopex.Modules.GraphQL.Schema.Filters
 {
@@ -28,22 +26,18 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
         internal Dictionary<string, FilterItem> Filters { get; } = new Dictionary<string, FilterItem>();
 
-        public QueryArguments BuildFilterArguments(IClassDescription clazz, IEnumerable<IPropertyDescription> linkProperties = null)
+        public QueryArguments BuildFilterArguments(IClassDescription clazz, HopexEnumerationGraphType languagesType, IEnumerable<IPropertyDescription> linkProperties = null)
         {
             var arguments = new QueryArguments();
-            return AddFilterArguments(arguments, clazz, linkProperties);
+            return AddFilterArguments(arguments, clazz, languagesType, linkProperties);
         }
 
-        public QueryArguments AddFilterArguments(QueryArguments arguments, IClassDescription clazz, IEnumerable<IPropertyDescription> linkProperties = null)
+        public QueryArguments AddFilterArguments(QueryArguments arguments, IClassDescription clazz, HopexEnumerationGraphType languagesType, IEnumerable<IPropertyDescription> linkProperties = null)
         {
             var filterItem = GetOrCreateFilterObject(clazz.Name);
             arguments.Add(new QueryArgument(filterItem.Filter) { Name = "filter" });
-            arguments.Add(new QueryArgument<IntGraphType> { Name = "first" });
-            arguments.Add(new QueryArgument<StringGraphType> { Name = "after" });
-            arguments.Add(new QueryArgument<IntGraphType> { Name = "last" });
-            arguments.Add(new QueryArgument<StringGraphType> { Name = "before" });
-            arguments.Add(new QueryArgument<IntGraphType> { Name = "skip" });
             arguments.Add(new QueryArgument(new ListGraphType(filterItem.OrderBy)) { Name = "orderBy" });
+            arguments.Add(new QueryArgument(languagesType) { Name = "language" });
 
             if (filterItem.IsInitialized)
             {
@@ -74,62 +68,31 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             foreach (var prop in properties)
             {
                 var propName = prop.Name.ToCamelCase();
-                if (false)//(prop.PropertyType == PropertyType.Id && prop.Id != MetaAttributeLibrary.AbsoluteIdentifier.Substring(0, 13))
+                var graphType = prop.NativeType.GetGraphTypeFromType(true);
+                var typeList = typeof(ListGraphType<>).MakeGenericType(typeof(NonNullGraphType<>).MakeGenericType(graphType));
+
+                IGraphType resolvedType = null;
+                IGraphType resolvedListType = null;
+
+                if (prop.EnumValues?.Count() > 0)
                 {
-                    //propName = propName.TrimEnd("Id".ToCharArray());
-                    var targetFilter = GetOrCreateFilterObject(propName);
-                    var targetType = new GenericObjectInterface(_schemaBuilder.Schema, _schemaBuilder.LanguagesType);
-                    foreach (var targetProp in targetType.Fields)
+                    resolvedType = _schemaBuilder.GetOrCreateEnumType(prop);
+                    if (resolvedType != null)
                     {
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_not" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_in" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_not_in" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_lt" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_lte" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_gt" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_gte" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_contains" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_not_contains" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_starts_with" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_not_starts_with" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_ends_with" });
-                        targetFilter.Filter.AddField(new FieldType { ResolvedType = targetProp.ResolvedType, Type = targetProp.Type, Name = $"{targetProp.Name}_not_ends_with" });
+                        resolvedListType = new ListGraphType(new NonNullGraphType(resolvedType));
                     }
-                    targetFilter.IsInitialized = true;
-                    filter.AddField(new FieldType
-                    {
-                        Name = propName,
-                        Type = typeof(InputObjectGraphType<object>),
-                        ResolvedType = targetFilter.Filter
-                    });
                 }
-                else
-                {
-                    var graphType = prop.NativeType.GetGraphTypeFromType(true);
-                    var typeList = typeof(ListGraphType<>).MakeGenericType(typeof(NonNullGraphType<>).MakeGenericType(graphType));
 
-                    IGraphType resolvedType = null;
-                    IGraphType resolvedListType = null;
-                    if (prop.EnumValues?.Count() > 0)
-                    {
-                        resolvedType = _schemaBuilder.GetOrCreateEnumType(prop);
-                        if (resolvedType != null)
-                        {
-                            resolvedListType = new ListGraphType(new NonNullGraphType(resolvedType));
-                        }
-                    }
+                AddFieldsToFilter(filter, prop.Id, propName, prop.PropertyType, graphType, typeList, resolvedType, resolvedListType);
 
-                    AddFieldsToFilter(filter, prop.Id, propName, prop.PropertyType, graphType, typeList, resolvedType, resolvedListType);
-
-                    enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(propName).Id, 1));
-                    enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(propName).Id, -1));
-                }
+                enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(propName).Id, 1));
+                enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(propName).Id, -1));
             }
 
             foreach (var rel in clazz.Relationships)
             {
-                var targetName = rel.Path.Last().TargetSchemaName;
+                var targetId = rel.Path.Last().TargetSchemaId;
+                var targetName = _schemaBuilder.HopexSchema.Classes.Where(x => x.Id == targetId).Select(x =>x.Name).FirstOrDefault();
                 var targetFilter = GetOrCreateFilterObject(targetName);
                 filter.AddField(new FieldType
                 {
@@ -180,20 +143,6 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                     filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_not"});
                     filter.AddField(new FieldType {ResolvedType = resolvedListType, Type = typeList, Name = $"{propertyName}_in"});
                     filter.AddField(new FieldType {ResolvedType = resolvedListType, Type = typeList, Name = $"{propertyName}_not_in"});
-                    //if (propertyId != MetaAttributeLibrary.AbsoluteIdentifier.Substring(0, 13))
-                    //{
-                        
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_lt"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_lte"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_gt"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_gte"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_contains"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_not_contains"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_starts_with"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_not_starts_with"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_ends_with"});
-                    //    filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}_not_ends_with"});
-                    //}
                     break;
                 case PropertyType.Enum:
                     filter.AddField(new FieldType {ResolvedType = resolvedType, Type = graphType, Name = $"{propertyName}"});
@@ -240,6 +189,8 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            //Fields in common with all type
+            filter.AddField(new FieldType { ResolvedType = null, Type = typeof(bool).GetGraphTypeFromType(true), Name = $"{propertyName}_null" });
         }
     }
 }

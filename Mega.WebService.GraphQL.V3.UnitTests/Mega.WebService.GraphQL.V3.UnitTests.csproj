@@ -89,8 +89,10 @@
     <Compile Include="Assertions\ByteArrayAssertions.cs" />
     <Compile Include="Assertions\CallMacroArgumentsMatchers.cs" />
     <Compile Include="Assertions\HttpActionResultAssertions.cs" />
+    <Compile Include="AsyncRequestHelper.cs" />
     <Compile Include="AttachmentController_should.cs" />
     <Compile Include="BaseController_should.cs" />
+    <Compile Include="DatasetController_should.cs" />
     <Compile Include="DiagramController_should.cs" />
     <Compile Include="FakeMacroCaller.cs" />
     <Compile Include="GraphQLController_should.cs" />
@@ -106,10 +108,6 @@
     <Analyzer Include="..\..\..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj">
-      <Project>{43369561-0052-477a-b23f-61fc57b8466f}</Project>
-      <Name>Hopex.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mega.WebService.GraphQL\Mega.WebService.GraphQL.csproj">
       <Project>{41bc7e91-8409-4c8d-a26c-c59a1ba777f9}</Project>
       <Name>Mega.WebService.GraphQL</Name>

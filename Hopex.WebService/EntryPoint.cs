@@ -1,5 +1,6 @@
 using GraphQL;
 using GraphQL.Http;
+using GraphQL.Instrumentation;
 using GraphQL.Language.AST;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common;
@@ -10,11 +11,8 @@ using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
 using Hopex.Model.PivotSchema.Convertors;
 using Hopex.Modules.GraphQL.Schema;
-
 using Mega.Macro.API;
-
 using Newtonsoft.Json;
-
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -31,8 +29,8 @@ namespace Hopex.Modules.GraphQL
         private const string WebServiceRoute = "graphql";
         internal static SchemaPathExtractor _schemaExtractor = new SchemaPathExtractor();
 
-        private ISchemaManagerProvider _schemaManagerProvider;
-        private ILanguagesProvider _languagesProvider;
+        private readonly ISchemaManagerProvider _schemaManagerProvider;
+        private readonly ILanguagesProvider _languagesProvider;
 
         public EntryPoint()
             : this(new SchemaManagerProvider(), new LanguagesProvider())
@@ -48,9 +46,11 @@ namespace Hopex.Modules.GraphQL
         {
             try
             {
-                var environmentId = Utils.GetEnvironmentId(HopexContext);
-                var schema = ExtractSchemaPath(GetMegaRoot(), HopexContext.Request.Path, environmentId);
+                Logger.LogInformation("GraphQL macro start");
 
+                var megaRoot = GetMegaRoot();
+                var environmentId = Utils.GetEnvironmentId(HopexContext);
+                var schema = ExtractSchemaPath(megaRoot, HopexContext.Request.Path, environmentId);
                 if (schema == null)
                 {
                     var ex = new Exception($"Unknown route: {HopexContext.Request.Path}");
@@ -59,31 +59,36 @@ namespace Hopex.Modules.GraphQL
                     {
                         return HopexResponse.Error(500, ex.Message);
                     }
-                    return HopexResponse.Error((int)HttpStatusCode.BadRequest, JsonConvert.SerializeObject(new
+                    return HopexResponse.Error((int) HttpStatusCode.BadRequest, JsonConvert.SerializeObject(new
                     {
                         HttpStatusCode = HttpStatusCode.BadRequest,
                         Error = ex.Message
                     }));
                 }
+                Logger.LogInformation("Get MegaRoot, EnvironmentId and SchemaPath terminated");
 
-                var schemaManager = await _schemaManagerProvider.GetInstanceAsync(Logger, HopexContext, schema.Version);
+                var languages = _languagesProvider.GetLanguages(Logger, megaRoot);
+                var currencies = _languagesProvider.GetCurrencies(Logger, megaRoot);
+                Logger.LogInformation("Get Languages and currencies terminated");
 
-                var languages = _languagesProvider.GetLanguages(HopexContext.NativeRoot);
+                Logger.LogInformation("Schemas initialization start");
+                var schemaManager = await _schemaManagerProvider.GetInstanceAsync(HopexContext, schema.Version, megaRoot, Logger);
+                var (graphQlSchema, hopexSchema) = await schemaManager.GetSchemaAsync(schema, languages, currencies);
+                Logger.LogInformation("Schemas initialization terminated");
 
-                var (graphQlSchema, hopexSchema) = await schemaManager.GetSchemaAsync(schema, languages);
-
+                var root = CreateDataModel(hopexSchema);
                 var executor = new DocumentExecuter();
                 Inputs variables = null;
                 if (args.Variables != null)
                 {
                     variables = new Inputs(args.Variables);
                 }
+                Logger.LogInformation("CreateDataModel and DocumentExecuter terminated");
 
-                Logger.LogInformation("Executing query");
-                var root = CreateDataModel(hopexSchema);
                 ExecutionResult result = null;
                 try
                 {
+                    Logger.LogInformation("Query start");
                     result = await executor.ExecuteAsync(_ =>
                     {
                         _.Schema = graphQlSchema;
@@ -91,17 +96,17 @@ namespace Hopex.Modules.GraphQL
                         _.UserContext = new UserContext
                         {
                             MegaRoot = GetNativeMegaRoot(),
-                            IRoot = GetMegaRoot(),
+                            IRoot = megaRoot,
                             WebServiceUrl = args.WebServiceUrl,
-                            Schema= schema,
+                            Schema = schema,
                             Languages = languages
                         };
                         _.OperationName = args.OperationName;
                         _.Query = args.Query;
                         _.Inputs = variables;
+                        _.FieldMiddleware.Use<InstrumentFieldMiddleware>();
                     });
-
-                    Logger.LogInformation($"Query terminated: {args.Query.Replace("\n", " ")}");
+                    Logger.LogInformation($"Query terminated: {args.Query.Replace(Environment.NewLine, " ").Replace("\n", " ")}");
 
                     var writer = new DocumentWriter(true);
                     if (Utils.IsRunningInHAS)
@@ -123,7 +128,7 @@ namespace Hopex.Modules.GraphQL
                     {
                         foreach (var error in result.Errors)
                         {
-                            Logger.LogInformation($"Query terminated with errors: {error.Message}");
+                            Logger.LogInformation($"Query terminated with error(s): {error}");
                         }
                     }
                     if ((result?.Operation?.OperationType ?? OperationType.Query) == OperationType.Mutation)
@@ -139,9 +144,9 @@ namespace Hopex.Modules.GraphQL
                 Logger?.LogError(ex, errorMessage);
                 if (Utils.IsRunningInHAS)
                 {
-                    return HopexResponse.Error((int)HttpStatusCode.InternalServerError, errorMessage);
+                    return HopexResponse.Error((int) HttpStatusCode.InternalServerError, errorMessage);
                 }
-                return HopexResponse.Error((int)HttpStatusCode.InternalServerError, JsonConvert.SerializeObject(new
+                return HopexResponse.Error((int) HttpStatusCode.InternalServerError, JsonConvert.SerializeObject(new
                 {
                     HttpStatusCode = HttpStatusCode.InternalServerError,
                     Error = errorMessage
@@ -152,9 +157,9 @@ namespace Hopex.Modules.GraphQL
                 Logger?.LogError(ex);
                 if (Utils.IsRunningInHAS)
                 {
-                    return HopexResponse.Error((int)HttpStatusCode.InternalServerError, ex.Message);
+                    return HopexResponse.Error((int) HttpStatusCode.InternalServerError, ex.Message);
                 }
-                return HopexResponse.Error((int)HttpStatusCode.InternalServerError, JsonConvert.SerializeObject(new
+                return HopexResponse.Error((int) HttpStatusCode.InternalServerError, JsonConvert.SerializeObject(new
                 {
                     HttpStatusCode = HttpStatusCode.InternalServerError,
                     Error = ex.Message

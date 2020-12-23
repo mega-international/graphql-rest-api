@@ -11,18 +11,19 @@ namespace Hopex.Modules.GraphQL.Schema
     public class GraphQLSchemaManager
     {
         private readonly IHopexMetaModelManager _hopexSchemaManager;
-
+        public IMegaRoot MegaRoot { get; }
         private ILogger Logger { get; }
 
-        public GraphQLSchemaManager(IHopexMetaModelManager hopexSchemaManager, ILogger logger)
+        public GraphQLSchemaManager(IHopexMetaModelManager hopexSchemaManager, IMegaRoot megaRoot, ILogger logger)
         {
             _hopexSchemaManager = hopexSchemaManager;
+            MegaRoot = megaRoot;
             Logger = logger;
         }
 
         private static readonly SemaphoreSlim _loadSemaphore = new SemaphoreSlim(1, 1);
 
-        public async Task<(global::GraphQL.Types.Schema, IHopexMetaModel)> GetSchemaAsync(SchemaReference schemaRef,  Dictionary<string, string> languages)
+        public async Task<(global::GraphQL.Types.Schema, IHopexMetaModel)> GetSchemaAsync(SchemaReference schemaRef,  Dictionary<string, IMegaObject> languages = null, List<string> currencies = null)
         {
             var path = schemaRef.UniqueId;
             if (_schemas.TryGetValue(path, out var builder))
@@ -44,7 +45,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     return (null, null);
                 }
 
-                builder = new SchemaBuilder(hopexSchema, languages, Logger, this);
+                builder = new SchemaBuilder(hopexSchema, languages, currencies, Logger, this);
                 builder.Create();
                 _schemas.Add(path, builder);
                 return (builder.Schema, hopexSchema);

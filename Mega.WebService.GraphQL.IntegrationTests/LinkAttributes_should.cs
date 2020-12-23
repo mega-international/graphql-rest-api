@@ -105,7 +105,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                     }
                 });
         }
-
+        
         private async Task<CreateAllResponse> CreateAllTestObjects()
         {
             var request = new GraphQLRequest()
@@ -148,22 +148,22 @@ namespace Mega.WebService.GraphQL.IntegrationTests
         {
             var request = new GraphQLRequest()
             {
-                Query = @"mutation deleteAll {                            
-                            deletaApp: deleteApplication(id:""TEST_OGD_APP1"" idType:EXTERNAL) { id }
-                            deleteBP: deleteBusinessProcess(id: ""TEST_OGD_BP1"" idType: EXTERNAL) { id }
-                            deleteBL1: deleteBusinessLine(id: ""TEST_OGD_BL1"" idType: EXTERNAL) { id }
-                            deleteBL2: deleteBusinessLine(id: ""TEST_OGD_BL2"" idType: EXTERNAL) { id }
-                            deleteBL3: deleteBusinessLine(id: ""TEST_OGD_BL3"" idType: EXTERNAL) { id }
-                          }"
+                Query = @"mutation deleteAll
+                        {                            
+                            deletaApp: deleteApplication(id:""TEST_OGD_APP1"" idType:EXTERNAL) { deletedCount }
+                            deleteBP: deleteBusinessProcess(id: ""TEST_OGD_BP1"" idType: EXTERNAL) { deletedCount }
+                            deleteBL1: deleteBusinessLine(id: ""TEST_OGD_BL1"" idType: EXTERNAL) { deletedCount }
+                            deleteBL2: deleteBusinessLine(id: ""TEST_OGD_BL2"" idType: EXTERNAL) { deletedCount }
+                            deleteBL3: deleteBusinessLine(id: ""TEST_OGD_BL3"" idType: EXTERNAL) { deletedCount }
+                         }"
             };
             var response = await _graphQLClient.SendQueryAsync<DeleteAllResponse>(request);
             var data = response.Data;
-            data.DeleteApp.Should().BeNull();
-            data.DeleteBP.Should().BeNull();
-            data.DeleteBL1.Should().BeNull();
-            data.DeleteBL2.Should().BeNull();
-            data.DeleteBL3.Should().BeNull();
-
+            data.DeleteApp?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteBP?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteBL1?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteBL2?.DeletedCount.Should().BeGreaterOrEqualTo(0);
+            data.DeleteBL3?.DeletedCount.Should().BeGreaterOrEqualTo(0);
             await base.DisposeAsync();            
         }
 
@@ -188,11 +188,11 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
         public class DeleteAllResponse
         {            
-            public BasicObject DeleteApp { get; set; }
-            public BasicObject DeleteBP { get; set; }
-            public BasicObject DeleteBL1 { get; set; }
-            public BasicObject DeleteBL2 { get; set; }
-            public BasicObject DeleteBL3 { get; set; }            
+            public DeleteResult DeleteApp { get; set; }
+            public DeleteResult DeleteBP { get; set; }
+            public DeleteResult DeleteBL1 { get; set; }
+            public DeleteResult DeleteBL2 { get; set; }
+            public DeleteResult DeleteBL3 { get; set; }
         }
 
         public class ApplicationInstance : BasicObject

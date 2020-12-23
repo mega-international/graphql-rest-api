@@ -43,7 +43,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
                 var userContext = (UserContext)context.UserContext;
                 var root = userContext.MegaRoot;
                 var languageId = root.CurrentEnvironment.Toolkit.GetString64FromId(root.CurrentEnvironment.CurrentLanguageId);
-                return userContext.Languages.FirstOrDefault(x => x.Value.Remove(0, 1).Remove(12, 3) == languageId).Key;
+                return userContext.Languages.FirstOrDefault(x => x.Value.MegaUnnamedField.Substring(1, 12) == languageId).Key;
             });
             Field<StringGraphType>("languageName", resolve: context =>
             {
@@ -60,7 +60,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
                 var userContext = (UserContext)context.UserContext;
                 var root = userContext.MegaRoot;
                 var languageId = root.CurrentEnvironment.Toolkit.GetString64FromId(root.CurrentEnvironment.DatabaseLanguage.Id);
-                return userContext.Languages.FirstOrDefault(x => x.Value.Remove(0, 1).Remove(12, 3) == languageId).Key;
+                return userContext.Languages.FirstOrDefault(x => x.Value.MegaUnnamedField.Substring(1, 12) == languageId).Key;
             });
             Field<StringGraphType>("databaseLanguageName", resolve: context =>
             {
@@ -77,7 +77,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
                 var userContext = (UserContext)context.UserContext;
                 var root = userContext.MegaRoot;
                 var languageId = root.CurrentEnvironment.Toolkit.GetString64FromId(root.CurrentEnvironment.SystemLanguage.Id);
-                return userContext.Languages.FirstOrDefault(x => x.Value.Remove(0, 1).Remove(12, 3) == languageId).Key;
+                return userContext.Languages.FirstOrDefault(x => x.Value.MegaUnnamedField.Substring(1, 12) == languageId).Key;
             });
             Field<StringGraphType>("systemLanguageName", resolve: context =>
             {

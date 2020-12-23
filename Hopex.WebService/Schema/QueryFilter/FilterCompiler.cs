@@ -1,4 +1,5 @@
 
+using GraphQL;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 
@@ -10,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Hopex.Model.Abstractions;
 
 namespace Hopex.Modules.GraphQL.Schema.Filters
 {
@@ -35,23 +37,27 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
     internal class FilterCompiler
     {
+        private IMegaRoot _root;
+        private IClassDescription _itemClassDescription;
         private readonly StringBuilder _sb = new StringBuilder();
-        private readonly IClassDescription _itemClassDescription;
         private readonly IRelationshipDescription _relationship;
         private readonly IModelElement _sourceElement; // Null for root
+        private static readonly char[] _forbiddenChars = new char[] { '"', '#' };
+        private static readonly int _maxItemsInArray = 50;
 
-        public FilterCompiler(IClassDescription itemClassDescription, IRelationshipDescription relationship, IModelElement source)
+        public FilterCompiler(IMegaRoot root, IClassDescription itemClassDescription, IRelationshipDescription relationship, IModelElement source)
         {
+            _root = root;
             _itemClassDescription = itemClassDescription;
             _relationship = relationship;
             _sourceElement = source;
         }
 
-        public string CreateHopexQuery(Dictionary<string, object> filter)
+        public string CreateHopexQuery(Dictionary<string, object> filter, IMegaObject language)
         {
             if (filter != null)
             {
-                VisitExpression(filter);
+                VisitExpression(filter, language);
             }
             if (_relationship != null)
             {
@@ -91,7 +97,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             }
         }
 
-        private void VisitExpression(Dictionary<string, object> dict, string connector = "AND", bool forceParen = false)
+        private void VisitExpression(Dictionary<string, object> dict, IMegaObject language, string connector = "AND", bool forceParen = false)
         {
             bool first = true;
             var parser = new FilterParser(dict);
@@ -106,7 +112,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                     WriteOperator(connector);
                 }
                 first = false;
-                VisitGroup(parser.Current, connector);
+                VisitGroup(parser.Current, connector, language);
             }
             if (parser.HasMany || forceParen)
             {
@@ -121,8 +127,9 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             Write(" ");
         }
 
-        private void VisitGroup(KeyValuePair<string, object> elem, string defaultConnector)
+        private void VisitGroup(KeyValuePair<string, object> elem, string defaultConnector, IMegaObject language)
         {
+            CheckElement(elem);
             var connector = elem.Key.ToLower();
             if (connector == "and" || connector == "or")
             {
@@ -140,24 +147,25 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                             WriteOperator(connector);
                         }
                         first = false;
-                        VisitExpression(e, connector);
+                        VisitExpression(e, language, connector);
                     }
                 }
                 return;
             }
-            VisitTerm(elem, defaultConnector);
+            VisitTerm(elem, defaultConnector, language);
         }
 
-        private void VisitTerm(KeyValuePair<string, object> elem, string connector)
+        private void VisitTerm(KeyValuePair<string, object> elem, string connector, IMegaObject language)
         {
             var (id, op) = GetOperator(elem.Key);
             if (op.Pattern == "rel")
             {
-                GenerateFilterRelationshipPrefix(id);
+                GenerateFilterRelationshipPrefix(id, out _itemClassDescription);
                 if (elem.Value is IEnumerable<object> e)
                 {
-                    VisitExpression(e.First() as Dictionary<string, object>, connector, true);
+                    VisitExpression(e.First() as Dictionary<string, object>, language, connector, true);
                 }
+                GenerateFilterRelationshipSuffix();
                 return;
             }
 
@@ -168,14 +176,67 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             }
             else
             {
-                WriteAttribute(prop);
+                var isAttributeWritten = false;
+                if (language != null)
+                {
+                    if (prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass)
+                    {
+                        var collectionDescription = _root.GetCollectionDescription("~msUikEB5iGM3[Component]");
+                        foreach (var property in collectionDescription.NativeObject.Properties)
+                        {
+                            if (property.SameID(property.RootId, prop.Id) && property.SameID(property.LanguageId, language.MegaUnnamedField))
+                            {
+                                var reverseRelation = _itemClassDescription.Relationships.Single(r => r.Id == _relationship.ReverseId);
+                                var segment1 = reverseRelation.Path[0];
+                                Write($"{segment1.RoleId}[{segment1.RoleName}]:{segment1.TargetSchemaId}[{segment1.TargetSchemaName}].({property.MegaField}");
+                                isAttributeWritten = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var classDescription = _root.GetClassDescription(prop.Owner.Id);
+                        foreach (var property in classDescription.NativeObject.Description.Item(1).Properties)
+                        {
+                            if (property.SameID(property.RootId, prop.Id) && property.SameID(property.LanguageId, language.MegaUnnamedField))
+                            {
+                                Write(property.MegaField);
+                                isAttributeWritten = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(!isAttributeWritten)
+                {
+                    if (prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass)
+                    {
+                        var reverseRelation = _itemClassDescription.Relationships.Single(r => r.Id == _relationship.ReverseId);
+                        var segment1 = reverseRelation.Path[0];
+                        Write($"{segment1.RoleId}[{segment1.RoleName}]:{segment1.TargetSchemaId}[{segment1.TargetSchemaName}].(");
+                    }
+                    WriteAttribute(prop);
+                }
             }
 
             Write($" {op.Name} ");
-            WriteRightStatement(op, elem.Value, prop);
+            if (op.Pattern == "null")
+            {
+                WriteRightStatementNull((bool)elem.Value);
+            }
+            else
+            {
+                WriteRightStatement(op, elem.Value, prop);
+            }
+
+            if (prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass)
+            {
+                Write($"AND ~310000000D00[AbsoluteIdentifier] = \"{_sourceElement.Id}\")");
+            }
         }
 
-        private void GenerateFilterRelationshipPrefix(string relationshipName)
+        private void GenerateFilterRelationshipPrefix(string relationshipName, out IClassDescription targetClass)
         {
             var rel = _itemClassDescription.GetRelationshipDescription(relationshipName);
             bool first = true;
@@ -184,17 +245,27 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 if (first)
                 {
                     // On part du principe qu'il n'y a qu'une condition dans le 1er segment et qu'il n'y en aura pas d'autres
+                    Write($"{segment.RoleId}[{segment.RoleName}]:{segment.TargetSchemaId}[{segment.TargetSchemaName}].(");
                     if (segment.Condition != null)
                     {
-                        Write($"{segment.RoleId}[{segment.RoleName}]:{segment.TargetSchemaId}[{segment.TargetSchemaName}].{segment.Condition.RoleId}[{segment.Condition.RoleName}]:{segment.Condition.MetaClassId}[{segment.Condition.MetaClassName}].~310000000D00[AbsoluteIdentifier] = \"~{segment.Condition.ObjectFilterId}\" AND ");
+                        Write($"{segment.Condition.RoleId}[{segment.Condition.RoleName}]:{segment.Condition.MetaClassId}[{segment.Condition.MetaClassName}].~310000000D00[AbsoluteIdentifier] = \"~{segment.Condition.ObjectFilterId}\" AND ");
                     }
                     first = false;
                 }
-                Write($"{segment.RoleId}[{segment.RoleName}]:{segment.TargetSchemaId}[{segment.TargetSchemaName}].");
+                else
+                {
+                    Write($"{segment.RoleId}[{segment.RoleName}]:{segment.TargetSchemaId}[{segment.TargetSchemaName}].");
+                } 
             }
+            targetClass = rel.TargetClass;
         }
 
-        private void Write(string txt)
+        private void GenerateFilterRelationshipSuffix()
+        {
+            Write(")");
+        }
+
+            private void Write(string txt)
         {
             _sb.Append(txt);
         }
@@ -205,11 +276,13 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             {
                 foreach (var e in list)
                 {
+                    CheckValue(e);
                     WriteConstant(e, prop);
                 }
             }
             else
             {
+                CheckValue(value);
                 if (op.Pattern != null)
                 {
                     WriteConstant(string.Format(op.Pattern, value), prop);
@@ -221,6 +294,15 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             }
         }
 
+        private void WriteRightStatementNull(bool nullValues)
+        {
+            if(!nullValues)
+            {
+                Write("Not ");
+            }
+            Write("Null ");
+        }
+
         private void WriteAttribute(IPropertyDescription prop)
         {
             Write($"{prop.Id}[{prop.Name}]");
@@ -228,6 +310,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
         private void WriteConstant(object value, IPropertyDescription prop)
         {
+
             if (prop.NativeType == typeof(DateTime))
             {
                 var dateTimeValue = (DateTime)value;
@@ -249,16 +332,38 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 {
                     Write((bool)value ? "1" : "0");
                 }
-                else if(value is IConvertible valueConvertible)
-                {
-                    Write(valueConvertible.ToString(CultureInfo.InvariantCulture));
-                }
                 else
                 {
-                    Write(value?.ToString());
+                    var valueStr = (value is IConvertible valueConvertible) ? valueConvertible.ToString(CultureInfo.InvariantCulture) : value?.ToString();
+                    Write(valueStr);
                 }
                 Write(delimiter);
                 Write(" ");
+            }
+        }
+
+        private void CheckValue(object value)
+        {
+            if(value is string valueStr)
+            {
+                foreach (var character in valueStr)
+                {
+                    if (_forbiddenChars.Contains(character))
+                    {
+                        throw new ExecutionError($"Value {valueStr} contains forbidden value: {character}");
+                    }
+                }
+            }
+        }
+
+        private void CheckElement(KeyValuePair<string, object> elem)
+        {
+            if(elem.Value is IEnumerable<object> list)
+            {
+                if(list.Count() > _maxItemsInArray)
+                {
+                    throw new ExecutionError($"Number of items in array field [{elem.Key}] should not exceed 50");
+                }
             }
         }
 
@@ -280,7 +385,8 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 { "_ends_with", new HopexOperator("Like", "#{0}") },
                 { "_some", new HopexOperator("some", "rel") },
                 { "_every", new HopexOperator("every", "rel") },
-                { "_none", new HopexOperator("none", "rel") }
+                { "_none", new HopexOperator("none", "rel") },
+                { "_null", new HopexOperator("Is", "null") }
             };
 
             foreach (var op in operatorNames)

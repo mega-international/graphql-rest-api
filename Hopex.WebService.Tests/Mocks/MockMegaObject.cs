@@ -11,14 +11,29 @@ namespace Hopex.WebService.Tests.Mocks
     class MegaPropertyWithFormat
     {
         protected object _nativeValue;
+        private Dictionary<string, object> _formattedValue = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
         internal MegaPropertyWithFormat(object value)
         {
             _nativeValue = value;
         }
 
+        internal MegaPropertyWithFormat WithDisplay(string displayValue)
+        {
+            _formattedValue.Add("Display", displayValue);
+            return this;
+        }
+
+        internal MegaPropertyWithFormat WithAscii(string asciiValue)
+        {
+            _formattedValue.Add("ASCII", asciiValue);
+            return this;
+        }
+
         internal T GetPropertyValue<T>(string format)
         {
+            if (_formattedValue.ContainsKey(format))
+                return (T)_formattedValue[format];
             if (format.Equals("External", StringComparison.InvariantCultureIgnoreCase))
                 return GetPropertyValueExternal<T>();
             return (T)_nativeValue;
@@ -39,7 +54,7 @@ namespace Hopex.WebService.Tests.Mocks
 
         public string MegaUnnamedField => MegaIdConverter.ToUnnamedField(Id);
 
-        public bool IsConfidential => false;
+        public virtual bool IsConfidential => _isConfidential;
 
         public bool IsAvailable => true;
 
@@ -52,6 +67,7 @@ namespace Hopex.WebService.Tests.Mocks
         private Dictionary<MegaId, object> _properties = new Dictionary<MegaId, object>(new MegaIdComparer());
         private Dictionary<MegaId, MockMegaAttribute> _translatedProperties = new Dictionary<MegaId, MockMegaAttribute>(new MegaIdComparer());
         private Dictionary<MegaId, MockMegaCollection> _links = new Dictionary<MegaId, MockMegaCollection>(new MegaIdComparer());
+        private bool _isConfidential;
 
         public MockMegaObject(MegaId id, MegaId classId = null)
         {
@@ -90,6 +106,18 @@ namespace Hopex.WebService.Tests.Mocks
             return this;
         }
 
+        internal MockMegaObject WithFormattedProperty(MegaId propId, MegaPropertyWithFormat value)
+        {
+            _properties.Add(propId, value);
+            return this;
+        }
+
+        internal MockMegaObject WithTypeObject(MockMegaObject typeObject)
+        {
+            base.WithTypeObject(typeObject);
+            return this;
+        }
+
         internal void PropagateRoot(MockMegaRoot root, MockMegaRoot.Builder builder)
         {
             Root = root;
@@ -100,6 +128,12 @@ namespace Hopex.WebService.Tests.Mocks
         internal MockMegaObject WithRelation(MockMegaCollection col)
         {
             _links.Add(col.Id, col);
+            return this;
+        }
+
+        internal MockMegaObject WithConfidentiality()
+        {
+            _isConfidential = true;
             return this;
         }
 
@@ -164,6 +198,16 @@ namespace Hopex.WebService.Tests.Mocks
         public void Delete(string options = "")
         {
             throw new NotImplementedException();
+        }
+
+        public void CallMethod(MegaId methodId, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IMegaObject GetPhysicalType()
+        {
+            return this;
         }
     }
 

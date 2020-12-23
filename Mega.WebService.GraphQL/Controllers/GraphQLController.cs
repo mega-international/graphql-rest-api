@@ -31,6 +31,7 @@ namespace Mega.WebService.GraphQL.Controllers
         public IHttpActionResult Execute(string schemaName, [FromBody] InputArguments args, string version)
         {
             Logger.Info($"GraphQlController.Execute(\"{schemaName}\", \"{version}\") enter.");
+            CompleteHeadersFromWebConfig();
             var result = ProcessQueryRequest(schemaName, args, version, data =>
             {
                 var macroResult = CallMacro(GraphQlMacro, data);
@@ -70,6 +71,7 @@ namespace Mega.WebService.GraphQL.Controllers
         public IHttpActionResult AsyncExecute(string schemaName, [FromBody] InputArguments args, string version)
         {
             Logger.Info($"GraphQlController.AsyncExecute(\"{schemaName}\") enter.");
+            CompleteHeadersFromWebConfig();
             if(!Request.Headers.TryGetValues("x-hopex-task", out var hopexTask))
             {
                 Logger.Info("Start job enter.");

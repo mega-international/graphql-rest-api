@@ -21,6 +21,9 @@ namespace Hopex.Model.Mocks
         public IMegaObject Parent => throw new NotImplementedException();
         public IHopexDataModel DomainModel { get; private set; }
 
+        private readonly List<Exception> _errors = new List<Exception>();
+        public IEnumerable<Exception> Errors { get => _errors; }
+
         public MockDataElement(MockDataModel dataModel, IClassDescription metaclass, string id = null, string name = null)
         {
             DataModel = dataModel;
@@ -77,7 +80,12 @@ namespace Hopex.Model.Mocks
             return new CrudResult("CRUD");
         }
 
-        public object GetGenericValue(string popertyMegaId, Dictionary<string, object> arguments)
+        public CrudResult GetPropertyCrud(IPropertyDescription property)
+        {
+            return new CrudResult("CRUD");
+        }
+
+        public object GetGenericValue(string propertyMegaId, Dictionary<string, object> arguments)
         {
             throw new NotImplementedException();
         }
@@ -87,8 +95,16 @@ namespace Hopex.Model.Mocks
             throw new NotImplementedException();
         }
 
-        public bool IsConfidential => false;
+        public void AddErrors(IModelElement subElement)
+        {
+            foreach(var error in subElement.Errors)
+            {
+                _errors.Add(error);
+            }
+        }
 
+        public bool IsConfidential => false;
         public bool IsAvailable => true;
+        public IMegaObject Language { get; set; }
     }
 }

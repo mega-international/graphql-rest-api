@@ -71,7 +71,16 @@ namespace Hopex.Modules.GraphQL.Schema
                 Name = "idType",
                 Resolver = new FuncFieldResolver<Dictionary<string, object>, string>(ctx => (string)ctx.Source["idType"])
             });
-            if(linkProperties!=null)
+            var enumCreationMode = new HopexEnumerationGraphType { Name = "creationMode" };
+            enumCreationMode.AddValue("RAW", "Do not use InstanceCreator, but classic \"create mode\"", false);
+            enumCreationMode.AddValue("BUSINESS", "Use InstanceCreator", true);
+            listType.AddField(new FieldType
+            {
+                ResolvedType = enumCreationMode,
+                Name = "creationMode",
+                Resolver = new FuncFieldResolver<Dictionary<string, object>, bool>(ctx => (bool)ctx.Source["creationMode"])
+            });
+            if (linkProperties!=null)
             {
                 _schemaBuilder.CreateProperties<Dictionary<string,object>>(linkProperties, listType, (ctx, prop) =>
                 {
@@ -99,21 +108,16 @@ namespace Hopex.Modules.GraphQL.Schema
 
         internal IGraphType CreateMutationList(IClassDescription targetClass)
         {
-
-            var linkProperties = targetClass.Properties.Where(p => p.Scope == PropertyScope.TargetClass && !p.IsReadOnly);
-            if (!linkProperties.Any())
+            if (targetClass == null)
             {
                 return _defaultType;
             }
-            return GenerateMutationType(linkProperties, _seq++);
-            //    var listType = new MutationActionGraphType { Name = $"_InputCollectionAction{_seq++}" };
-            //inputListType.Field(
-            //        typeof(NonNullGraphType<CollectionActionGraphType>),
-            //        "action",
-            //        resolve: ctx => ctx.Source.Action);
-
-            //Field<ListGraphType<NonNullGraphType<MutationListElementGraphType>>>("list", resolve: o => o.Source.List);
-            //    schema.RegisterType(inputListType);
+            var linkProperties = targetClass.Properties.Where(p => (p.Scope == PropertyScope.TargetClass || p.Scope == PropertyScope.Class) && !p.IsReadOnly);
+            if (linkProperties.Any())
+            {
+                return GenerateMutationType(linkProperties, _seq++);
+            }
+            return _defaultType;
         }
     }
 }

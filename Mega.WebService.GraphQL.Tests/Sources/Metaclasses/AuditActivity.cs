@@ -1,7 +1,16 @@
+using System.Collections.Generic;
+
 namespace Mega.WebService.GraphQL.Tests.Sources.Metaclasses
 {
     public class AuditActivity : MetaClass
     {
+        public override List<string> GetBlackListedFields()
+        {
+            var fields = base.GetBlackListedFields();
+            fields.AddRange(new List<string> {
+                "activityStatus"});
+            return fields;
+        }
         protected override string GetSingleNameStartingWithUpperCase()
         {
             return "Audit activity";

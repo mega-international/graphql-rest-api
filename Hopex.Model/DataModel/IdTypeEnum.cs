@@ -6,6 +6,7 @@ namespace Hopex.Model.DataModel
     public enum IdTypeEnum
     {
         INTERNAL,
-        EXTERNAL
+        EXTERNAL,
+        TEMPORARY
     }
 }

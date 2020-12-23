@@ -2,6 +2,7 @@ using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 using Mega.WebService.GraphQL.Tests.Models;
 using Mega.WebService.GraphQL.Tests.Sources.FieldModels;
+using Mega.WebService.GraphQL.Tests.Sources.FieldModels.Classes;
 using Mega.WebService.GraphQL.Tests.Sources.Metaclasses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -41,6 +42,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected readonly string _myServiceUrl = ConfigurationManager.AppSettings["HopexGraphQL"].TrimEnd('/');
         protected const string _schemaITPM = "ITPM";
         protected const string _schemaAudit = "Audit";
+        protected const string _schemaRisk = "Risk";
         protected const int _maxArgsSize = 30;
         protected TimeMessageManager timeMessageManager = new TimeMessageManager();
 
@@ -185,15 +187,29 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             {
                 Query = query
             };
+            GraphQLResponse response;
             try
             {
-                GraphQLResponse response = await requester.SendPostAsync(request, IsAsyncMode, token);
-                return response.Data;
+                response = await requester.SendPostAsync(request, IsAsyncMode, token);
             }
-            catch(Exception)
+            catch (Exception)
             {
-                return null;
+                throw;
             }
+            if(response == null)
+            {
+                throw new NullReferenceException($"Response GraphQL is null for query: {query}");
+            }
+            if ((response.Errors?.Length ?? 0) > 0)
+            {
+                var errorMessage = "";
+                foreach(var error in response.Errors)
+                {
+                    errorMessage += $"Error: {error.Message} <br>";
+                }
+                throw new Exception(errorMessage);
+            }
+            return response.Data;
         }
 
         protected async Task<JToken> ProcessRawQuery(GraphQLRequester requester, string query)
@@ -211,12 +227,13 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             return await ProcessRawQuery(_requester, query, CancellationToken.None);
         }
 
-        private List<string> BuildOutputs(IReadOnlyList<Field> outputFields)
+        private List<string> BuildOutputs(IReadOnlyList<Field> outputFields, FieldsParameters fieldsParameters = null)
         {
             List<string> outputs = new List<string>();
             foreach(var field in outputFields)
             {
-                outputs.Add(field.GetOutputFormat());
+                var fieldParameters = fieldsParameters?.Get(field.Name);
+                outputs.Add(field.GetOutputFormat(true, fieldParameters));
             }
             return outputs;
         }
@@ -239,13 +256,18 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected async Task<JArray> GetAll(string metaclassName, IReadOnlyList<Field> outputFields)
         {
+            return await GetAll(metaclassName, outputFields, null);
+        }
+
+        protected async Task<JArray> GetAll(string metaclassName, IReadOnlyList<Field> outputFields, FieldsParameters fieldsParameters)
+        {
             metaclassName = FirstCharUpper(metaclassName);
 
             //prepare datas
             string queryName = char.ToLowerInvariant(metaclassName [0]) + metaclassName.Substring(1);
 
             //outputs
-            List<string> outputs = BuildOutputs(outputFields);
+            List<string> outputs = BuildOutputs(outputFields, fieldsParameters);
 
             //query
             string query = GraphQLRequester.GenerateRequestNoArg(QueryType.Query, queryName, outputs, metaclassName);
@@ -253,6 +275,11 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         }
 
         protected async Task<JArray> GetFiltered(string metaclassName, JObject filterVal, List<Field> inputFields, IReadOnlyList<Field> outputFields)
+        {
+            return await GetFiltered(metaclassName, filterVal, inputFields, outputFields, null);
+        }
+
+        protected async Task<JArray> GetFiltered(string metaclassName, JObject filterVal, List<Field> inputFields, IReadOnlyList<Field> outputFields, FieldsParameters fieldsParameters)
         {
             metaclassName = FirstCharUpper(metaclassName);
 
@@ -272,7 +299,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             };
 
             //outputs
-            List<string> outputs = BuildOutputs(outputFields);
+            List<string> outputs = BuildOutputs(outputFields, fieldsParameters);
 
             //query
             string query = GraphQLRequester.GenerateRequestOneArg(QueryType.Query, queryName, inputs, outputs, metaclassName);
@@ -664,6 +691,12 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             _progression.MessageCounts.Add(ColoredMessageFromBool($"<p>{stepName}: <br>current {count} / expected: {expected}</p>", count == expected));
         }
 
+        protected void CountedStep(string stepName, int count, int target, Func<int, int, (string, bool)>compare)
+        {
+            var result = compare(count, target);
+            _progression.MessageCounts.Add(ColoredMessageFromBool($"<p>{stepName}: <br>{result.Item1}</p>", result.Item2));
+        }
+
         protected void DetailedStep(string stepDetails)
         {
             _progression.MessageDetails.Add($"<p>{stepDetails}</p>");
@@ -989,8 +1022,6 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected void CompareListItems(MetaClass metaclass, List<JObject> originals, List<JObject> createdDatas)
         {
-            var inputFields = new List<Field>(metaclass.InputFields);
-
             //Convert created datas to dictionary to get each of them from their original id
             Dictionary<string, JObject> createdDatasById = new Dictionary<string, JObject>();
             createdDatas.ForEach(createdData => createdDatasById.Add(createdData [MetaFieldNames.externalIdentifier].ToString(), createdData));
@@ -1003,7 +1034,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                 {
                     var originalId = original.GetValue(MetaFieldNames.id).ToString();
                     var createdData = createdDatasById [originalId];
-                    bool compare = CompareItems(original, createdData, inputFields);
+                    bool compare = CompareItems(original, createdData, metaclass.OutputFieldsWrittable());
                     ok = ok && compare;
                     compareCount += compare ? 1 : 0;
                 }
@@ -1017,7 +1048,8 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             bool ok = true;
             int compareCount = 0;
             int compareCountTotal = 0;
-            string messageDetails = "Next comparison:<br>";
+            var messageDetails = $"Object {original.GetValue(MetaFieldNames.id)}({original.GetValue(MetaFieldNames.name)}):<br>";
+
             fields.ForEach(field =>
             {
                 if(field.Name == MetaFieldNames.externalIdentifier)
@@ -1047,15 +1079,19 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                     compare = JToken.EqualityComparer.Equals(value1, value2);
                 }
                 ok = ok && compare;
-                string messageValues = $"{field.Name}: {value1.ToString()} <===> {value2.ToString()}";
-                messageDetails += $"{ColoredMessageFromBool(messageValues, compare)}<br>";
+                if(!compare)
+                {
+                    var messageValues = $"{field.Name}: {value1.ToString()} <===> {value2.ToString()}";
+                    messageDetails += $"{ColoredMessageFromBool(messageValues, compare)}<br>";
+                }
                 ok = ok && compare;
                 ++compareCountTotal;
                 compareCount += compare ? 1 : 0;
             });
-            string messageResult = $"Comparison score: {compareCount}/{compareCountTotal}";
-            messageDetails += $"{ColoredMessageFromBool(messageResult, ok)}<br>";
-            DetailedStep(messageDetails);
+            if(!ok)
+            {
+                DetailedStep(messageDetails);
+            }
             return ok;
         }
 
@@ -1108,7 +1144,14 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected Dictionary<string, JObject> GetDatasByExternalId(List<JObject> datas)
         {
             var result = new Dictionary<string, JObject>();
-            datas.ForEach(data => result.Add(data[MetaFieldNames.externalIdentifier].ToString(), data));
+            foreach (var data in datas)
+            {
+                var extId = data[MetaFieldNames.externalIdentifier].ToString();
+                if (!string.IsNullOrEmpty(extId))
+                {
+                    result.Add(data[MetaFieldNames.externalIdentifier].ToString(), data);
+                }
+            }
             return result;
         }
 

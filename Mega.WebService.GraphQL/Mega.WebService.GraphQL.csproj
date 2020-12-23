@@ -15,14 +15,14 @@
       <Output TaskParameter="OutputFile" ItemName="UpdatedAssemblyVersionFiles" />
     </AssemblyInfo>
   </Target>
-   <Target Name="MGTargetSignature"  AfterTargets="Build"   Condition=" '$(Configuration)' == 'Release' And '$(BuildProfile)' == 'exploit' ">
-      <Message Text="Signature des dlls de '$(OutputPath)' " Importance="high" />
-      <PropertyGroup>
-        <MGPowerShellExe Condition=" '$(MGPowerShellExe)'=='' "> powershell.exe</MGPowerShellExe>
-        <MGScriptSignature Condition=" '$(MGScriptSignature)'=='' ">W:\tools_vsts\scripts\WindowsPowerShell\Invoke-SigningExeOrDll.ps1</MGScriptSignature>
-      </PropertyGroup>
-      <Exec Command="$(MGPowerShellExe) -NonInteractive -executionpolicy Unrestricted -command &quot;&amp;  { &amp; &apos;$(MGScriptSignature)&apos; -Folder &apos;$(OutputPath)&apos; -FilePattern &apos;*.dll&apos; }&quot; " />      
-   </Target>  
+  <Target Name="MGTargetSignature" AfterTargets="Build" Condition=" '$(Configuration)' == 'Release' And '$(BuildProfile)' == 'exploit' ">
+    <Message Text="Signature des dlls de '$(OutputPath)' " Importance="high" />
+    <PropertyGroup>
+      <MGPowerShellExe Condition=" '$(MGPowerShellExe)'=='' "> powershell.exe</MGPowerShellExe>
+      <MGScriptSignature Condition=" '$(MGScriptSignature)'=='' ">W:\tools_vsts\scripts\WindowsPowerShell\Invoke-SigningExeOrDll.ps1</MGScriptSignature>
+    </PropertyGroup>
+    <Exec Command="$(MGPowerShellExe) -NonInteractive -executionpolicy Unrestricted -command &quot;&amp;  { &amp; '$(MGScriptSignature)' -Folder '$(OutputPath)' -FilePattern '*.dll' }&quot; " />
+  </Target>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -167,6 +167,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\AttachmentController.cs" />
+    <Compile Include="Controllers\DatasetController.cs" />
+    <Compile Include="Controllers\HopexApiController .cs" />
     <Compile Include="Controllers\GraphQlController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\DiagramController.cs" />
@@ -180,7 +182,15 @@
     <Compile Include="Models\CallMacroArguments.cs" />
     <Compile Include="Models\ErrorContent.cs" />
     <Compile Include="Models\GraphQlResponse.cs" />
+    <Compile Include="Models\HopexEnvironmentsWithRepositories..cs" />
     <Compile Include="Models\HopexSessionType.cs" />
+    <Compile Include="Models\InputArguments.cs" />
+    <Compile Include="Models\JsonMessages\AttachmentArguments.cs" />
+    <Compile Include="Models\JsonMessages\DatasetArguments.cs" />
+    <Compile Include="Models\JsonMessages\DiagramExportArguments.cs" />
+    <Compile Include="Models\JsonMessages\ErrorMacroResponse.cs" />
+    <Compile Include="Models\JsonMessages\FileDownloadMacroResponse.cs" />
+    <Compile Include="Models\JsonMessages\SchemaMacroResponse.cs" />
     <Compile Include="Utils\FileDownloadHttpResponse.cs" />
     <Compile Include="Utils\GreedyStreamReader.cs" />
     <Compile Include="Models\HopexInfo.cs" />
@@ -213,12 +223,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Voyager.cshtml" />
     <None Include="Properties\PublishProfiles\Exploit.pubxml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj">
-      <Project>{43369561-0052-477a-b23f-61fc57b8466f}</Project>
-      <Name>Hopex.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>

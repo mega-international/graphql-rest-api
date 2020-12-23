@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #voyager {
+            height: 100vh;
+        }
+
+        .toolbar-button {
+            background: #fdfdfd;
+            background: linear-gradient(#f9f9f9, #ececec);
+            border-radius: 3px;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.20), 0 1px 0 rgba(255,255,255, 0.7), inset 0 1px #fff;
+            color: #555;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px;
+            padding: 3px 11px 5px;
+            text-decoration: none;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 150px;
+        }
+    </style>
+
+    <!--
+      This GraphQL Voyager example depends on Promise and fetch, which are available in
+      modern browsers, but can be "polyfilled" for older browsers.
+      GraphQL Voyager itself depends on React DOM.
+      If you do not want to rely on a CDN, you can host these files locally or
+      include them directly in your favored resource bunder.
+    -->
+    <script src="https://cdn.jsdelivr.net/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react@16/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@16/umd/react-dom.production.min.js"></script>
+
+    <!--
+      These two files are served from jsDelivr CDN, however you may wish to
+      copy them directly into your environment, or perhaps include them in your
+      favored resource bundler.
+     -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/graphql-voyager/dist/voyager.css" />
+    <script src="https://cdn.jsdelivr.net/npm/graphql-voyager/dist/voyager.min.js"></script>
+
+</head>
+
+<body>
+
+    <a class="toolbar-button" href="/graphql-ide">Home</a>
+    <a class="toolbar-button" href="/graphql-ide/home/closesession">Close session</a>
+    <div>
+        @Html.DropDownList("Schema", (SelectList)ViewBag.Schemas, new { @class = "toolbar-button", @onchange = "switchSchema(this.value)" })
+    </div>
+
+    <div id="voyager">Loading...</div>
+
+    <script>
+        function switchSchema(schema) {
+            window.location.href = '/graphql-ide/home/voyager/' + schema;
+        }
+        // Defines a GraphQL introspection fetcher using the fetch API. You're not required to
+        // use fetch, and could instead implement introspectionProvider however you like,
+        // as long as it returns a Promise
+        // Voyager passes introspectionQuery as an argument for this function
+        function introspectionProvider(introspectionQuery) {
+            // This example expects a GraphQL server at the path /graphql.
+            // Change this to point wherever you host your GraphQL server.
+            return fetch('/graphql-ide/graphql/@ViewBag.Schemas.SelectedValue', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: introspectionQuery }),
+                credentials: 'include',
+            }).then(function (response) {
+                return response.text();
+            }).then(function (responseBody) {
+                try {
+                    return JSON.parse(responseBody);
+                } catch (error) {
+                    return responseBody;
+                }
+            });
+        }
+
+        // Render <Voyager /> into the body.
+        GraphQLVoyager.init(document.getElementById('voyager'),
+            {
+                introspection: introspectionProvider
+            });
+
+    </script>
+
+</body>
+
+</html>

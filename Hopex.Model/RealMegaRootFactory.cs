@@ -1,5 +1,6 @@
 using Hopex.Model.Abstractions;
 using Mega.Macro.API;
+using Mega.Macro.API.Enums;
 using Mega.Macro.API.Utils;
 using System;
 using System.Collections;
@@ -26,6 +27,13 @@ namespace Hopex.Model
         public IMegaSite Site => new RealMegaSite(RealEnvironment.Site);
 
         public string EnvironmentPath => RealEnvironment.EnvironmentPath;
+
+        public IMegaResources Resources => new RealMegaResources(RealEnvironment.Resources);
+
+        public dynamic GetMacro(string macroId)
+        {
+            return RealEnvironment.NativeObject.GetMacro(macroId);
+        }
     }
 
     internal class RealMegaSite : RealMegaWrapperObject, IMegaSite
@@ -61,14 +69,25 @@ namespace Hopex.Model
         }
     }
 
+    internal class RealMegaResources : RealMegaWrapperObject, IMegaResources
+    {
+        public RealMegaResources(MegaResources realResources) : base(realResources) { }
+    }
 
     internal class RealMegaWrapperObject : IMegaWrapperObject
     {
         protected MegaWrapperObject _realWrapperObject;
 
+        public dynamic NativeObject => _realWrapperObject.NativeObject;
+
         internal RealMegaWrapperObject(MegaWrapperObject realWrapperObject)
         {
             _realWrapperObject = realWrapperObject;
+        }
+
+        public void InvokeMethod(string method, params object[] args)
+        {
+            _realWrapperObject.InvokeMethod(method, args);
         }
 
         public void InvokePropertyPut(string property, params object[] args)
@@ -79,6 +98,11 @@ namespace Hopex.Model
         public T InvokeFunction<T>(string function, params object[] args)
         {
             return _realWrapperObject.InvokeFunction<T>(function, args);
+        }
+
+        public void Dispose()
+        {
+            _realWrapperObject.Dispose();
         }
     }
 
@@ -136,9 +160,18 @@ namespace Hopex.Model
             else
                 return (T)wrappedResult.NativeObject;
         }
+
+        public bool ConditionEvaluate(MegaId methodId)
+        {
+            return _realItem.NativeObject.ConditionEvaluate($"ApplyTest({methodId})");
+        }
+
+        public IMegaObject GetTypeObject()
+        {
+            return new RealMegaObject(_realItem.GetTypeObject());
+        }
     }
-
-
+    
     internal class RealMegaObject : RealMegaItem, IMegaObject
     {
         internal MegaObject RealObject => (MegaObject)_realWrapperObject;
@@ -207,6 +240,16 @@ namespace Hopex.Model
         {
             RealObject.Delete(options);
         }
+
+        public void CallMethod(MegaId methodId, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null)
+        {
+            RealObject.CallMethod(methodId, arg1, arg2, arg3, arg4, arg5, arg6);
+        }
+
+        public IMegaObject GetPhysicalType()
+        {
+            return new RealMegaObject(RealObject.GetPhysicalType());
+        }
     }
 
     internal class RealMegaAttribute : RealMegaWrapperObject, IMegaAttribute
@@ -231,6 +274,14 @@ namespace Hopex.Model
         private MegaWizardContext RealWizard => (MegaWizardContext)_realWrapperObject;
 
         public RealWizardContext(MegaWizardContext realWizard) : base(realWizard) { }
+
+        public WizardCreateMode Mode
+        { get => RealWizard.Mode; set => RealWizard.Mode = value; }
+
+        public object Create()
+        {
+            return InvokeFunction<double>("Create");
+        }
     }
 
     internal class RealMegaCollection : RealMegaItem, IMegaCollection
@@ -244,6 +295,11 @@ namespace Hopex.Model
         public IMegaObject Item(int index)
         {
             return new RealMegaObject(RealCollection.Item(index));
+        }
+
+        public IMegaObject Item(MegaId objectId)
+        {
+            return new RealMegaObject(RealCollection.Item(objectId));
         }
 
         public IEnumerator<IMegaObject> GetEnumerator()
@@ -271,6 +327,11 @@ namespace Hopex.Model
         public void RemoveChild(MegaId id)
         {
             RealCollection.NativeObject.Item(id.Value).Remove();            
+        }
+
+        public IMegaCollection GetType(string targetMetaClassId)
+        {
+            return new RealMegaCollection(MegaWrapperObject.Cast<MegaCollection>(RealCollection.NativeObject.GetType(targetMetaClassId)));
         }
     }
 

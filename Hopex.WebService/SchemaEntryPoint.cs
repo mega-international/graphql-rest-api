@@ -50,9 +50,11 @@ namespace Hopex.Modules.GraphQL
                 }));
             }
 
-            var schemaManager = await _schemaManagerProvider.GetInstanceAsync(Logger, HopexContext, schemaRef.Version);
+            var megaRoot = GetRoot();
 
-            var languages = _languagesProvider.GetLanguages(HopexContext.NativeRoot);
+            var schemaManager = await _schemaManagerProvider.GetInstanceAsync(HopexContext, schemaRef.Version, megaRoot, Logger);
+
+            var languages = _languagesProvider.GetLanguages(Logger, megaRoot);
 
             var (graphQlSchema, _) = await schemaManager.GetSchemaAsync(schemaRef, languages);
 

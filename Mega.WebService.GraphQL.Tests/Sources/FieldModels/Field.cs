@@ -1,3 +1,4 @@
+using Mega.WebService.GraphQL.Tests.Sources.FieldModels.Classes;
 using Mega.WebService.GraphQL.Tests.Sources.Filters;
 using Newtonsoft.Json.Linq;
 using System;
@@ -71,9 +72,30 @@ namespace Mega.WebService.GraphQL.Tests.Sources.FieldModels
             return _operator.GenerateValueFilter(items, fieldName, !IsIdentifier(), out expected);
         }
 
-        public virtual string GetOutputFormat(bool showName = true)
+        public string GetOutputFormat(bool showName = true, object parameters = null)
         {
-            return showName ? Name : "";
+            if(parameters is FieldsParameters fieldsParameters)
+            {
+                return GetOutputFormatInternal(showName, fieldsParameters.Get(Name)?.Parameters);
+            }
+            else if(parameters is FieldParameters fieldParameters)
+            {
+                return GetOutputFormatInternal(showName, fieldParameters.Parameters);
+            }
+            else if(parameters is null)
+            {
+                return GetOutputFormatInternal(showName, null);
+            }
+            else
+            {
+                throw new ArgumentException($"Parameters has invalid type: {parameters.GetType()}");
+            }
+        }
+
+        protected virtual string GetOutputFormatInternal(bool showName, IReadOnlyDictionary<string, string> parameters)
+        {
+            var parametersStr = parameters == null ? "" : BuildParametersString(parameters);
+            return showName ? (Name + parametersStr) : "";
         }
 
         public string GetOriginalName()
@@ -95,6 +117,31 @@ namespace Mega.WebService.GraphQL.Tests.Sources.FieldModels
         {
             var typeName = GetType().Name;
             return $"{typeName}: Name: {Name}, {(Nullable ? "" : "non null")}";
+        }
+
+        protected string BuildParametersString(IReadOnlyDictionary<string, string> parameters)
+        {
+            if(parameters == null)
+            {
+                throw new ArgumentNullException("Parameters must be non null");
+            }
+            if(parameters.Count == 0)
+            {
+                return "";
+            }
+            var parametersStr = "(";
+            bool first = true;
+            foreach(var parameter in parameters)
+            {
+                if(!first)
+                {
+                    parametersStr += ", ";
+                }
+                parametersStr += $"{parameter.Key}: {parameter.Value}";
+                first = false;
+            }
+            parametersStr += ")";
+            return parametersStr;
         }
     }
 }

@@ -1,7 +1,3 @@
-using Hopex.Model.Abstractions;
-using Mega.Macro.API;
-using System;
-
 namespace Hopex.WebService.Tests.Mocks
 {
     internal class MockClassDescription : MockMegaObject

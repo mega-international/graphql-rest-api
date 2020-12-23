@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+using System.Web.Http;
+using Newtonsoft.Json;
 
 namespace Mega.WebService.GraphQL
 {
@@ -8,6 +9,7 @@ namespace Mega.WebService.GraphQL
         {
             config.MapHttpAttributeRoutes();
             config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}", new { id = RouteParameter.Optional });
+            config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings();
         }
     }
 }

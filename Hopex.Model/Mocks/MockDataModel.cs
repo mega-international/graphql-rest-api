@@ -1,12 +1,14 @@
+using Hopex.Model.Abstractions;
+using Hopex.Model.Abstractions.DataModel;
+using Hopex.Model.Abstractions.MetaModel;
+using Hopex.Model.DataModel;
+using Mega.Macro.API;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hopex.Model.Abstractions.DataModel;
-using Hopex.Model.Abstractions.MetaModel;
-using Hopex.Model.DataModel;
-using Mega.Macro.API;
+using GraphQL.Types;
 
 namespace Hopex.Model.Mocks
 {
@@ -14,10 +16,12 @@ namespace Hopex.Model.Mocks
     public class MockDataModel : IHopexDataModel, IDisposable
     {
         private int cx = 1000;
-        private Dictionary<string, int> _counters = new Dictionary<string, int>();
-        private ConcurrentDictionary<MegaId, IModelElement> _elements = new ConcurrentDictionary<MegaId, IModelElement>();
-        private ConcurrentDictionary<string, MockModelCollection> _collections = new ConcurrentDictionary<string, MockModelCollection>();
+        private readonly Dictionary<string, int> _counters = new Dictionary<string, int>();
+        private readonly ConcurrentDictionary<MegaId, IModelElement> _elements = new ConcurrentDictionary<MegaId, IModelElement>();
+        private readonly ConcurrentDictionary<string, MockModelCollection> _collections = new ConcurrentDictionary<string, MockModelCollection>();
 
+        public Dictionary<string, IModelElement> TemporaryMegaObjects { get; }
+        
         public static MockDataModel Create(IHopexMetaModel metaModel)
         {
             MockDataModel dataModel = new MockDataModel(metaModel);
@@ -61,6 +65,11 @@ namespace Hopex.Model.Mocks
             return elem;
         }
 
+        public async Task<IModelElement> CreateElementFromParentAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters, IMegaCollection iColParent)
+        {
+            return await CreateElementAsync(schema, id, idType, useInstanceCreator, setters);
+        }
+
         private async Task UpdateAsync(IModelElement elem, IEnumerable<ISetter> setters)
         {
             if (setters == null)
@@ -72,7 +81,7 @@ namespace Hopex.Model.Mocks
             {
                 if (setter is PropertySetter ps)
                 {
-                    elem.SetValue(ps.PropertyDescription, ps.Value, ps.SetterFormat);
+                    await setter.UpdateElementAsync(this, elem);
                 }
                 else if (setter is CollectionSetter cs)
                 {
@@ -134,6 +143,12 @@ namespace Hopex.Model.Mocks
             return Task.FromResult<IModelCollection>(_collections.GetOrAdd(schema.Name, _ => new MockModelCollection(this, schema)));
         }
 
+        public Task<List<IModelElement>> SearchAllAsync(ResolveFieldContext<IHopexDataModel> ctx)
+        {
+            var collection = _elements.Select(modelElement => modelElement.Value).ToList();
+            return Task.FromResult(collection);
+        }
+
         public Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType)
         {
             if (_elements.TryGetValue(id, out var elem))
@@ -141,16 +156,20 @@ namespace Hopex.Model.Mocks
             return Task.FromResult<IModelElement>(null);
         }
 
-        public Task<IModelElement> RemoveElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool cascade)
+        public Task<DeleteResultType> RemoveElementAsync(List<IMegaObject> objectsToDelete, bool isCascade = false)
         {
-            if (_collections.TryGetValue(schema.Name, out var collections))
+            var removedElementCount = 0;
+            foreach (var item in objectsToDelete)
             {
-                if (collections.Remove(id, cascade))
+                if (_collections.TryGetValue("", out var collections))
                 {
-                    // return Task.FromResult(true);
+                    if (collections.Remove(item.Id, isCascade))
+                    {
+                        removedElementCount++;
+                    }
                 }
             }
-            return Task.FromResult<IModelElement>(null);
+            return Task.FromResult(new DeleteResultType {DeletedCount = removedElementCount});
         }
 
         internal IModelElement CreateElement(IClassDescription targetSchema, int id)

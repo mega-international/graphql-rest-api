@@ -36,14 +36,12 @@ namespace Mega.WebService.GraphQL.IntegrationTests
         private string _repositoryName = "GraphQLIntegrationTests";
         public string ProfileId => "757wuc(SGjpJ"; // Hopex Customizer
 
-        private MegaDatabase _megaDatabase;
         public string RepositoryId { get; private set; }
         public string EnvironmentId { get; private set; }
         public string ContextHeader => $"{{\"EnvironmentId\":\"{EnvironmentId}\",\"RepositoryId\":\"{RepositoryId}\",\"ProfileId\":\"{ProfileId}\"}}";
 
         public HttpClient Client { get; private set; }
-        public MgrImporter MgrImporter { get; private set; }
-
+        
         private UasToken _uasToken = UasToken.NO_TOKEN;
         private Dictionary<string, GraphQLHttpClient> _graphQLClientDictionary = new Dictionary<string, GraphQLHttpClient>();
 
@@ -61,12 +59,11 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                 var settings = JsonConvert.DeserializeObject<CachedSettings>(File.ReadAllText(CACHED_CONFIG_FILE));
                 EnvironmentId = settings.EnvironmentId;
                 RepositoryId = settings.RepositoryId;
-                MgrImporter = new NullMgrImporter();
             }
             else
             {
-                FindMegaDatabase();
-                MgrImporter = new MgrImporter(_megaDatabase);
+                var megaDatabase = FindMegaDatabase();
+                new MgrImporter(megaDatabase).ImportAll();
 
                 var settings = new CachedSettings
                 {
@@ -85,7 +82,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             };
         }
 
-        private void FindMegaDatabase()
+        private MegaDatabase FindMegaDatabase()
         {
             var sqlConnectionStringFromEnv = Environment.GetEnvironmentVariable("HopexSqlConnectionString");
             if (!string.IsNullOrEmpty(sqlConnectionStringFromEnv))
@@ -104,14 +101,15 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             Console.WriteLine($"Found environment {EnvironmentId} {environment.Path}");
 
             var databases = environment.Databases();
-            _megaDatabase = databases.Cast<MegaDatabase>().FirstOrDefault(db => db.Name.Equals(_repositoryName, StringComparison.InvariantCultureIgnoreCase));
-            if (_megaDatabase == null)
+            var megaDatabase = databases.Cast<MegaDatabase>().FirstOrDefault(db => db.Name.Equals(_repositoryName, StringComparison.InvariantCultureIgnoreCase));
+            if (megaDatabase == null)
             {
                 Console.WriteLine("Creating Database " + _repositoryName);
-                _megaDatabase = databases.Create(_repositoryName, $@"{environment.Path}\Db\{_repositoryName}", _sqlConnectionString);
+                megaDatabase = databases.Create(_repositoryName, $@"{environment.Path}\Db\{_repositoryName}", _sqlConnectionString);
             }
-            RepositoryId = _megaDatabase.GetProp("EnvHexaIdAbs");
+            RepositoryId = megaDatabase.GetProp("EnvHexaIdAbs");
             Console.WriteLine("Found Database " + RepositoryId);
+            return megaDatabase;
         }
 
         private static string GetFullyQualifiedDomainName()

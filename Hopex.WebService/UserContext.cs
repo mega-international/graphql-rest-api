@@ -10,6 +10,6 @@ namespace Hopex.Modules.GraphQL
         public IMegaRoot IRoot { get; set; }
         public string WebServiceUrl { get; set; }
         public SchemaReference Schema { get; set; }
-        public Dictionary<string, string> Languages { get; set; }
+        public Dictionary<string, IMegaObject> Languages { get; set; }
     }
 }

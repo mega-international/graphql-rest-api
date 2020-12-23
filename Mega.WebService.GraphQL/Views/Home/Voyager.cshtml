@@ -66,12 +66,15 @@
 
     <script>
 
-        var uasUrl = "@Model.UasUrl";
-        var environmentId = "@Model.EnvironmentId";
-        var repositoryId = "@Model.RepositoryId";
-        var profileId = "@Model.ProfileId";
-        var login = "@Model.Login";
-        var password = "@Model.Password";
+        var uasUrl = '@Model.UasUrl';
+        var clientId = '@Model.ClientId';
+        var clientSecret = '@Model.ClientSecret';
+        var scopes = '@Model.Scopes';
+        var environmentId = '@Model.EnvironmentId';
+        var repositoryId = '@Model.RepositoryId';
+        var profileId = '@Model.ProfileId';
+        var login = '@Model.Login';
+        var password = '@Model.Password';
 
         function switchSchema(schema) {
             window.location.href = '/hopexgraphql/home/voyager/' + schema;
@@ -80,11 +83,11 @@
         function getToken(url, environmentId, login, password) {
             var details = {
                 'grant_type': 'password',
-                'scope': 'hopex openid read write',
+                'scope': scopes,
                 'username': login,
                 'password': password,
-                'client_id': 'HopexAPI',
-                'client_secret': 'secret',
+                'client_id': clientId,
+                'client_secret': clientSecret,
                 'environmentId': environmentId
             };
             var formBody = [];

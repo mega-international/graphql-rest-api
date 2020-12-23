@@ -1,7 +1,10 @@
 using FluentAssertions;
 using MegaMapp;
-using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using Xunit.Abstractions;
 
 namespace Mega.WebService.GraphQL.IntegrationTests.Utils
 {
@@ -15,8 +18,31 @@ namespace Mega.WebService.GraphQL.IntegrationTests.Utils
             _megaDatabase = megaDatabase;
         }
 
-        public virtual void Import(string file)
+        public void ImportAll()
         {
+            IEnumerable<string> mgrs;
+            if (InterceptingTestFramework.RunAll)
+            {
+                mgrs = Assembly.GetExecutingAssembly()
+                    .GetTypes()
+                    .SelectMany(t => t.GetCustomAttributes<ImportMgrAttribute>())
+                    .Select(a => a.File);
+            }
+            else
+            {
+                mgrs = InterceptingTestFramework.TestCases.Select(c => c.TestMethod.TestClass)
+                    .Distinct(new TestCaseNameComparer())
+                    .SelectMany(c => c.Class.GetCustomAttributes(typeof(ImportMgrAttribute).AssemblyQualifiedName))
+                    .SelectMany(a => a.GetConstructorArguments())
+                    .Cast<string>();
+            }
+            foreach (var mgr in mgrs)
+                Import(mgr);
+        }
+
+        private void Import(string file)
+        {
+            System.Console.WriteLine($"Importing {file}...");
             var directory = Directory.GetCurrentDirectory();
             var fullPath = Path.Combine(directory, file);
             File.Exists(fullPath).Should().BeTrue();
@@ -24,15 +50,16 @@ namespace Mega.WebService.GraphQL.IntegrationTests.Utils
         }
     }
 
-    public class NullMgrImporter : MgrImporter
+    internal class TestCaseNameComparer : IEqualityComparer<ITestClass>
     {
-        public NullMgrImporter() : base(null)
+        public bool Equals(ITestClass x, ITestClass y)
         {
+            return x.Class.Name.Equals(y.Class.Name);
         }
 
-        public override void Import(string file)
+        public int GetHashCode(ITestClass obj)
         {
-            Console.WriteLine($"Skipping import of {file}");
+            return obj.Class.Name.GetHashCode();
         }
     }
 }

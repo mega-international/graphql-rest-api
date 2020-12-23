@@ -24,6 +24,8 @@ namespace Mega.WebService.GraphQL.Controllers
             var hopexInfo = new HopexInfo
             {
                 UasUrl = ConfigurationManager.AppSettings["AuthenticationUrl"].TrimEnd('/') + "/connect/token/",
+                ClientId = ConfigurationManager.AppSettings["ClientId"],
+                ClientSecret = ConfigurationManager.AppSettings["ClientSecret"],
                 Scopes = ConfigurationManager.AppSettings["Scopes"],
                 Schemas = new SelectList(schemas, id),
                 EnvironmentId = ConfigurationManager.AppSettings["EnvironmentId"],
@@ -52,14 +54,16 @@ namespace Mega.WebService.GraphQL.Controllers
 
             var hopexInfo = new HopexInfo
             {
-                UasUrl = ConfigurationManager.AppSettings ["AuthenticationUrl"].TrimEnd('/') + "/connect/token/",
+                UasUrl = ConfigurationManager.AppSettings["AuthenticationUrl"].TrimEnd('/') + "/connect/token/",
+                ClientId = ConfigurationManager.AppSettings["ClientId"],
+                ClientSecret = ConfigurationManager.AppSettings["ClientSecret"],
                 Scopes = ConfigurationManager.AppSettings["Scopes"],
                 Schemas = new SelectList(schemas, id),
-                EnvironmentId = ConfigurationManager.AppSettings ["EnvironmentId"],
-                RepositoryId = ConfigurationManager.AppSettings ["RepositoryId"],
-                ProfileId = ConfigurationManager.AppSettings ["ProfileId"],
-                Login = ConfigurationManager.AppSettings ["Login"],
-                Password = ConfigurationManager.AppSettings ["Password"]
+                EnvironmentId = ConfigurationManager.AppSettings["EnvironmentId"],
+                RepositoryId = ConfigurationManager.AppSettings["RepositoryId"],
+                ProfileId = ConfigurationManager.AppSettings["ProfileId"],
+                Login = ConfigurationManager.AppSettings["Login"],
+                Password = ConfigurationManager.AppSettings["Password"]
             };
 
             return View(hopexInfo);

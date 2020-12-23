@@ -1,0 +1,593 @@
+
+- Execution       : Extraction (2020/09/04 15:49:36)
+- File exported   : c:\mega\hopex v4.00.00\Environments\EnvTestsLab_900_000_tst_5563\Db\GraphQLIntegrationTests\USER\SCR\OBJ0904.mgr
+- Environment     : c:\mega\hopex v4.00.00\Environments\EnvTestsLab_900_000_tst_5563
+- DataBase        : GraphQLIntegrationTests
+- User            : CRONIER Sébastien
+- Options         : Definition of path of MetaAssociation -> M2013
+- Perimeter       : ~Bav0cNnAjyQR[Standard for export]
+- ************************************************************************************************
+
+
+- Root objects:
+-      ApplicationDemo
+-      ApplicationDataAreaDemo
+-      ClassDemo
+-      BusinessInformationAreaDemo
+-      MemBusInfoDemo
+-      BusinessDictionaryDemo::TermSynonymDemo
+-      VAURY Jean-Marie-Data Designer-ConceptDemo
+-      BusinessDictionaryDemo::ConceptDemo
+-      BusinessDictionaryDemo::ConceptDemo
+-      BusinessDictionaryDemo
+-      ABTerm
+-      bTerm
+-      ATerm
+- 
+- Application                             ApplicationDemo
+- Application Data Area                   ApplicationDataAreaDemo
+- Application Local Data Store            ApplicationDemo::ApplicationDataAreaDemo
+- Business Dictionary                     BusinessDictionaryDemo
+- Business Information Area               BusinessInformationAreaDemo
+- Candidate Key                           ClassDemo::ID_ClassDemo
+- Class                                   ClassDemo
+- Concept                                 BusinessDictionaryDemo::ConceptDemo
+- Logical Data Area Component             ApplicationDataAreaDemo::ClassDemo
+- Memorized Business Information          BusinessInformationAreaDemo::ConceptDemo
+- Realization of Business Information     Fulfillment of[ConceptDemo] by [ClassDemo]
+- Term                                    BusinessDictionaryDemo::TermSynonymDemo
+- Term                                    MemBusInfoDemo
+- Term                                    ATerm
+- Term                                    BusinessDictionaryDemo::ConceptDemo
+- Term                                    bTerm
+- Term                                    ABTerm
+- Responsibility Assignment               VAURY Jean-Marie-Data Designer-ConceptDemo
+
+-  "Application" "3CFF3D785F527264"
+.Create ."~MrUiM9B5iyM0[Application]" "3CFF3D785F527264" -
+        .CHK "tzFFurZKVHcSC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 13:13:28" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 13:13:28" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 13:13:28" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~g20000000f60[Generic Local name]"                 "ApplicationDemo[0000000000000000]"
+
+-  "Application Data Area" "36773B8A5F5235B0"
+.Create ."~4I1mIZCCLDd7[Application Data Area]" "36773B8A5F5235B0" -
+        .CHK "8SdDAkZKV1RDC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 13:05:14" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 13:05:23" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "ApplicationDataAreaDemo[0000000000000000]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 13:05:23"
+
+-  "Application Local Data Store" "36773C4E5F52365B"
+.Create ."~(CKIDHLkIHhK[Application Local Data Store]" "36773C4E5F52365B" -
+        .CHK "vTdDEnZKVjbDC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 13:08:30" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 13:08:31" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "]36773C4E5F52365B[36773B8A5F5235B0]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 13:08:31"
+
+-  "Business Dictionary" "009D11265F512F7D"
+.Create ."~DP1xhuEA4PC0[Business Dictionary]" "009D11265F512F7D" -
+        .CHK "mq90c4HKVrtBC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/03 15:52:06" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:23:45" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "BusinessDictionaryDemo[0000000000000000]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 12:23:45"
+
+-  "Business Dictionary" "009D11265F512F7D"
+.Update ."~DP1xhuEA4PC0[Business Dictionary]" "009D11265F512F7D" -
+        .CHK "mq90c4HKVrtB" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:23:45" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 12:23:45" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00521N6HoN31cCdDcGo0mRMrlT6vbTK8WRcbpStDbQKGWQNHZOMvl2dbo001z
+.
+
+-  "Business Information Area" "2F5135065F52163C"
+.Create ."~zIauMCEoF9LD[Business Information Area]" "2F5135065F52163C" -
+        .CHK "(6rB6KZKVnZ5C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 12:37:26" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:57:06" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~g20000000f60[Generic Local name]"                 "BusinessInformationAreaDemo[0000000000000000]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 12:57:06"
+
+-  "Business Information Area" "2F5135065F52163C"
+.Update ."~zIauMCEoF9LD[Business Information Area]" "2F5135065F52163C" -
+        .CHK "(6rB6KZKVnZ5" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:57:06" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 12:57:06" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00601N6HoN31cCdDcJI0mGY1vQNDrSsLkII1pRsPkOMroRsbqGI1kOMLoPKGW2czj001z
+.
+
+-  "Candidate Key" "36773A8B5F523517"
+.Create ."~hz1pmni(qCn0[Candidate Key]" "36773A8B5F523517" -
+        .CHK "lTdDBgZKVTHDC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 13:01:00" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 13:01:00" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~oz1pnni(qan0[Primary]"                            "Y" -
+        ."~g20000000f60[Generic Local name]"                 "ID_ClassDemo[36773A8B5F5234EE]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Class" "36773A8B5F5234EE"
+.Create ."~dXRV098DpGG1[Class]" "36773A8B5F5234EE" -
+        .CHK "5TdDBgZKVvEDC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 13:00:59" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 13:04:22" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~0XytF2kose20[UML ClassName]"                      "ClassDemo[0000000000000000]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 13:04:22"
+
+-  "Concept" "009D11465F513003"
+.Create ."~bP1xsuEA4DD0[Concept]" "009D11465F513003" -
+        .CHK "Nt9065HKVD0CC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/03 15:52:38" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:35:13" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~CTqE2lJV5j00[Definition Name]"                    "ConceptDemo[009D11265F512F7D]" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 12:35:13"
+
+-  "Concept" "009D11465F513003"
+.Update ."~bP1xsuEA4DD0[Concept]" "009D11465F513003" -
+        .CHK "Nt9065HKVD0C" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:35:13" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 12:35:13" -
+        ."~f10000000b20[Comment]" "g3TCfAJnyq00" 
+00680SbnxCMPqRc5SN6bpSsvXS6DfCZ5dN38rPcLaN31cPcLaRc5iC35dUpOpRsPST7HkUsnY
+00680C6PSRcPSN6nfQ6DcSt9XC7HbKqqWQ5CWR6nbR4GWVJjdTbnzTsLfRcbhN3HaCMDrON1S
+00361N6HoN31cCdDcH20mQMPbT6bkRczfPMGW2czj001z
+.
+
+-  "Logical Data Area Component" "36773B555F523569"
+.Create ."~Cs3HpJ2jKzVx[Logical Data Area Component]" "36773B555F523569" -
+        .CHK "CUdDLjZKVbMDC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 13:04:21" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 13:04:21" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "]Logical Data Area Component[36773A8B5F5234EE]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 13:04:21"
+
+-  "Memorized Business Information" "2F5134815F5215FB"
+.Create ."~XIVW7RPyMLmW[Memorized Business Information]" "2F5134815F5215FB" -
+        .CHK "s7rB1IZKVjV5C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 12:35:13" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:35:13" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "]Memorized Business Information[009D11465F513003]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~a20000000H60[Language Update Date]"               "2020/09/04 12:35:13"
+
+-  "Realization of Business Information" "36773A045F52349B"
+.Create ."~Ymj7EScwCTd1[Realization of Business Information]" "36773A045F52349B" -
+        .CHK "hTdD4eZKVj9DC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 12:58:44" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 13:01:01" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0" -
+        ."~4aGY)ouNI1YL[Composite Realization Name]"         "BusInfoRealDemo"
+
+-  "Term" "2F5132275F52142C"
+.Create ."~TO1xUxEA4DE0[Term]" "2F5132275F52142C" -
+        .CHK "A7rBd8ZKVn25C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 12:25:11" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:25:11" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "TermSynonymDemo[2F5132275F52142C]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Term" "2F5133565F5214F7"
+.Create ."~TO1xUxEA4DE0[Term]" "2F5133565F5214F7" -
+        .CHK "57rBMDZKVTF5C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 12:30:14" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:30:14" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "MemBusInfoDemo[2F5133565F5214F7]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Term" "009D01425F512E87"
+.Create ."~TO1xUxEA4DE0[Term]" "009D01425F512E87" -
+        .CHK "5r9025GKVTeBC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/03 14:44:18" -
+        ."~610000000P00[Modification Date]"                  "2020/09/03 14:44:18" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "ATerm[009D01425F512E87]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Term" "009D11465F513002"
+.Create ."~TO1xUxEA4DE0[Term]" "009D11465F513002" -
+        .CHK "Mt9065HKV90CC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/03 15:52:39" -
+        ."~610000000P00[Modification Date]"                  "2020/09/03 15:52:39" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "ConceptDemo[009D11465F513002]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Term" "009D01595F512EC9"
+.Create ."~TO1xUxEA4DE0[Term]" "009D01595F512EC9" -
+        .CHK "Us90P5GKVbiBC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/03 14:44:41" -
+        ."~610000000P00[Modification Date]"                  "2020/09/03 14:44:41" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "bTerm[009D01595F512EC9]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Term" "009D01745F512EEF"
+.Create ."~TO1xUxEA4DE0[Term]" "009D01745F512EEF" -
+        .CHK "Vt90q5GKVzkBC30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/03 14:45:08" -
+        ."~610000000P00[Modification Date]"                  "2020/09/03 14:45:08" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~CoK3h1oc8Di0[GenericLabel]"                       "ABTerm[009D01745F512EEF]" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Responsibility Assignment" "2F51311E5F5213E3"
+.Create ."~030000000240[Responsibility Assignment]" "2F51311E5F5213E3" -
+        .CHK "s5rBU4ZKVD(4C30000mCpCpC" -
+        ."~510000000L00[Creation Date]"                      "2020/09/04 12:20:46" -
+        ."~610000000P00[Modification Date]"                  "2020/09/04 12:20:46" -
+        ."~(10000000v30[Creator]"                            "XgCp3syUNLAH" -
+        ."~b10000000L20[Modifier]"                           "XgCp3syUNLAH" -
+        ."~520000000L40[Create Version]"                     "36864" -
+        ."~620000000P40[Update Version]"                     "36864" -
+        ."~)20000000z70[Reading access area identifier]"     "sTlVwxdH3100" -
+        ."~nOU8g8IMCb30[Version of last conversion]"         "0"
+
+-  "Time Dependent Element" "3CFF3D785F527264"
+-  "Period Of Validity" "3CFF3D795F5272F7"
+.Connect ."~sEhryhDo4ba0[Time Dependent Element]" "3CFF3D785F527264" ."~YChrYpDo4ri0[Period Of Validity]" "3CFF3D795F5272F7" -
+        .CHK "tzFFurZKVHcSByFFvrZKVTlS" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:13:29" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:13:29" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Dependent Element" "3CFF3D785F527264"
+-  "Period Of Validity" "3CFF3D795F527322"
+.Connect ."~sEhryhDo4ba0[Time Dependent Element]" "3CFF3D785F527264" ."~YChrYpDo4ri0[Period Of Validity]" "3CFF3D795F527322" -
+        .CHK "tzFFurZKVHcStyFFvrZKV9oS" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:13:29" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:13:29" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Time Dependent Element" "3CFF3D785F527264"
+-  "Period Of Validity" "3CFF3D7A5F527354"
+.Connect ."~sEhryhDo4ba0[Time Dependent Element]" "3CFF3D785F527264" ."~YChrYpDo4ri0[Period Of Validity]" "3CFF3D7A5F527354" -
+        .CHK "tzFFurZKVHcSgzFFwrZKVHrS" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:13:30" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:13:30" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class of Enterprise Physical Software Assembly" "3CFF3D785F527264"
+-  "ER Physical Local Data Store" "36773C4E5F52365B"
+.Connect ."~h11n0zGHB9h1[Class of Enterprise Physical Software Assembly]" "3CFF3D785F527264" ."~vDKIOKLkI9oK[ER Physical Local Data Store]" "36773C4E5F52365B" -
+        .CHK "tzFFurZKVHcSvTdDEnZKVjbD" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:13:28" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:13:28" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Subject to Life Cycle" "3CFF3D785F527264"
+-  "Life Cycle Definition" "ADF9D61C49750738"
+.Connect ."~Utr)WAmX9vW0[Subject to Life Cycle]" "3CFF3D785F527264" ."~Err)UBmX91a0[Life Cycle Definition]" "ADF9D61C49750738" -
+        .CHK "tzFFurZKVHcSLcVhSOTT9Xp1" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:13:30" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:13:30" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "ER Data Area" "36773B8A5F5235B0"
+-  "Logical Data Area Components" "36773B555F523569"
+.Connect ."~Ft3Hot1jK5bv[ER Data Area]" "36773B8A5F5235B0" ."~Uq3HBL2jKTZx[Logical Data Area Components]" "36773B555F523569" -
+        .CHK "8SdDAkZKV1RDCUdDLjZKVbMD" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:05:14" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:05:14" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "ER Physical Data Store" "36773C4E5F52365B"
+-  "Application Data Area" "36773B8A5F5235B0"
+.Connect ."~2I1mpbCCLzi7[ER Physical Data Store]" "36773C4E5F52365B" ."~xH1mOgCCL5w7[Application Data Area]" "36773B8A5F5235B0" -
+        .CHK "vTdDEnZKVjbD8SdDAkZKV1RD" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:08:31" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:08:31" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Business Dictionary" "009D11265F512F7D"
+-  "Owned Business Information Block" "009D11465F513002"
+.Connect ."~DP1xhuEA4PC0[Business Dictionary]" "009D11265F512F7D" ."~ZGWRk7exCPW0[Owned Business Information Block]" "009D11465F513002" -
+        .CHK "mq90c4HKVrtBMt9065HKV90C" -
+        ."~710000000T00[Link creation date]"                 "2020/09/03 15:52:39" -
+        ."~810000000X00[Link modification date]"             "2020/09/03 15:52:39" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Business Dictionary" "009D11265F512F7D"
+-  "Owned Business Information Block" "009D11465F513003"
+.Connect ."~DP1xhuEA4PC0[Business Dictionary]" "009D11265F512F7D" ."~ZGWRk7exCPW0[Owned Business Information Block]" "009D11465F513003" -
+        .CHK "mq90c4HKVrtBNt9065HKVD0C" -
+        ."~710000000T00[Link creation date]"                 "2020/09/03 15:52:38" -
+        ."~810000000X00[Link modification date]"             "2020/09/03 15:52:38" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Business Dictionary" "009D11265F512F7D"
+-  "Owned Business Information Block" "2F5132275F52142C"
+.Connect ."~DP1xhuEA4PC0[Business Dictionary]" "009D11265F512F7D" ."~ZGWRk7exCPW0[Owned Business Information Block]" "2F5132275F52142C" -
+        .CHK "mq90c4HKVrtBA7rBd8ZKVn25" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:25:11" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:25:11" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Business Information Area" "2F5135065F52163C"
+-  "Owned Memorized Business Information" "2F5134815F5215FB"
+.Connect ."~zIauMCEoF9LD[Business Information Area]" "2F5135065F52163C" ."~aJVW7fPyMHyW[Owned Memorized Business Information]" "2F5134815F5215FB" -
+        .CHK "(6rB6KZKVnZ5s7rB1IZKVjV5" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:37:26" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:37:26" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class" "36773A8B5F5234EE"
+-  "Candidate Key" "36773A8B5F523517"
+.Connect ."~dXRV098DpGG1[Class]" "36773A8B5F5234EE" ."~n)1ppni(qOv0[Candidate Key]" "36773A8B5F523517" -
+        .CHK "5TdDBgZKVvEDlTdDBgZKVTHD" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:01:00" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:01:00" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class of Enterprise Description Building Block" "36773A8B5F5234EE"
+-  "Owned Business Information Realization" "36773A045F52349B"
+.Connect ."~3d9Lzar9BvC0[Class of Enterprise Description Building Block]" "36773A8B5F5234EE" ."~JcQYkbqpE1KJ[Owned Business Information Realization]" "36773A045F52349B" -
+        .CHK "5TdDBgZKVvEDhTdD4eZKVj9D" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:00:59" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:00:59" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class of Group of Business Information Feature" "009D11465F513003"
+-  "Designation" "009D11465F513002"
+.Connect ."~XlS2OOGxCLR0[Class of Group of Business Information Feature]" "009D11465F513003" ."~S4g1MxGNIrS5[Designation]" "009D11465F513002" -
+        .CHK "Nt9065HKVD0CMt9065HKV90C" -
+        ."~710000000T00[Link creation date]"                 "2020/09/03 15:52:39" -
+        ."~810000000X00[Link modification date]"             "2020/09/03 15:52:39" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Class of Group of Business Information Feature" "009D11465F513003"
+-  "Synonym" "2F5132275F52142C"
+.Connect ."~XlS2OOGxCLR0[Class of Group of Business Information Feature]" "009D11465F513003" ."~XyqNi4MNITFG[Synonym]" "2F5132275F52142C" -
+        .CHK "Nt9065HKVD0CA7rBd8ZKVn25" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:25:11" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:25:11" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Logical Data Area Component" "36773B555F523569"
+-  "Referenced Data Composite Type" "36773A8B5F5234EE"
+.Connect ."~Cs3HpJ2jKzVx[Logical Data Area Component]" "36773B555F523569" ."~8bpwjrECLnJ2[Referenced Data Composite Type]" "36773A8B5F5234EE" -
+        .CHK "CUdDLjZKVbMD5TdDBgZKVvED" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 13:04:21" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 13:04:21" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Memorized Business Information" "2F5134815F5215FB"
+-  "Memorized Business Information" "009D11465F513003"
+.Connect ."~XIVW7RPyMLmW[Memorized Business Information]" "2F5134815F5215FB" ."~eGVWGfPyMz)W[Memorized Business Information]" "009D11465F513003" -
+        .CHK "s7rB1IZKVjV5Nt9065HKVD0C" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:35:13" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:35:13" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Realization of Business Information" "36773A045F52349B"
+-  "Realized Business Information" "009D11465F513003"
+.Connect ."~Ymj7EScwCTd1[Realization of Business Information]" "36773A045F52349B" ."~cIZ5QQXHGvBM[Realized Business Information]" "009D11465F513003" -
+        .CHK "hTdD4eZKVj9DNt9065HKVD0C" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:58:44" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:58:45" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Term" "2F5132275F52142C"
+-  "Language" "English"
+.Connect ."~TO1xUxEA4DE0[Term]" "2F5132275F52142C" ."~VeGnj1jw4LE0[Language]" "English" -
+        .CHK "A7rBd8ZKVn2500(6wlHmk400" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:25:11" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:25:11" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Term" "2F5133565F5214F7"
+-  "Language" "English"
+.Connect ."~TO1xUxEA4DE0[Term]" "2F5133565F5214F7" ."~VeGnj1jw4LE0[Language]" "English" -
+        .CHK "57rBMDZKVTF500(6wlHmk400" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:30:14" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:30:14" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Term" "009D01425F512E87"
+-  "Language" "Français"
+.Connect ."~TO1xUxEA4DE0[Term]" "009D01425F512E87" ."~VeGnj1jw4LE0[Language]" "Français" -
+        .CHK "5r9025GKVTeBB0SNPuLckCQ3" -
+        ."~710000000T00[Link creation date]"                 "2020/09/03 14:44:18" -
+        ."~810000000X00[Link modification date]"             "2020/09/03 14:44:18" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Term" "009D11465F513002"
+-  "Language" "English"
+.Connect ."~TO1xUxEA4DE0[Term]" "009D11465F513002" ."~VeGnj1jw4LE0[Language]" "English" -
+        .CHK "Mt9065HKV90C00(6wlHmk400" -
+        ."~710000000T00[Link creation date]"                 "2020/09/03 15:52:39" -
+        ."~810000000X00[Link modification date]"             "2020/09/03 15:52:39" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Term" "009D01595F512EC9"
+-  "Language" "English"
+.Connect ."~TO1xUxEA4DE0[Term]" "009D01595F512EC9" ."~VeGnj1jw4LE0[Language]" "English" -
+        .CHK "Us90P5GKVbiB00(6wlHmk400" -
+        ."~710000000T00[Link creation date]"                 "2020/09/03 14:44:41" -
+        ."~810000000X00[Link modification date]"             "2020/09/03 14:44:41" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Term" "009D01745F512EEF"
+-  "Language" "Italiano"
+.Connect ."~TO1xUxEA4DE0[Term]" "009D01745F512EEF" ."~VeGnj1jw4LE0[Language]" "Italiano" -
+        .CHK "Vt90q5GKVzkBLXkm2GSbou10" -
+        ."~710000000T00[Link creation date]"                 "2020/09/03 14:45:08" -
+        ."~810000000X00[Link modification date]"             "2020/09/03 14:45:08" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "2F51311E5F5213E3"
+-  "Assigned Object" "009D11465F513003"
+.Connect ."~030000000240[Responsibility Assignment]" "2F51311E5F5213E3" ."~hCr81RIpEvMH[Assigned Object]" "009D11465F513003" -
+        .CHK "s5rBU4ZKVD(4Nt9065HKVD0C" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:20:46" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:20:46" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "2F51311E5F5213E3"
+-  "Assigned Person" "VAURY Jean-Marie"
+.Connect ."~030000000240[Responsibility Assignment]" "2F51311E5F5213E3" ."~L2000000Ca80[Assigned Person]" "VAURY Jean-Marie" -
+        .CHK "s5rBU4ZKVD(4zTcUyq7ETbI9" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:20:46" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:20:46" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"
+
+-  "Responsibility Assignment" "2F51311E5F5213E3"
+-  "Business Role" "Data Designer"
+.Connect ."~030000000240[Responsibility Assignment]" "2F51311E5F5213E3" ."~M2000000Ce80[Business Role]" "Data Designer" -
+        .CHK "s5rBU4ZKVD(4pcRgRnQkILWE" -
+        ."~710000000T00[Link creation date]"                 "2020/09/04 12:20:46" -
+        ."~810000000X00[Link modification date]"             "2020/09/04 12:20:46" -
+        ."~720000000T40[Link Creator]"                       "XgCp3syUNLAH" -
+        ."~920000000b40[Link Modifier]"                      "XgCp3syUNLAH" -
+        ."~410000000H00[Order]"                              "9999"

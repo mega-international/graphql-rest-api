@@ -1,11 +1,9 @@
 using GraphQL;
-
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
 using Hopex.Model.MetaModel;
 
 using Mega.Macro.API;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +20,14 @@ namespace Hopex.Model.Abstractions.DataModel
 
     public class CollectionSetter : ISetter
     {
-        public static CollectionSetter Create(IRelationshipDescription relationshipDescription, CollectionAction action, IEnumerable<object> listElements) => new CollectionSetter(relationshipDescription, action, listElements);
+        public static CollectionSetter Create(IRelationshipDescription relationshipDescription,
+                                            CollectionAction action,
+                                            IEnumerable<object> listElements) =>
+            new CollectionSetter(relationshipDescription, action, listElements);
 
-        protected CollectionSetter(IRelationshipDescription relationshipDescription, CollectionAction action, IEnumerable<object> listElements)
+        protected CollectionSetter(IRelationshipDescription relationshipDescription,
+                                CollectionAction action,
+                                IEnumerable<object> listElements)
         {
             RelationshipDescription = relationshipDescription;
             Action = action;
@@ -33,7 +36,6 @@ namespace Hopex.Model.Abstractions.DataModel
 
         public IRelationshipDescription RelationshipDescription { get; }
         public CollectionAction Action { get; }
-
         public IEnumerable<object> ListElement { get; }
 
         public async Task UpdateElementAsync(IHopexDataModel model, IModelElement source)
@@ -41,7 +43,6 @@ namespace Hopex.Model.Abstractions.DataModel
             //_domainModel.LogInformation($"setter col = {cs.ToString()}");
             var link = RelationshipDescription;
             var permissions = GetPathCrud(source, link.Path[0]);
-
             var elements = ListElement.Cast<Dictionary<string, object>>();
             switch (Action)
             {
@@ -84,7 +85,7 @@ namespace Hopex.Model.Abstractions.DataModel
             return CrudComputer.GetPathCrud(source.IMegaObject, path);
         }
 
-        private void RemoveConnection(IModelElement source, HopexModelElement elemToInsert, IPathDescription[] path)
+        private void RemoveConnection(IModelElement source, IModelElement elemToInsert, IPathDescription[] path)
         {
             var current = source.IMegaObject;
             List<IMegaObject> interObjects = new List<IMegaObject>();
@@ -182,30 +183,72 @@ namespace Hopex.Model.Abstractions.DataModel
             return item.GetPropertyValue(Utils.NormalizeHopexId(hop.Condition.RoleId)) == hop.Condition.ObjectFilterId;
         }
 
-        private async Task ModifyRelationshipAsync(IHopexDataModel model, IModelElement source, IRelationshipDescription link, Dictionary<string, object> properties, bool insert)
+        private async Task CreateItemInRelationshipAsync(IHopexDataModel model, IModelElement source, IRelationshipDescription link, Dictionary<string, object> properties, string id, IdTypeEnum idType)
         {
             var elemSchema = GetTargetSchema(source, link);
-            var id = properties["id"].ToString();;
-            var idType = IdTypeEnum.INTERNAL;
-            if (properties.ContainsKey("idType"))
+            bool useInstanceCreator = false;
+            if (properties.TryGetValue("creationMode", out var useInstanceCreatorObj))
             {
-                Enum.TryParse(properties["idType"].ToString(), out idType);
+                useInstanceCreator = (bool)useInstanceCreatorObj;
             }
-            var getElementByIdAsyncTask = model.GetElementByIdAsync(elemSchema, id, idType);
-            if (getElementByIdAsyncTask == null)
+            var setters = CreateSetters(link.TargetClass, properties);
+            var collection = source.IMegaObject.GetCollection(link.RoleId);
+            var element = await model.CreateElementFromParentAsync(elemSchema, id, idType, useInstanceCreator, setters, collection);
+            if (element.Errors?.Any() ?? false) //Get all errors from new item to report them if any occurs
             {
-                throw new ExecutionError($"Element {elemSchema.Name} not found with id {id}");
+                source.AddErrors(element);
             }
+        }
 
-            if (!(await getElementByIdAsyncTask is HopexModelElement elemToInsert))
+        private async Task ModifyRelationshipAsync(IHopexDataModel model, IModelElement source, IRelationshipDescription link, Dictionary<string, object> properties, bool insert)
+        {
+            if(properties.TryGetValue("id", out var idObj)) //présence de l'id => c'est juste un connect classique
             {
-                throw new ExecutionError($"{id}' is not a valid item to add for relationship {link.Name} of {id}");
-            }
+                var id = idObj.ToString();
+                var idType = IdTypeEnum.INTERNAL;
+                if (properties.ContainsKey("idType"))
+                {
+                    Enum.TryParse(properties["idType"].ToString(), out idType);
+                }
+                var elemSchema = GetTargetSchema(source, link);
+                var getElementByIdAsyncTask = model.GetElementByIdAsync(elemSchema, id, idType);
+                if (getElementByIdAsyncTask == null)
+                {
+                    throw new ExecutionError($"Element {elemSchema.Name} not found with id {id}");
+                }
 
-            if (insert)
-                InsertConnection(source, elemToInsert, link, properties);
-            else
-                RemoveConnection(source, elemToInsert, link.Path);       
+                if (!(await getElementByIdAsyncTask is IModelElement elemToInsert))
+                {
+                    switch (idType)
+                    {
+                        case IdTypeEnum.INTERNAL:
+                            throw new ExecutionError($"{id}' is not a valid item to add for relationship {link.Name} of {id}");
+                        case IdTypeEnum.EXTERNAL:
+                            await CreateItemInRelationshipAsync(model, source, link, properties, id, idType); //external doit être créé
+                            return;
+                        case IdTypeEnum.TEMPORARY:
+                            if (model.TemporaryMegaObjects.ContainsKey(id))
+                            {
+                                elemToInsert = model.TemporaryMegaObjects[id];
+                            }
+                            else
+                            {
+                                throw new ExecutionError($"{id}' is not a valid item to add for relationship {link.Name} of {id}");
+                            }
+                            break;
+                        default:
+                            return;
+                    }
+                }
+                if (insert)
+                    InsertConnection(source, elemToInsert, link, properties);
+                else
+                    RemoveConnection(source, elemToInsert, link.Path);
+            }
+            else // pas d'id => il faut créer l'objet linké
+            {
+                await CreateItemInRelationshipAsync(model, source, link, properties, null, IdTypeEnum.INTERNAL);
+            }
         }
 
         protected virtual IClassDescription GetTargetSchema(IModelElement source, IRelationshipDescription link)
@@ -213,7 +256,7 @@ namespace Hopex.Model.Abstractions.DataModel
             return source.ClassDescription.MetaModel.GetClassDescription(link.Path.Last().TargetSchemaName);
         }
 
-        private void InsertConnection(IModelElement source, HopexModelElement elemToInsert, IRelationshipDescription relationShip, Dictionary<string, object> propertyValues)
+        private void InsertConnection(IModelElement source, IModelElement elemToInsert, IRelationshipDescription relationShip, Dictionary<string, object> propertyValues)
         {
             var current = source.MegaObject;
             var iCurrent = source.IMegaObject;
@@ -262,7 +305,7 @@ namespace Hopex.Model.Abstractions.DataModel
             }
         }
         
-        private void UpdateLinkAttributes(HopexModelElement elemToInsert, IRelationshipDescription relationShip, Dictionary<string, object> propertyValues, IMegaObject current)
+        private void UpdateLinkAttributes(IModelElement elemToInsert, IRelationshipDescription relationShip, Dictionary<string, object> propertyValues, IMegaObject current)
         {           
             var linkProperties = relationShip.TargetClass.Properties.Where(p => p.Scope == PropertyScope.Relationship || p.Scope == PropertyScope.TargetClass);
             if (linkProperties.Any())
@@ -319,6 +362,20 @@ namespace Hopex.Model.Abstractions.DataModel
         private void RemoveFromCollection(IMegaCollection collection, MegaId objectId)
         {
             collection.RemoveChild(objectId);
+        }
+
+        private IEnumerable<ISetter> CreateSetters(IClassDescription entity, Dictionary<string, object> properties)
+        {
+            var result = new List<ISetter>();
+            foreach (var kv in properties)
+            {
+                var prop = entity.GetPropertyDescription(kv.Key, false);
+                if (prop != null)
+                {
+                    result.Add(PropertySetter.Create(prop, kv.Value));
+                }
+            }
+            return result;
         }
     }
 }
