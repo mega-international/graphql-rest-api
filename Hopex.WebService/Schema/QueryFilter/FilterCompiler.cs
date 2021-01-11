@@ -160,12 +160,14 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             var (id, op) = GetOperator(elem.Key);
             if (op.Pattern == "rel")
             {
+                var savedClassDescription = _itemClassDescription;
                 GenerateFilterRelationshipPrefix(id, out _itemClassDescription);
                 if (elem.Value is IEnumerable<object> e)
                 {
                     VisitExpression(e.First() as Dictionary<string, object>, language, connector, true);
                 }
                 GenerateFilterRelationshipSuffix();
+                _itemClassDescription = savedClassDescription;
                 return;
             }
 

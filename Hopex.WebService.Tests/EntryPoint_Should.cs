@@ -71,6 +71,10 @@ namespace Hopex.WebService.Tests
             "query {application(filter:{applicationOwner_PersonSystem_some:{email_contains:\"webeval\"}}) {id name}}",
             "SELECT ~MrUiM9B5iyM0[Application] WHERE ~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~WzF2lb0yGb2U\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].(~Sy64inney0Y5[Email] Like \"#webeval#\" ))"
         )]
+        [InlineData(
+            "query {application(filter:{and: {iTOwner_PersonSystem_some:{name: \"Louis\"} businessOwner_PersonSystem_some:{name:\"Dan\"}}}){id}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE (~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~ic5nTMC6H9fC\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].(~210000000900[Name] = \"Louis\" )) and ~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~fd5niMC6H1iC\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].(~210000000900[Name] = \"Dan\" )))"
+        )]
         public async Task Query_with_filter(string query, params string[] expectedERQLs)
         {
             await ExecuteQueryAsync(@query);
