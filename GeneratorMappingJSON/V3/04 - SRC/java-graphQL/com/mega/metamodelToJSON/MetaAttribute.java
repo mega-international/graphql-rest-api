@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.mega.generator.Arguments;
 import com.mega.generator.Generator;
-import com.mega.mappingJSON.ConstraintsProperties;
 import com.mega.mappingJSON.EnumValuesJSON;
 import com.mega.mappingJSON.PropertiesJSON;
 import com.mega.modeling.api.MegaCollection;
@@ -15,167 +15,19 @@ import com.mega.modeling.api.MegaObject;
 import com.mega.modeling.api.MegaRoot;
 import com.mega.vocabulary.StaticFields;
 
-public class MetaAttribute  extends CommonAttributes  {
-
-	private PropertiesJSON propertiesJSON;
-	private ConstraintsProperties constraintsProperties;
-
-	private MegaObject oMetaAttribute;	
-	private String absoluteIdentifier;
+public class MetaAttribute  extends GenericAttributeOrTaggedValue  {
 	
-	private boolean isValidMetaAttribute = true;
-	private boolean isMetaAttributeObject = false;
-		
 	public MetaAttribute(MegaRoot megaRoot, MegaObject oMetamodel, MegaObject pMetaAttribute, HashMap<String,String> overrideNameList) {
-		this.megaRoot = megaRoot;
-		this.oMetamodel = oMetamodel;
-		this.overrideNameList = overrideNameList;
-		this.oMetaAttribute = megaRoot.getCollection(StaticFields.metaAttribute).get(pMetaAttribute.megaField());
-		this.constraintsProperties = new ConstraintsProperties();
-
-
-		
-		
-		String technincalName = "";
-		if (oMetaAttribute.exists()) {		
-			absoluteIdentifier = oMetaAttribute.getProp(StaticFields.absoluteIdentifier);
-			//removeInvalid(absoluteIdentifier);
-			boolean isAvailable = (boolean) oMetaAttribute.callFunction("IsAvailable");
-
-			Generator.logger.finer("MetaAttribute = " +oMetaAttribute.getProp(StaticFields.shortName));
-			Generator.logger.finest("MetaAttribute = isAvailable = " + isAvailable );
-						
-			if (isAvailable) {
-				technincalName = UtilitiesMappingJSON.getTechnicalNameMetaAttribute(oMetaAttribute.getProp(StaticFields.shortName));
-				setProperties();
-			} else {
-				isValidMetaAttribute = false;		
-			}
-			if (!includedAttribute(technincalName) && isValidMetaAttribute) {
-				isValidMetaAttribute = false;			
-			}			
-		} else {
-			isValidMetaAttribute = false;
-		}
-		
-		Generator.logger.finest("isValidMetaAttribute = " + isValidMetaAttribute );
-		
-		
-	}		
-
-	public MetaAttribute(String technincalName, String absoluteIdentifier, String sDescription, String maxLength, String type, boolean isMetaAttributeFilter, boolean isMandatory, boolean isReadOnly, boolean translatable, boolean formattedText,HashMap<String,String> overrideNameList) {
-		this.propertiesJSON = new PropertiesJSON(overrideNameList,absoluteIdentifier);
-		this.constraintsProperties = new ConstraintsProperties();
-		this.overrideNameList = overrideNameList;
-		isValidMetaAttribute = true;
-		
-		propertiesJSON.setName(technincalName);
-		propertiesJSON.setId(absoluteIdentifier);
-		propertiesJSON.setDescription(sDescription);
-
-        constraintsProperties.setMaxLength(maxLength);
-        constraintsProperties.setType(type);
-        constraintsProperties.setMandatory(isMandatory);
-        constraintsProperties.setReadOnly(isReadOnly);
-        constraintsProperties.setTranslatable(translatable);
-        constraintsProperties.setFormattedText(formattedText);
-        
-        propertiesJSON.setConstraints(constraintsProperties);
-		
-		
-		
-	}	
-/*	
-	public String getName() {
-		return this.name;
+		super(megaRoot, oMetamodel, pMetaAttribute, overrideNameList);
 	}
 	
-	public String getNameErrorDisplay() {
-		return this.nameErrorDisplay;
+	public MetaAttribute(String technincalName, String absoluteIdentifier, String sDescription, String maxLength, String type, boolean isMetaAttributeFilter, boolean isMandatory, boolean isReadOnly, boolean translatable, boolean formattedText, boolean isUnique,HashMap<String,String> overrideNameList) {
+		super(technincalName, absoluteIdentifier, sDescription, maxLength, type, isMetaAttributeFilter, isMandatory, isReadOnly, translatable, formattedText, isUnique,overrideNameList);	
 	}
-*/	
-	
-	public MegaObject getoMetaAttribute() {
-		return this.oMetaAttribute;
-	}
-	
-	public boolean getIsMetaAttributeObject() {
-		return this.isMetaAttributeObject;
-	}	
-	
-	public String getAbsoluteIdentifier() {
-		return this.absoluteIdentifier;
-	}
-	
-	public PropertiesJSON getPropertiesJSON() {
-		return propertiesJSON;
-	}
-	
-	public boolean getIsValideMetaAttribute() {
-		return this.isValidMetaAttribute;
-	}
-	
-	private void setProperties() {		
-		
-		String technincalName = oMetaAttribute.getProp(StaticFields.shortName);
-		technincalName = UtilitiesMappingJSON.getTechnicalNameMetaAttribute(technincalName);
-//		absoluteIdentifier = oMetaAttribute.getProp(StaticFields.absoluteIdentifier);
-		String sDescription = UtilitiesMappingJSON.getCleanComment(oMetaAttribute.getProp(StaticFields.comment,"display").toString());
-		String maxLength = oMetaAttribute.getProp(StaticFields.metaAttributeLength);
-		
-        String oMetaAttributeType = oMetaAttribute.getProp(StaticFields.metaAttributeType,"internal").toString();
-        String type = UtilitiesMappingJSON.getGraphQLType(oMetaAttributeType);
 
-		this.propertiesJSON = new PropertiesJSON(overrideNameList, absoluteIdentifier);
 
-		technincalName = customNaming(technincalName, type );
 		
-		propertiesJSON.setName(technincalName);
-		propertiesJSON.setId(absoluteIdentifier);
-		propertiesJSON.setDescription(sDescription);
-		
-		
-		//we ignoe Object 
-		// String sFormat=  oMetaAttribute.getProp(StaticFields.metaAttributeFormat,"internal").toString();
-		
-		
-        // we ignore var binary and binary type
-        if (oMetaAttributeType.contentEquals("B") || oMetaAttributeType.contentEquals("Q")  ) {
-        	isValidMetaAttribute = false;
-        }
-        
-        // if the metaattribute is a varchar the lenght doesn't matter.
-        if (oMetaAttributeType.contentEquals("A")) {
-            //constraintsProperties.setMaxLength("0");
-            
-        } else if  (oMetaAttributeType.contentEquals("H"))   {
-            constraintsProperties.setMaxLength("16");
-        } else {
-            constraintsProperties.setMaxLength(maxLength);
-        }
-        	
-        constraintsProperties.setType(type);
-       // constraintsProperties.setFilter(isMetaAttributeFilter());
-        //constraintsProperties.setFilter(true);
-        
-        constraintsProperties.setMandatory(isMandatory());
-        constraintsProperties.setReadOnly(isReadOnly(technincalName));
-		constraintsProperties.setTranslatable(isTranslatable());
-		constraintsProperties.setFormattedText(isFormattedText(oMetaAttributeType));
-		
-        propertiesJSON.setConstraints(constraintsProperties);
-
-        if (isEnum()) {
-        	propertiesJSON.setEnumValues(getMetaAttributeValues());
-        }
-     
-        // managing duplicate error
-		//name = technincalName.toString();       
-        //nameErrorDisplay =  name + " - " + absoluteIdentifier;       
-	}
-	
-	
-	private String customNaming(String technincalName, String type ) {
+	protected String customNaming(String technincalName, String type ) {
 		String localName = technincalName;
 				
 		if (type.contentEquals("Id") || type.contentEquals("id") ) {
@@ -192,7 +44,8 @@ public class MetaAttribute  extends CommonAttributes  {
 		return localName;
 	}
 	
-	private List<EnumValuesJSON> getMetaAttributeValues() {
+	
+	protected List<EnumValuesJSON> getMetaAttributeValues() {
 		
 		Generator.logger.finest("Start MetaAttributeValues");
 				
@@ -201,8 +54,13 @@ public class MetaAttribute  extends CommonAttributes  {
 		MegaCollection megaCollection = oMetaAttribute.getCollection(StaticFields.metaAttributeValue);
 
 		while (megaCollection.hasNext()) {
-			MegaObject oMetaAttributeValue = megaCollection.next();			
+			MegaObject oMetaAttributeValue = megaCollection.next();		
 			MetaAttributeValue metaAttributeValue = new MetaAttributeValue(megaRoot, oMetamodel,oMetaAttribute,oMetaAttributeValue, overrideNameList);
+			
+			if (metaAttributeValue.getAtLeastOneCustom()) {
+				setAtLeastOneCustom(true);
+			}			
+			
 			if (metaAttributeValue.isValideMetaAttributeValue()) {
 				enumValuesJSONList.add(metaAttributeValue.getEnumValuesJSON());
 			}
@@ -213,7 +71,8 @@ public class MetaAttribute  extends CommonAttributes  {
 		return enumValuesJSONList;
 	}
 	
-	private boolean includedAttribute(String technincalName) {
+	
+	protected boolean includedAttribute(String technincalName) {
 		// we remove certains attributes that are either too technical or redundant
 		boolean include = true;
 		
@@ -230,14 +89,7 @@ public class MetaAttribute  extends CommonAttributes  {
 			include = false;
 		}
 
-		/*
-        // we remove the MetaAttribute that we will managed as RelationShip
-        if (isMetAttributeObjectAsRelationShip(absoluteIdentifier)) {
-    		Generator.logger.finest("isMetAttributeObjectAsRelationShip = " + isMetAttributeObjectAsRelationShip(absoluteIdentifier) +" - technincalName= " + technincalName );
-    		include = false;
-    		this.isMetaAttributeObject = true;
-        }		
-		*/
+
 		
 		if (technincalName.contentEquals("LinkModifierName")  || technincalName.contentEquals("linkModifierName") ) {
 			include = true;
@@ -254,58 +106,10 @@ public class MetaAttribute  extends CommonAttributes  {
 		return include;
 	}
 
-	private boolean isFormattedText(String oMetaAttributeType) {
-		boolean formattedText = false;
-		
-		//Varchar
-		if (oMetaAttributeType.contentEquals("A")) {
-			formattedText = true;
-		
-			String defaultMetaTextFormat = oMetaAttribute.getProp(StaticFields.defaultMetaTextFormat);
-			switch (defaultMetaTextFormat) {  
-			case "11D8120F3BEC0026":  // CSV 
-				formattedText = false;
-			break;   			
-			case "20A720DC3BAA0004":  // FIELD 
-				formattedText = false;
-			break; 
-			case "3AC340245BA2753E":  // UTF8 
-				formattedText = false;
-			break; 
-			case "14A216B744880066":  // CONDITION 
-				formattedText = false;
-			break; 			
-			default:  
-				//
-			} 
 
-		}
 
-		//MegaObject commentMetaAttribute = megaRoot.getObjectFromID("~f10000000b20[Comment]");
-		//if (oMetaAttribute.sameID(commentMetaAttribute.getID())) {
-		//	formattedText = true;			
-		//}
-
-		return formattedText;
-	}
-
-	private boolean isTranslatable() {
-		boolean translatable = false;
-		String translability = oMetaAttribute.getProp(StaticFields.translability);
-		switch (translability) {  
-		case "T":   
-			translatable = true;
-		break;   		
-		case "U":   
-			translatable = false;
-		break;	
-		default:  
-			translatable = false;
-		}  		
-		return translatable;
-	}	
 	
-	private boolean isReadOnly(String technincalName) {
+	protected boolean isReadOnly(String technincalName) {
 		boolean readOnly = false;		
         int countMacro =  oMetaAttribute.getCollection(StaticFields.macro).size();
         int updatePermission = Integer.parseInt(oMetaAttribute.getProp(StaticFields.updatePermission));
@@ -347,69 +151,55 @@ public class MetaAttribute  extends CommonAttributes  {
 		return readOnly;
 	}
 	
-	private boolean isMandatory() {
-		boolean mandatory = false;
 
-		if (oMetaAttribute.sameID(StaticFields.shortName)) {
-			mandatory = true;
-		}		
-		
-		return mandatory;
-	}
-/*	
-	private boolean isMetaAttributeFilter() {
-		boolean isfilter = false;
-		
-		if (isEnum()) { 
-			isfilter = true;
-		} else {
-			isfilter = false;
-		}
+	
+	protected boolean isUnique() {
+		boolean unique = false;
 
-		if (oMetaAttribute.sameID(StaticFields.shortName)) {
-			isfilter = true;
-		}
+		String atIndex = oMetaAttribute.getProp(StaticFields.atIndex,"internal").toString();
 		
-		return isfilter; 
-	}
-*/	
-	private boolean isEnum() {
-		boolean isEnum = false;
-		
-		 String sFormat=  oMetaAttribute.getProp(StaticFields.metaAttributeFormat,"internal").toString();
-			switch (sFormat) {  
-			case "F":   
-				isEnum = true;
-			break;   		
-			case "T":   
-				isEnum = true;
-			break;	
-			default:  
-				isEnum = false;
-		}  		
-		
-		return isEnum;
+		switch (atIndex) {  
+		case "U":  // Unique 
+			unique = true;
+		break;   			
+		case "S":  // Unique Case sensitive 
+			unique = true;
+		break; 			
+		default:  
+			//
+		} 
+
+		return unique;
 	}
 	
+
 	public static List<PropertiesJSON> manualAttribute(boolean hasNameSpace, HashMap<String,String>  overrideNameList) {
 			List<PropertiesJSON> propertiesJSONList = new ArrayList<PropertiesJSON>();	
 		
-		if (hasNameSpace) {
-			String technincalName5 = "Name";
-			String absoluteIdentifier5 = "Z20000000D60"; 
-			String sDescription5 = "Short Name of the object (posibility to get the long name with an argument)";
-			String maxLength5 = "1024";
-			String type5 = "String";
-			boolean isMetaAttributeFilter5 = true; 
-			boolean isMandatory5 = true; 
-			boolean isReadOnly5 = false;			
-			boolean translatable5 = true; 
-			boolean formattedText5 = false;		
-			MetaAttribute metaAttribute5 = new MetaAttribute(technincalName5, absoluteIdentifier5, sDescription5, maxLength5, type5, isMetaAttributeFilter5, isMandatory5, isReadOnly5, translatable5,formattedText5,overrideNameList);
-			PropertiesJSON propertiesJSON5 = metaAttribute5.getPropertiesJSON();
-			propertiesJSONList.add(propertiesJSON5);				
 			
+
+		// we don't add the name in case of custom		
+		if (!Arguments.getExtendOnly()) {
+		if (hasNameSpace) {
+				String technincalName5 = "Name";
+				String absoluteIdentifier5 = "Z20000000D60"; 
+				String sDescription5 = "Short Name of the object (posibility to get the long name with an argument)";
+				String maxLength5 = "1024";
+				String type5 = "String";
+				boolean isMetaAttributeFilter5 = true; 
+				boolean isMandatory5 = true; 
+				boolean isReadOnly5 = false;			
+				boolean translatable5 = true; 
+				boolean formattedText5 = false;		
+				boolean isUnique = false;
+				MetaAttribute metaAttribute5 = new MetaAttribute(technincalName5, absoluteIdentifier5, sDescription5, maxLength5, type5, isMetaAttributeFilter5, isMandatory5, isReadOnly5, translatable5,formattedText5,isUnique,overrideNameList);
+				PropertiesJSON propertiesJSON5 = metaAttribute5.getPropertiesJSON();
+				propertiesJSONList.add(propertiesJSON5);				
+				
+			}
+		
 		}
+		
 	
 		return propertiesJSONList;
 	}	
@@ -829,7 +619,6 @@ public class MetaAttribute  extends CommonAttributes  {
 		listMetaAttribute.add("~UdHRDRN)4HD0[REPLACEMySQL]");
 		listMetaAttribute.add("~F76((mmW9zL0[Computed Start Date]");
 		listMetaAttribute.add("~H46(bnmW9fN0[Computed End Date]");
-
 		return listMetaAttribute;
 
 	}

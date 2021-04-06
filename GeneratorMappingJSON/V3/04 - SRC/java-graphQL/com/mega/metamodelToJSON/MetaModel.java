@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-
+import com.mega.generator.Arguments;
 import com.mega.generator.Generator;
 import com.mega.mappingJSON.CommonFields;
 import com.mega.mappingJSON.InterfacesJSON;
@@ -34,12 +34,18 @@ public class MetaModel  extends CommonAttributes  {
 	
 	} // constructor
 	
-	public RootJSON generateJSON(String name, String version, String latestGeneration) {
-		RootJSON rootJSON = new RootJSON(name,version,latestGeneration);
+	public RootJSON generateJSON(String name, String version, String latestGeneration, String schemaName) {
+		RootJSON rootJSON = new RootJSON(name,version,latestGeneration,schemaName);
 		
 
 		setMetaClass(rootJSON);
-		setInterfaces(rootJSON);
+		
+		
+		if (!Arguments.getExtendOnly()) {
+			setInterfaces(rootJSON);			
+		}
+		
+
 		
 		return rootJSON;
 	}
@@ -56,14 +62,24 @@ public class MetaModel  extends CommonAttributes  {
 		
 		Generator.logger.info("Size = "+oColMetaclass.size());
 		
+		int number = 0;
+		
 		while(oColMetaclass.hasNext()) {
 			MegaObject oMetaClass = oColMetaclass.next();
+			number = number+1;
+			
+			
+			Generator.logger.info(number + " - MetaClass = " +oMetaClass.getProp(StaticFields.shortName) );
+		
 			MetaClass metaClass = new MetaClass(megaRoot,oMetamodel,oMetaClass,overrideNameList,globalUniqueName);			
-
+	
 			if (metaClass.getIsValidMetaClass()) {
 				 MetaClassJSON metaClassJSON = metaClass.getMetaClasJSON();
 				metaClassJSONList.add(metaClassJSON);								
 			 }
+			
+			
+			
 		} // while
 				
 		MetaModel.reportDuplicateName("MetaClass", metaClassJSONList, ensureUniqueName);	
@@ -108,6 +124,58 @@ public class MetaModel  extends CommonAttributes  {
 		} // while		
 	
 	}	
+	
+	
+	
+	public static boolean oMetaAssociationInMetaModelDiagram(MegaRoot megaRoot, MegaObject oMetamodel, MegaObject oMetaAssociationEnd) {
+		boolean inDiagram = false;
+		
+		if (oMetaAssociationEnd.exists()) {
+					
+			String maeAbsoluteIdentifier = oMetaAssociationEnd.getProp(StaticFields.absoluteIdentifier);
+			String oMetaModelAbsoluteIdentifier = oMetamodel.getProp(StaticFields.absoluteIdentifier);		
+			String query = "Select ~R20000000k10{S}[MetaAssociationEnd] Where ~uhCGT34OxO30{P}[System Diagram].~iq6zWgoiC9F4{P}[Described Element]:~W20000000220{S}[_MetaModel].~310000000D00{A}[_idAbs]=\""+ oMetaModelAbsoluteIdentifier +"\" And ~310000000D00{A}[_idAbs] = \""+maeAbsoluteIdentifier+"\"";
+			
+			MegaCollection oColMae= megaRoot.getSelection(query);
+			
+			int oColSize = oColMae.size();		
+			
+			if (oColSize==1) {
+				inDiagram = true;
+			}		
+		}
+		return inDiagram;	
+	}
+	
+	
+	public static boolean oMetaClassInMetaModelDiagram(MegaRoot megaRoot, MegaObject oMetamodel, MegaObject oMetaClass) {
+		boolean inDiagram = false;
+		
+		
+
+		if (oMetaClass.exists() && oMetamodel.exists()) {
+
+			Generator.logger.finest("method oMetaClassInMetaModelDiagram :  exist= " + oMetaClass.exists()   );
+			Generator.logger.finest("method oMetaClassInMetaModelDiagram :  exist= " + oMetaClass.exists() + " - Name " + oMetaClass.getProp("Name")  );
+			
+			
+			String mcAbsoluteIdentifier = oMetaClass.getProp(StaticFields.absoluteIdentifier);
+			String oMetaModelAbsoluteIdentifier = oMetamodel.getProp(StaticFields.absoluteIdentifier);		
+		
+			String query = "Select ~P20000000c10{S}[MetaClass] Where ~ahCGT34Ox820{P}[SystemDiagram].~iq6zWgoiC9F4{P}[Described Element]:~W20000000220{S}[_MetaModel].~310000000D00{A}[_idAbs] = \"" + oMetaModelAbsoluteIdentifier + "\"  And ~310000000D00{A}[_idAbs]=\"" + mcAbsoluteIdentifier +"\""; 
+			
+			MegaCollection oColMc= megaRoot.getSelection(query);
+			
+			int oColSize = oColMc.size();		
+			
+			if (oColSize==1) {
+				inDiagram = true;
+			}		
+		
+		}
+		
+		return inDiagram;			
+	}
 	
 	
 	

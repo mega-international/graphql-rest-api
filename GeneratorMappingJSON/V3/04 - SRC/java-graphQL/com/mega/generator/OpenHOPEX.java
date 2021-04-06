@@ -19,7 +19,7 @@ public class OpenHOPEX {
 
 	//private MegaDatabase systemDB  = null;
 	
-	public OpenHOPEX(String sAdministrator, String sPassword, String openMode) {
+	public OpenHOPEX(String sAdministrator, String sPassword, String openMode) throws Exception {
 
 		Generator.logger.info("Open HOPEX ");
 		
@@ -30,6 +30,9 @@ public class OpenHOPEX {
 	
 		megaEnvironments = megaApplication.getEnvironments();
 		megaEnvironment = megaEnvironments.get(Arguments.getEnvironment());
+		
+		
+	//	megaEnvironment.is
 		
 
 		Generator.logger.fine("Mega Environment = " + megaEnvironment.getName());
@@ -59,7 +62,19 @@ public class OpenHOPEX {
 		this.version = versionInformation.getReleaseNumber() + "."+ versionInformation.getPatchNumber();
 
 		Generator.logger.fine("Version = " + this.version);
+
+		String languageName = megaRoot.currentEnvironment().getCurrentLanguageName();
 		
+		Generator.logger.info("Language Name = " + languageName);
+		
+		String languageIdStr = megaRoot.currentEnvironment().toolkit().getString64FromID(megaRoot.currentEnvironment().getCurrentLanguageID());
+
+		Generator.logger.fine("Language ID = " + languageIdStr);
+		
+		if (!languageIdStr.equals("00(6wlHmk400")) {
+			throw new Exception("Expected language English (00(6wlHmk400) current value :" + languageName + " (ID = " + languageIdStr + ")"); 
+		}
+
 		
 	}
 	
@@ -76,7 +91,17 @@ public class OpenHOPEX {
 	
 	
 	public void closeHOPEX() {
-		megaRoot.close();
+		data  = null;
+		megaApplication = null;
+		megaEnvironments = null;
+		megaEnvironment = null; 
+		megaDatabases  = null;
+		versionInformation = null;		
+		
+		if (!megaRoot.isClosed()) {
+			megaRoot.close();
+			megaRoot = null;
+		}
 		Generator.logger.info("HOPEX Closed ");	
 	}
 	

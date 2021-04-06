@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.mega.generator.Arguments;
 import com.mega.generator.Generator;
+import com.mega.mappingJSON.ConstraintsRelationShip;
 import com.mega.mappingJSON.FilterMaeJSON;
 import com.mega.mappingJSON.PathToTargetJSON;
 import com.mega.mappingJSON.PropertiesJSON;
@@ -34,20 +36,25 @@ public class MetaAssociationEnd extends CommonAttributes {
 
 		this.globalUniqueName = globalUniqueName;
 
+		isValideMetaAssociationEnd = true;
+		
 		Generator.logger.finer("MetaAssociationEnd = " +oMetaAssociationEnd.getProp(StaticFields.shortName));
 		
+		this.isCustom = computeIsCustom(oMetaAssociationEnd);			
+		if (getIsCustom()) {
+			setAtLeastOneCustom(true);
+		}
 		
 		MegaObject personAssignment = megaRoot.getObjectFromID(StaticFields.personAssignment);
 		MegaObject maeAssignement = megaRoot.getObjectFromID(StaticFields.maeAssignement);
 
-		isValideMetaAssociationEnd = true;
+
 
 		// in case of starting from a diagram we do not navigate the intermediate object
 		MegaObject mcDiagram = megaRoot.getObjectFromID(StaticFields.metaclassDiagram);	
 		if (oStartingMetaClass.sameID(mcDiagram.getID())) {		
 			navigate = false;
-			
-			
+						
 			boolean intermediate = MetaClass.isFeaturedMetaClass(megaRoot,oMetaClass);
 			if (intermediate) {
 				isValideMetaAssociationEnd = false;	
@@ -82,7 +89,10 @@ public class MetaAssociationEnd extends CommonAttributes {
 			
 			if (isAvailableMEA && isAvailableMetaClass ) {
 				// we are in all the other cases
-				RelationshipsJSON relationshipsJSON = new RelationshipsJSON(overrideNameList,globalUniqueName);	
+				RelationshipsJSON relationshipsJSON = new RelationshipsJSON(overrideNameList,globalUniqueName);					
+				ConstraintsRelationShip constraintsRelationShip = relationshipsJSON.getConstraints();
+				constraintsRelationShip.setReadOnly(isReadOnly(oMetaAssociation));
+				
 				relationshipsJSONList.add(relationshipsJSON);		
 				
 				setProperties(relationshipsJSON, isFirst,navigate,nameForComplexPath,oStartingMetaClass,oMetaAssociationEnd,oMetaClass, oMetaAssociation);				
@@ -90,6 +100,11 @@ public class MetaAssociationEnd extends CommonAttributes {
 				isValideMetaAssociationEnd = false;		
 			}
 	}
+		
+		// we take only customization if getExtendOnly = true		
+		if (Arguments.getExtendOnly() && !getAtLeastOneCustom()) {
+			this.isValideMetaAssociationEnd = false;
+		}
 		
 		Generator.logger.finest("isValideMetaAssociationEnd = " + isValideMetaAssociationEnd );
 		
@@ -118,6 +133,15 @@ public class MetaAssociationEnd extends CommonAttributes {
 		return isAlwaysVisible;
 		
 	}	
+	
+	private boolean isReadOnly(MegaObject oMetaAssociationEnd) {
+		boolean readOnly = false;		
+		MegaCollection oColMacro = oMetaAssociationEnd.getCollection(StaticFields.metaAssociationMacro);	
+		if(oColMacro.size()>0) {
+			readOnly=true;
+		}
+		return readOnly;
+	}
 	
 	public boolean isValideMetaAssociationEnd() {
 		return this.isValideMetaAssociationEnd;
@@ -155,8 +179,13 @@ public class MetaAssociationEnd extends CommonAttributes {
 			MegaObject oSubMetaclass = megaRoot.getCollection(StaticFields.metaClassMetaClass).get(pSubMetaclass.megaField());
 			boolean isAvailableMetaClass = (boolean) oSubMetaclass.callFunction("IsAvailable");			
 			if (isAvailableMetaClass) {
+				
 				MegaObject metaClassInDiagram = oMetamodel.getCollection(StaticFields.systemDescription).get(1).getCollection(StaticFields.diagramMetaClass).get(oSubMetaclass);
 				if (metaClassInDiagram.exists()) {
+				Generator.logger.finest("Method manageAssignment " );
+
+				//if (MetaModel.oMetaClassInMetaModelDiagram(this.megaRoot, this.oMetamodel, oSubMetaclass)) {
+
 					MegaCollection oColAssignableRole= oSubMetaclass.getCollection(StaticFields.assignableRole);
 					while (oColAssignableRole.hasNext()) {
 						MegaObject oBusinessRole = oColAssignableRole.next();
@@ -203,6 +232,8 @@ public class MetaAssociationEnd extends CommonAttributes {
 		String oIdAbsMEA = oMetaAssociationEnd.getProp(StaticFields.absoluteIdentifier);
 		String sMetaMultiplicity = oMetaAssociationEnd.getProp(StaticFields.metaMultiplicity);		
 
+		
+		
 		String technincalNameMA = UtilitiesMappingJSON.getTechnicalNameMetaAssociation((oMetaAssociation.getProp(StaticFields.shortName)));   		
 
 		String technincalNameStartingMetaClass = UtilitiesMappingJSON.getTechnicalNameMetaClass((oStartingMetaClass.getProp(StaticFields.shortName)));
@@ -221,6 +252,8 @@ public class MetaAssociationEnd extends CommonAttributes {
 		pathToTargetJSON.setName(technincalNameMA);				
 		pathToTargetJSON.setMetaClassName(technincalNameMetaClass);
 		pathToTargetJSON.setMultiplicity(sMetaMultiplicity);
+		
+		
 		
 		relationshipsJSON.addPathToTargetJSON(pathToTargetJSON,startingMetaClassId, technincalNameStartingMetaClass,true,"","","");
 		
@@ -310,9 +343,6 @@ public class MetaAssociationEnd extends CommonAttributes {
 		
 	}
 	
-	
-	
-
 	private void setProperties(RelationshipsJSON relationshipsJSON, boolean isFirst, boolean navigate, boolean nameForComplexPath, MegaObject oStartingMetaClass, MegaObject oMetaAssociationEnd, MegaObject oMetaClass, MegaObject oMetaAssociation ) {
 
 		MegaCollection oColMetaAttribute = oMetaAssociation.getCollection(StaticFields.metaAssociationMetaAttribute);
@@ -320,7 +350,9 @@ public class MetaAssociationEnd extends CommonAttributes {
 		String technincalNameMEA = UtilitiesMappingJSON.getTechnicalNameMetaAssociationEnd((oMetaAssociationEnd.getProp(StaticFields.shortName)));   		
 		String technincalNameMetaClass = UtilitiesMappingJSON.getTechnicalNameMetaClass((oMetaClass.getProp(StaticFields.shortName)));
 		
-		String technincalNameMA = UtilitiesMappingJSON.getTechnicalNameMetaAssociation((oMetaAssociation.getProp(StaticFields.shortName)));   		
+		String technincalNameMA = UtilitiesMappingJSON.getTechnicalNameMetaAssociation((oMetaAssociation.getProp(StaticFields.shortName)));   
+		String oIdAbsMA = oMetaAssociation.getProp(StaticFields.absoluteIdentifier);
+		
 		String targetMetaClassID= oMetaClass.getProp(StaticFields.absoluteIdentifier);
 		
 		String oIdAbsMEA = oMetaAssociationEnd.getProp(StaticFields.absoluteIdentifier);
@@ -334,7 +366,7 @@ public class MetaAssociationEnd extends CommonAttributes {
 
 		
 		//String idMetaClassSource = oStartingMetaClass.getProp(StaticFields.absoluteIdentifier);
-		
+
 		
 		PathToTargetJSON pathToTargetJSON = new PathToTargetJSON(overrideNameList,oIdAbsMEA,targetMetaClassID);	
 		List<PropertiesJSON> properties = setMetaAttribute(oColMetaAttribute);
@@ -347,13 +379,14 @@ public class MetaAssociationEnd extends CommonAttributes {
 		pathToTargetJSON.setMetaClassName(technincalNameMetaClass);
 		pathToTargetJSON.setMultiplicity(sMetaMultiplicity);
 
+		/* TO DO Remove because Useless ?
 		if (!isFirst) {
 			technincalNameMEA  = technincalNameMetaClass + "_" + technincalNameMEA;
 		} 
 		if (nameForComplexPath) {
 			technincalNameMEA  = technincalNameMetaClass + "_" + technincalNameMEA;
 		}
-
+		 */
 				
 		relationshipsJSON.setId(id);
 		relationshipsJSON.addPathToTargetJSON(pathToTargetJSON,startingMetaClassId,technincalNameStartingMetaClass,false,"","","");
@@ -364,14 +397,19 @@ public class MetaAssociationEnd extends CommonAttributes {
 		// dans le cas d'un business document
 		// si navigateTheIntermediateObject = true il faut ignorer toute la relationship
 		// et positionner la variable isValideMetaAssociationEnd = false
-				
-		boolean ignorePath = ignoreSubMetaClassFeaturedForPath(oMetaClass, oStartingMetaClass);		
+
+		//nerator.logger.warning("technincalNameStartingMetaClass= " + technincalNameStartingMetaClass + " oIdAbsMEA= " + oIdAbsMA + " =technincalNameMetaClass = " + technincalNameMetaClass);
 		
+		
+		boolean ignorePath = ignoreSubMetaClassFeaturedForPath(oMetaClass, oStartingMetaClass);		
+				
 		if (ignorePath) {
 			isValideMetaAssociationEnd = false;
 		} else {
 		
 			if (navigateTheIntermediateObject && navigate) {
+				Generator.logger.finest("set Path to Target" + "technincalNameStartingMetaClass= " + technincalNameStartingMetaClass + " oIdAbsMEA= " + oIdAbsMA + " =technincalNameMetaClass = " + technincalNameMetaClass);
+
 				setPathtoTarget(relationshipsJSON, isFirst, oStartingMetaClass,oMetaAssociationEnd, oMetaClass);			
 			} // if
 
@@ -393,7 +431,7 @@ public class MetaAssociationEnd extends CommonAttributes {
 			while(oColMetaAttributeLocal.hasNext()) {
 				MegaObject oMetaAttribute = oColMetaAttributeLocal.next();
 				MetaAttribute metaAttribute = new MetaAttribute(megaRoot,oMetamodel,oMetaAttribute, overrideNameList);
-				if (metaAttribute.getIsValideMetaAttribute()) {				
+				if (metaAttribute.getIsValid()) {				
 					PropertiesJSON propertiesJSON = metaAttribute.getPropertiesJSON();
 					propertiesJSONList.add(propertiesJSON);				
 				} // if valid			
@@ -425,6 +463,27 @@ public class MetaAssociationEnd extends CommonAttributes {
 		return result;
 	}
 */	
+	
+  	private boolean ignoreUselessTargetForVariationMetaAssociation( MegaObject oStartingMetaClass, MegaObject oTargetMetaClass, MegaObject oMetaAssociation) {
+		boolean ignore = false;
+  		
+  		String startingMetaClassId = oStartingMetaClass.getProp(StaticFields.absoluteIdentifier);
+		String oIdAbsMA = oMetaAssociation.getProp(StaticFields.absoluteIdentifier);
+		String targetMetaClassID= oTargetMetaClass.getProp(StaticFields.absoluteIdentifier);
+		
+		
+		if (!startingMetaClassId.contentEquals("lJp58zHf4H50") && (oIdAbsMA.contentEquals("qXAXOUeI6b90") || oIdAbsMA.contentEquals("KWAXSxeI6vE0"))) {
+			
+			if (!targetMetaClassID.contentEquals("lJp58zHf4H50") ) {
+				if (!startingMetaClassId.contentEquals(targetMetaClassID) ) {
+					ignore = true;
+				}
+			}
+
+		}
+		
+  		return ignore;
+  	}
 	
 	private boolean ignoreSubMetaClassFeaturedForPath(MegaObject oMetaClass1, MegaObject oMetaClass2) {
 		boolean result = false;		
@@ -469,8 +528,12 @@ public class MetaAssociationEnd extends CommonAttributes {
 
 			// we filter only metaAssociation end in the diagram.
 			MegaObject meaInDiagram = oMetamodel.getCollection(StaticFields.systemDescription).get(1).getCollection(StaticFields.diagramMetaAssociationEnd).get(oTargetMetaAssociationEnd);
+			
 			boolean isAvailableMEA = (boolean) oTargetMetaAssociationEnd.callFunction("IsAvailable");
 			if (isAvailableMEA) {
+			
+				
+				//if (MetaModel.oMetaAssociationInMetaModelDiagram(this.megaRoot, this.oMetamodel, oTargetMetaAssociationEnd)) {				
 				if (meaInDiagram.exists()) {
 					// if this is not the path we come from		
 					MegaObject oOppositeMetaAssociationEnd = MetaAssociationEnd.getOppositeMetaAssociationEnd(oMetaAssociationEnd);
@@ -530,14 +593,32 @@ public class MetaAssociationEnd extends CommonAttributes {
 						// if abstract
 						MegaObject pMetaClassLocal = megaRoot.getCollection(StaticFields.pMetaClass).get(oTargetMetaClass);		
 						MegaCollection oColSubMetaClass =pMetaClassLocal.getCollection(StaticFields.pDescription).get(1).getCollection(StaticFields.concretes);							
-			      		while (oColSubMetaClass.hasNext()) {
+			      		
+						
+
+						while (oColSubMetaClass.hasNext()) {
 			      			MegaObject oSubMetaclass = oColSubMetaClass.next();	 
-			      			
 			    			boolean isAvailableMetaClassSub = (boolean) oSubMetaclass.callFunction("IsAvailable");			
-			      			if (isAvailableMetaClassSub) {
+			      			
+			    			if (isAvailableMetaClassSub) {
+	      				
+			      				//oSubMetaclass.getProp(StaticFields.absoluteIdentifier);
+			      				
 				      			MegaObject metaClassInDiagram = oMetamodel.getCollection(StaticFields.systemDescription).get(1).getCollection(StaticFields.diagramMetaClass).get(oSubMetaclass);	      			
-				      			if (metaClassInDiagram.exists()) {
-				      				oColConcrete.insert(oSubMetaclass);
+			      			if (metaClassInDiagram.exists()) {
+			    				Generator.logger.finest("Method setPathtoTarget : metaClassInDiagram.exists()" );
+			      			//	if (MetaModel.oMetaClassInMetaModelDiagram(this.megaRoot, this.oMetamodel, oSubMetaclass)) {
+    				
+			    				Generator.logger.finest("oSubMetaclass.name() = "  + UtilitiesMappingJSON.getTechnicalNameMetaClass((metaClassInDiagram.getProp(StaticFields.shortName))));
+			    				
+			    				if (ignoreUselessTargetForVariationMetaAssociation(  oStartingMetaClass,  metaClassInDiagram,  oMetaAssociation)) {
+			    					//we do nothing if we ignore		
+			    				} else {
+			    					oColConcrete.insert(oSubMetaclass);
+			    				}
+			    				
+			    				
+				      				
 				      			}	
 			      			}
 			      		} //while
@@ -553,6 +634,7 @@ public class MetaAssociationEnd extends CommonAttributes {
 			    				relationshipsJSONList.add(relationshipsJSONNew);								
 			    				relationshipsJSONToTake = relationshipsJSONNew;
 			    			} // if	
+		    				Generator.logger.finest("Method setPathtoTarget : loop oColConcrete setProperties" );
 		
 							setProperties(relationshipsJSONToTake, isFirst, navigate , nameForComplexPath, oStartingMetaClass,oTargetMetaAssociationEnd, oTargetMetaClassToTake, oMetaAssociation);											
 							isFirstTimeInLoop = false;
@@ -569,6 +651,7 @@ public class MetaAssociationEnd extends CommonAttributes {
 							relationshipsJSONList.add(relationshipsJSONNew);								
 							relationshipsJSONToTake = relationshipsJSONNew;
 						} // if					
+	    				Generator.logger.finest("Method setPathtoTarget : if concrete" );
 						
 						setProperties(relationshipsJSONToTake, isFirst, navigate , nameForComplexPath,oStartingMetaClass, oTargetMetaAssociationEnd, oTargetMetaClass,oMetaAssociation);																
 						isFirstTimeInLoop = false;

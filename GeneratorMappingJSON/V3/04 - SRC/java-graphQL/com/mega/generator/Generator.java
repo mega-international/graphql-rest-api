@@ -38,10 +38,9 @@ public class Generator {
 		Generator.logger.config("File Name Schema        = "+Arguments.getFileNameSchema());
 		Generator.logger.config("Environment             = "+Arguments.getEnvironment());
 		Generator.logger.config("Repository              = "+Arguments.getRepository());
+		Generator.logger.config("Customization only      = "+Arguments.getExtendOnly());
 		
-		
-		
-	
+
 		/*
 		SEVERE (highest)
 		WARNING
@@ -99,22 +98,27 @@ public class Generator {
 		return schemaToGenerateList;
 	}
 	
-	private static void generateMetaModel(String metaModelName, String metaModelidAbs, String login, String password, String profile, String filePath, String fileNameOverride, String latestGeneration) {
+	private static void generateMetaModel(String metaModelName, String metaModelidAbs, String login, String password, String profile, String filePath, String fileNameOverride, String latestGeneration) throws Exception {
 
 		Generator.logger.info("########## Starting : " + metaModelName);
 		OpenHOPEX openHOPEX = new OpenHOPEX(login, password, "-Role:" + profile + " -TranType:Micro -OpenMode:R");
-		try {		
+		try {	
+			
 			MegaRoot megaRoot = openHOPEX.getMegaRoot();
 			String fileName = metaModelName + ".JSON";
 			HashMap<String,String> overRideNameList = new HashMap<String,String>();
 			readwriteOverRideName(filePath + fileNameOverride,overRideNameList,false);
-			generateJSON(megaRoot,metaModelidAbs,filePath+fileName,overRideNameList,openHOPEX.getName(),openHOPEX.getVersion(),latestGeneration);
+			generateJSON(megaRoot,metaModelidAbs,filePath+fileName,overRideNameList,openHOPEX.getName(),openHOPEX.getVersion(),latestGeneration,metaModelName);
 			readwriteOverRideName(filePath + fileNameOverride,overRideNameList,true);
 
+			megaRoot.close();
+			megaRoot = null;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			openHOPEX.closeHOPEX();
+			openHOPEX = null;
 		}
 		
 	}
@@ -203,12 +207,12 @@ public class Generator {
 		
 	}
 	
-	private static void generateJSON(MegaRoot megaRoot,String rootMetaModel,String filePath,HashMap<String,String> overRideNameList, String name, String version,String latestGeneration) throws Exception {
+	private static void generateJSON(MegaRoot megaRoot,String rootMetaModel,String filePath,HashMap<String,String> overRideNameList, String name, String version,String latestGeneration, String schemaName) throws Exception {
 
 		Generator.logger.info("Creating JSON");
 
 		MetaModel metaModel = new MetaModel(megaRoot,rootMetaModel,overRideNameList);
-		RootJSON rootJSON = metaModel.generateJSON(name,version,latestGeneration);
+		RootJSON rootJSON = metaModel.generateJSON(name,version,latestGeneration,schemaName);
 		
 		writeJSONFile(rootJSON, filePath );
 			

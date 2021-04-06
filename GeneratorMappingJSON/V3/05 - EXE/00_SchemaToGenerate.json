@@ -1,7 +1,8 @@
 {
 	"schemaToGenerate": [
+
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "ITPM",
 			"metaModelAbsoluteIdentifier": "TeEKeRMmSPYK",
 			"login": "Tibere",
@@ -9,7 +10,7 @@
 			"profile": "ITPM Functional Administrator"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "BPA",
 			"metaModelAbsoluteIdentifier": "KdLTVAz5T5BS",
 			"login": "Frank",
@@ -17,7 +18,7 @@
 			"profile": "Process Functional Administrator"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "Data",
 			"metaModelAbsoluteIdentifier": "7JBWOI9bUPqB",
 			"login": "Mega",
@@ -25,7 +26,7 @@
 			"profile": "Hopex Customizer"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "Assessment",
 			"metaModelAbsoluteIdentifier": "A4mYhmucTbeH",
 			"login": "Mega",
@@ -33,7 +34,7 @@
 			"profile": "Hopex Customizer"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "Audit",
 			"metaModelAbsoluteIdentifier": "bcLTwMt5THDO",
 			"login": "Ernesto",
@@ -41,7 +42,7 @@
 			"profile": "Audit Functional Administrator"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "DataPrivacy",
 			"metaModelAbsoluteIdentifier": "igEKBLUkSjkG",
 			"login": "Olivier",
@@ -49,7 +50,7 @@
 			"profile": "Functional Administrator (GDPR)"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "Risk",
 			"metaModelAbsoluteIdentifier": "NfEKpIDmSDpH",
 			"login": "Jude",
@@ -57,7 +58,7 @@
 			"profile": "HOPEX Customizer"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "MetaModel",
 			"metaModelAbsoluteIdentifier": "XSTxVyCQTrMF",
 			"login": "Mega",
@@ -65,7 +66,7 @@
 			"profile": "HOPEX Customizer"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "Workflow",
 			"metaModelAbsoluteIdentifier": "882gHmQVUXbJ",
 			"login": "Mega",
@@ -73,12 +74,20 @@
 			"profile": "HOPEX Customizer"
 		},
 		{
-			"included": "false",
+			"included": "true",
 			"schemaName": "Reporting",
 			"metaModelAbsoluteIdentifier": "J82geYQVU9EF",
 			"login": "Mega",
 			"password": "Hopex",
 			"profile": "HOPEX Customizer"
+		},
+		{
+			"included": "true",
+			"schemaName": "ITARC",
+			"metaModelAbsoluteIdentifier": "fPLO0bBPVnj6",
+			"login": "Mega",
+			"password": "Hopex",
+			"profile": "IT Architecture Functional Administrator"
 		},
 		{
 			"included": "false",
@@ -87,14 +96,6 @@
 			"login": "Mega",
 			"password": "Hopex",
 			"profile": "HOPEX Customizer"
-		},
-		{
-			"included": "true",
-			"schemaName": "ARC",
-			"metaModelAbsoluteIdentifier": "fPLO0bBPVnj6",
-			"login": "Mega",
-			"password": "Hopex",
-			"profile": "IT Architecture Functional Administrator"
 		}
 	]
 }

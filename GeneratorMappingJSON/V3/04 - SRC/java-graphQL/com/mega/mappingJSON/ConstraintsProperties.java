@@ -9,6 +9,7 @@ public class ConstraintsProperties {
 //	private boolean filter;	
 	private boolean translatable;
 	private boolean formattedText;
+	private boolean unique;
 
 	
 	/*		
@@ -86,6 +87,12 @@ public class ConstraintsProperties {
 		return this.formattedText;
 	}		
 	
+	public void setUnique(boolean unique) {
+		this.unique =unique;
+	}
 	
+	public boolean getUnique() {
+		return this.unique;
+	}	
 	
 }

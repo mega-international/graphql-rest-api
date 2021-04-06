@@ -14,6 +14,7 @@ public class Arguments {
 
 	private static boolean debug = false;
 	private static boolean verbose = false;
+	private static boolean extendOnly = false;
 //	private static String folder = "C:\\\\temp\\\\java\\\\";
 	private static String folder = "C:\\temp\\java\\";
 
@@ -35,6 +36,15 @@ public class Arguments {
 		return Arguments.level;
 	}
 	
+	public static boolean getExtendOnly() {
+		return extendOnly;
+	}
+	
+	public static void setExtendOnly(boolean extendOnly) {
+		Arguments.extendOnly = extendOnly;
+	}
+
+
 	public static boolean getDebug() {
 		return debug;
 	}
@@ -42,7 +52,9 @@ public class Arguments {
 	public static void setDebug(boolean debug) {
 		Arguments.debug = debug;
 	}
-
+	
+	
+	
 	public static boolean getVerbose() {
 		return verbose;
 	}
@@ -108,6 +120,7 @@ public class Arguments {
 		options.addOption("h", "help", false, "print this message");
 		options.addOption("d", "debug", false, "Enables aditionnal logs to be displayed for debug purposes");
 		options.addOption("v", "verbose", false, "Be extra verbose in the logs");		
+		options.addOption("ex", "extend", false, "To generate extend JSON with only customization contains in the metamodel");		
 		
 		Option folder   = Option.builder("f")
 			.optionalArg(true)
@@ -175,6 +188,10 @@ public class Arguments {
 		else {
 			if(cmd.hasOption("d")) {
 				Arguments.setDebug(true);	
+				Arguments.level = Level.CONFIG;
+			}
+			if(cmd.hasOption("ex")) {
+				Arguments.setExtendOnly(true);	
 				Arguments.level = Level.CONFIG;
 			}
 			if(cmd.hasOption("v")) {

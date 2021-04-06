@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mega.generator.Arguments;
+import com.mega.generator.Generator;
 import com.mega.mappingJSON.RelationshipsJSON;
 import com.mega.modeling.api.MegaCollection;
 import com.mega.modeling.api.MegaObject;
@@ -31,21 +33,35 @@ public class MetaAssociationEndList extends CommonAttributes {
 		this.oStartingMetaClass = oStartingMetaClass;
 		this.globalUniqueName = globalUniqueName;
 
+				
+		
 		this.overrideNameList= overrideNameList;
 		this.oInitialMetaAssociationEnd = megaRoot.getCollection(StaticFields.metaAssociationEnd).get(pInitialMetaAssociationEnd.megaField());
 
+		this.isCustom = computeIsCustom(oInitialMetaAssociationEnd);			
+		if (getIsCustom()) {
+			setAtLeastOneCustom(true);
+		}
+		
+		
 		this.relationshipsJSONList = new ArrayList<RelationshipsJSON>();
 		
 		// we filter only metaAssociation end in the diagram.
-		MegaObject meaInDiagram = oMetamodel.getCollection(StaticFields.systemDescription).get(1).getCollection(StaticFields.diagramMetaAssociationEnd).get(oInitialMetaAssociationEnd);
+		//MegaObject meaInDiagram = oMetamodel.getCollection(StaticFields.systemDescription).get(1).getCollection(StaticFields.diagramMetaAssociationEnd).get(oInitialMetaAssociationEnd);
 
+		
+	
+
+		
 		
 		boolean isAvailableMEA = (boolean) oInitialMetaAssociationEnd.callFunction("IsAvailable");
 		boolean isAvailableMetaClass = (boolean) oStartingMetaClass.callFunction("IsAvailable");
 		
-		if (isAvailableMEA && isAvailableMetaClass) {	
-			if (meaInDiagram.exists()) {
+		if (isAvailableMEA && isAvailableMetaClass) {
+			if (MetaModel.oMetaAssociationInMetaModelDiagram(this.megaRoot, this.oMetamodel, oInitialMetaAssociationEnd)) {			
+			//if (meaInDiagram.exists()) {
 				isValideMetaAssociationEnd = true;
+												
 				this.oInitialTargetMetaClass = oInitialMetaAssociationEnd.getCollection(StaticFields.metaAssociationEndMetaClass).get(1);
 		
 				boolean isFirst = true;
@@ -56,6 +72,11 @@ public class MetaAssociationEndList extends CommonAttributes {
 			}
 		} else {
 			isValideMetaAssociationEnd = false;
+		}
+		
+		// we take only customization if getExtendOnly = true		
+		if (Arguments.getExtendOnly() && !getAtLeastOneCustom()) {
+			this.isValideMetaAssociationEnd = false;
 		}
 		
 		MetaModel.reportDuplicateName("MetaAssociations", relationshipsJSONList, ensureUniqueName);			
@@ -83,9 +104,12 @@ public class MetaAssociationEndList extends CommonAttributes {
 		' case abstract : we loop on all sub concrete metaclass
 */	
 		
-		MegaObject metaClassInDiagram = oMetamodel.getCollection(StaticFields.systemDescription).get(1).getCollection(StaticFields.diagramMetaClass).get(oMetaClass);
+		//MegaObject metaClassInDiagram = oMetamodel.getCollection(StaticFields.systemDescription).get(1).getCollection(StaticFields.diagramMetaClass).get(oMetaClass);
 	
-		if (metaClassInDiagram.exists()) {
+		Generator.logger.finest("Method subMetaClassConcrete " );
+		
+		if (MetaModel.oMetaClassInMetaModelDiagram(this.megaRoot, this.oMetamodel, oMetaClass)) {
+		//if (metaClassInDiagram.exists()) {
 			isValideMetaAssociationEnd = true;			
 			String sMetaLayer = oMetaClass.getProp(StaticFields.metaLayer,"internal").toString();
 	  	

@@ -2,7 +2,8 @@ package com.mega.metamodelToJSON;
 
 import org.apache.commons.text.WordUtils;
 
-import com.ibm.icu.text.Transliterator; 
+import com.ibm.icu.text.Transliterator;
+
 
 public class UtilitiesMappingJSON {
 
@@ -87,6 +88,9 @@ public class UtilitiesMappingJSON {
 		return comment;
 	}
 
+	
+
+	
 	public static String getTechnicalNameMetaAttributeValue(String comment) {
 		
 		comment = WordUtils.capitalize(comment);
