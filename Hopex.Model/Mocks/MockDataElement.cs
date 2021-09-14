@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GraphQL.Execution;
 using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
@@ -53,7 +54,7 @@ namespace Hopex.Model.Mocks
             return Task.FromResult((IModelCollection)_values.GetOrAdd(relationshipDescription.Name, _ => DataGenerator.CreateCollection(DataModel, relationshipDescription)));
         }
 
-        public T GetValue<T>(IPropertyDescription propertyDescription, Dictionary<string, object> arguments = null, string format = null)
+        public T GetValue<T>(IPropertyDescription propertyDescription, IDictionary<string, ArgumentValue> arguments = null, string format = null)
         {
             return (T)_values.GetOrAdd(propertyDescription.Name, _ => DataGenerator.CreateRandom(propertyDescription));
         }
@@ -63,7 +64,7 @@ namespace Hopex.Model.Mocks
             _values.AddOrUpdate(propertyDescription.Name, value, (_, v) => value);
         }
 
-        public T GetValue<T>(string propertyName, Dictionary<string, object> arguments = null, string format = null)
+        public T GetValue<T>(string propertyName, IDictionary<string, ArgumentValue> arguments = null, string format = null)
         {
             var property = ClassDescription.GetPropertyDescription(propertyName);
             return GetValue<T>(property, arguments, format);
@@ -85,7 +86,7 @@ namespace Hopex.Model.Mocks
             return new CrudResult("CRUD");
         }
 
-        public object GetGenericValue(string propertyMegaId, Dictionary<string, object> arguments)
+        public object GetGenericValue(string propertyMegaId, IDictionary<string, ArgumentValue> arguments)
         {
             throw new NotImplementedException();
         }
@@ -97,7 +98,7 @@ namespace Hopex.Model.Mocks
 
         public void AddErrors(IModelElement subElement)
         {
-            foreach(var error in subElement.Errors)
+            foreach (var error in subElement.Errors)
             {
                 _errors.Add(error);
             }
@@ -106,5 +107,7 @@ namespace Hopex.Model.Mocks
         public bool IsConfidential => false;
         public bool IsAvailable => true;
         public IMegaObject Language { get; set; }
+
+        public IModelElement PathElement { get; set; }
     }
 }

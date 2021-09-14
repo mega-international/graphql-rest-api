@@ -15,12 +15,11 @@ namespace Hopex.Model.DataModel
         public override IEnumerator<IModelElement> GetEnumerator()
         {
             var schemaElement = GetSchemaElement();
-            var diagrams = MegaWrapperObject.CastIfAny<MegaCollection>(_source.NativeObject.GetDescribingDiagrams());
-            foreach (var diagram in diagrams)
+            var diagrams = MegaWrapperObject.CastIfAny<MegaCollection>(_source.CallFunction<MegaCollection>("GetDescribingDiagrams"));
+            foreach (MegaObject diagram in diagrams)
             {
                 yield return new HopexModelElement(_dataModel, schemaElement, diagram);
             }
-            yield break;
         }
     }
 }

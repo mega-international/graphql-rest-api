@@ -7,6 +7,6 @@ namespace Hopex.Modules.GraphQL.Schema
 
     public interface ISchemaManagerProvider
     {
-        Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, IMegaRoot MegaRoot, ILogger logger);
+        Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, ILogger logger);
     }
 }

@@ -50,7 +50,7 @@ steps:
    If (! (Test-Path exeRelease\Assemblies)) {
        New-Item exeRelease\Assemblies -Type Directory
    }
-   $SourceDir = "\\ntas\data\ccmwa\wa\code-787_505.dev\exerelease\Assemblies"
+   $SourceDir = "\\ntas\data\ccmwa\wa\code-787_506.dev\exerelease\Assemblies"
    Copy-Item "$SourceDir\Mega.Bridge.dll" exeRelease\Assemblies -Force
    Copy-Item "$SourceDir\Hopex.ApplicationServer.WebServices.dll" exeRelease\Assemblies -Force
    Copy-Item "$SourceDir\Mega.Macro.Executor.dll" exeRelease\Assemblies -Force

@@ -18,5 +18,7 @@ namespace Hopex.Model.PivotSchema.Models
         public string Description { get; set; }
         [JsonProperty("implementInterface")]
         public string Implements { get; set; }
+        [JsonProperty("constraints")]
+        public PivotConstraintsDescription Constraints { get; set; }
     }
 }

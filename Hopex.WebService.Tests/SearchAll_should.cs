@@ -44,7 +44,7 @@ namespace Hopex.WebService.Tests
                 .Build();
 
             var result = await ExecuteQueryAsync(root, @"query{searchAll(filter:{text:""foo""}){id, name}}");
-            result.Should().MatchGraphQL("errors.[0].message", "Cannot query field \"searchAll\" on type \"Query\".");
+            result.Should().MatchGraphQL("errors.[0].message", "Cannot query field 'searchAll' on type 'Query'.");
         }
 
         [Fact]

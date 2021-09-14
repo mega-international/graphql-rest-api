@@ -8,12 +8,11 @@ namespace Hopex.Model.Abstractions.DataModel
 {
     public class CustomRelationshipSetter : CollectionSetter
     {
-        public CustomRelationshipSetter(IRelationshipDescription relationshipDescription, CollectionAction action, List<object> list)
+        public CustomRelationshipSetter(IRelationshipDescription relationshipDescription, CollectionAction action, IEnumerable<object> list)
             :base(relationshipDescription, action, list)
-        {
-        }
+        {}
 
-        protected override IClassDescription GetTargetSchema(IModelElement source, IRelationshipDescription link)
+        protected override IClassDescription GetTargetSchema(IModelElement source, IPathDescription path)
         {
             return new ClassDescription(source.MetaModel, "GenericRelationTarget", null, null, false);
         }
@@ -39,8 +38,8 @@ namespace Hopex.Model.Abstractions.DataModel
         {
             var relationId = prop["relationId"].ToString();
             var action = (CollectionAction)Enum.Parse(typeof(CollectionAction), prop["action"].ToString(), true);
-            var list = (List<object>)prop["list"];
-            var relationshipDescription = new RelationshipDescription(relationId, null, null, $"{relationId}[customRelationship]", relationId, "")
+            var list = (IEnumerable<object>)prop["list"];
+            var relationshipDescription = new RelationshipDescription(relationId, null, null, $"{relationId}[customRelationship]", relationId, "", null)
             {
                 TargetClass = new ClassDescription(null, "unknow target", null, null, false)
             };
@@ -51,7 +50,7 @@ namespace Hopex.Model.Abstractions.DataModel
 
         public static IEnumerable<ISetter> CreateSetters(object values)
         {
-            var props = (List<object>)values;
+            var props = (IEnumerable<object>)values;
             foreach (var prop in props)
             {
                 yield return Create((Dictionary<string, object>)prop);

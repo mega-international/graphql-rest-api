@@ -37,7 +37,6 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             var filterItem = GetOrCreateFilterObject(clazz.Name);
             arguments.Add(new QueryArgument(filterItem.Filter) { Name = "filter" });
             arguments.Add(new QueryArgument(new ListGraphType(filterItem.OrderBy)) { Name = "orderBy" });
-            arguments.Add(new QueryArgument(languagesType) { Name = "language" });
 
             if (filterItem.IsInitialized)
             {
@@ -67,8 +66,8 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             }
             foreach (var prop in properties)
             {
-                var propName = prop.Name.ToCamelCase();
-                var graphType = prop.NativeType.GetGraphTypeFromType(true);
+                var propName = prop.DisplayName.ToCamelCase();
+                var graphType = TypeExtensions.GetGraphTypeFromType(prop.NativeType);
                 var typeList = typeof(ListGraphType<>).MakeGenericType(typeof(NonNullGraphType<>).MakeGenericType(graphType));
 
                 IGraphType resolvedType = null;
@@ -85,8 +84,8 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
                 AddFieldsToFilter(filter, prop.Id, propName, prop.PropertyType, graphType, typeList, resolvedType, resolvedListType);
 
-                enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(propName).Id, 1));
-                enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(propName).Id, -1));
+                enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(prop.Name).Id, 1));
+                enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(prop.Name).Id, -1));
             }
 
             foreach (var rel in clazz.Relationships)
@@ -99,6 +98,19 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                     Name = rel.Name + "_some",
                     Type = typeof(ListGraphType<NonNullGraphType<InputObjectGraphType<object>>>),
                     ResolvedType = new ListGraphType(new NonNullGraphType(targetFilter.Filter))
+                });
+                var countFilter = new InputObjectGraphType<object> {Name = "countFilter"};
+                countFilter.AddField(new FieldType {Name = "count", Type = typeof(IntGraphType), ResolvedType = new IntGraphType()});
+                countFilter.AddField(new FieldType {Name = "count_not", Type = typeof(IntGraphType), ResolvedType = new IntGraphType()});
+                countFilter.AddField(new FieldType {Name = "count_lt", Type = typeof(IntGraphType), ResolvedType = new IntGraphType()});
+                countFilter.AddField(new FieldType {Name = "count_lte", Type = typeof(IntGraphType), ResolvedType = new IntGraphType()});
+                countFilter.AddField(new FieldType {Name = "count_gt", Type = typeof(IntGraphType), ResolvedType = new IntGraphType()});
+                countFilter.AddField(new FieldType {Name = "count_gte", Type = typeof(IntGraphType), ResolvedType = new IntGraphType()});
+                filter.AddField(new FieldType
+                {
+                    Name = rel.Name + "_count",
+                    Type = typeof(ListGraphType<NonNullGraphType<InputObjectGraphType<object>>>),
+                    ResolvedType = countFilter
                 });
                 //filter.AddField(new FieldType
                 //{
@@ -190,7 +202,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                     throw new ArgumentOutOfRangeException();
             }
             //Fields in common with all type
-            filter.AddField(new FieldType { ResolvedType = null, Type = typeof(bool).GetGraphTypeFromType(true), Name = $"{propertyName}_null" });
+            filter.AddField(new FieldType { ResolvedType = null, Type = typeof(BooleanGraphType), Name = $"{propertyName}_empty" });
         }
     }
 }

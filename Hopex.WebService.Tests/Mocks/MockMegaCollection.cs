@@ -1,5 +1,6 @@
 using Hopex.Model.Abstractions;
 using Mega.Macro.API;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,7 +9,8 @@ namespace Hopex.WebService.Tests.Mocks
     public class MockMegaCollection : MockMegaItem, IMegaCollection
     {
         public MegaId Id { get; private set; }
-        private List<MockMegaObject> _children = new List<MockMegaObject>();
+        private readonly List<MockMegaObject> _children = new List<MockMegaObject>();
+        private static int _idGenerator = 1;
 
         public MockMegaCollection(MegaId id)
         {
@@ -54,10 +56,16 @@ namespace Hopex.WebService.Tests.Mocks
 
         public IMegaObject Create(MegaId objectId = null, string paramId1 = null, string paramValue1 = null, string paramId2 = null, string paramValue2 = null)
         {
+            if(objectId == null)
+            {
+                objectId = GenerateId();
+            }
             var child = new MockMegaObject(objectId, Id);            
             _children.Add(child);
             child.Root = Root;
-            ((MockMegaRoot)Root).AddMetaLegs(child);
+            var mockRoot = (MockMegaRoot)Root;
+            mockRoot.AddMetaLegs(child);
+            mockRoot.AddNewObject(child);
             return child;
         }
 
@@ -89,6 +97,11 @@ namespace Hopex.WebService.Tests.Mocks
         public IMegaCollection GetType(string targetMetaClassId)
         {
             return this;
+        }
+
+        public static MegaId GenerateId()
+        {
+            return MegaId.Create(Convert.ToDouble(_idGenerator++));
         }
     }
 }

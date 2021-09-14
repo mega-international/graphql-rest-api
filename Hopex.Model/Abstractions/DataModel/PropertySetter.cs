@@ -35,7 +35,7 @@ namespace Hopex.Model.Abstractions.DataModel
         }
 
         public IPropertyDescription PropertyDescription { get; private set; }
-        public virtual object Value { get; private set; }
+        public object Value { get; private set; }
         public string SetterFormat { get; private set; }
         private readonly Exception _createError = null;
 

@@ -115,7 +115,7 @@ namespace Hopex.WebService.Tests
                     {relationship}(filter:{{name:""toto""}}) {{ id }}
                 }}}}", "MetaModel");
 
-            resp.Should().MatchGraphQL("errors[0].message", "Unknown argument \"filter\"*");
+            resp.Should().MatchGraphQL("errors[0].message", "Unknown argument 'filter'*");
         }
 
         [Theory]
@@ -131,7 +131,7 @@ namespace Hopex.WebService.Tests
                     {relationship}(orderBy: name_ASC)  {{ id }}
                 }}}}", "MetaModel");
 
-            resp.Should().MatchGraphQL("errors[0].message", "Unknown argument \"orderBy\"*");
+            resp.Should().MatchGraphQL("errors[0].message", "Unknown argument 'orderBy'*");
         }
 
         [Fact]

@@ -31,7 +31,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected override void Initialisation()
         {
-            _requester = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}/{_schemaRisk}");
+            _requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}/{_schemaRisk}");
         }
 
         protected override async Task StepsAsync(ITestParam oTestParam)
@@ -62,7 +62,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         private async Task<int> GetCountIncidents(Profile profile)
         {
-            SetConfig(EnvironmentId, RepositoryIdTo, profile.Id);
+            SetConfig(Destination.CloneWithProfile(profile.Id));
             var outputs = new List<Field> { new ScalarField(MetaFieldNames.id, "string") };
             var resultHopexCustomizer = await GetAll("Incident", outputs);
             return resultHopexCustomizer.Count;

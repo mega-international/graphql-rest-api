@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Hopex.Modules.GraphQL
 {
-    public class InstrumentFieldMiddleware
+    public class InstrumentFieldMiddleware : IFieldMiddleware
     {
-        public async Task<object> Resolve(ResolveFieldContext context, FieldMiddlewareDelegate next)
+        public async Task<object> Resolve(IResolveFieldContext context, FieldMiddlewareDelegate next)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace Hopex.Modules.GraphQL
             }
             catch(Exception ex)
             {
-                var message = $"Error trying to resolve: {context?.FieldAst?.Alias ?? context?.FieldName ?? "null"}. Error message: {ex.Message} See more details in log file";
+                var message = $"Error trying to resolve: {context?.FieldAst?.Alias ?? context?.FieldDefinition.Name ?? "null"}. Error message: {ex.Message} See more details in log file";
                 throw new ExecutionError(message, ex);
             }
         }

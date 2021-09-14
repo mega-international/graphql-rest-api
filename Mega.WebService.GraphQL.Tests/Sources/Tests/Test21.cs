@@ -1,5 +1,6 @@
 using Mega.WebService.GraphQL.Tests.Sources.FieldModels;
 using Mega.WebService.GraphQL.Tests.Sources.Metaclasses;
+using Mega.WebService.GraphQL.Tests.Sources.Requesters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -84,14 +85,13 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         private async Task<bool> CheckSessionAsync(User user, Profile profile)
         {
-            var requester = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaITPM}")
+            var requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaITPM}");
+            SetConfig(requester, Destination.CloneWithProfile(profile.Id));
+            if (requester is GraphQLRequester graphQLRequester)
             {
-                EnvironmentId = EnvironmentId,
-                RepositoryId = RepositoryIdTo,
-                ProfileId = profile.Id,
-                Login = user.LoginName,
-                Password = user.Password
-            };
+                graphQLRequester.Login = user.LoginName;
+                graphQLRequester.Password = user.Password;
+            }
             var fieldsQuery = "";
             foreach (var field in _fields)
             {

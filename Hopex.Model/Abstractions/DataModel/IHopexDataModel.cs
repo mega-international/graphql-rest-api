@@ -1,9 +1,9 @@
+using GraphQL;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GraphQL.Types;
 
 namespace Hopex.Model.Abstractions.DataModel
 {
@@ -25,7 +25,7 @@ namespace Hopex.Model.Abstractions.DataModel
         Dictionary<string, IModelElement> TemporaryMegaObjects { get; }
 
         Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType);
-        Task<List<IModelElement>> SearchAllAsync(ResolveFieldContext<IHopexDataModel> ctx);
+        Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx);
         Task<IModelElement> CreateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters);
         Task<IModelElement> CreateElementFromParentAsync(IClassDescription target, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters, IMegaCollection iColParent);
         Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters);

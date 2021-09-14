@@ -21,18 +21,19 @@
     <!-- Fin MEGA -->
     
     <ItemGroup>
-        <PackageReference Include="GraphQL" Version="2.4.0" />
-        <PackageReference Include="GraphQL-Parser" Version="4.1.2" />
-        <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="1.0.435" />
+        <PackageReference Include="GraphQL" Version="4.5.0" />
+        <PackageReference Include="GraphQL-Parser" Version="7.2.0" />
+        <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="5.0.82" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.6.8" />
+        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.7" />
+        <PackageReference Include="System.Runtime" Version="4.3.1" />
     </ItemGroup>
     
     <ItemGroup>
-      <Reference Include="Mega.Macro.Wrapper">
-        <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
-      </Reference>
+        <Reference Include="Mega.Macro.Wrapper">
+            <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
+        </Reference>
     </ItemGroup>
     
 </Project>

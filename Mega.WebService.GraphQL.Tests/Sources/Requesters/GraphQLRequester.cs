@@ -1,27 +1,19 @@
-using GraphQL.Client;
-using GraphQL.Client.Exceptions;
-using GraphQL.Common.Request;
-using GraphQL.Common.Response;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Mega.WebService.GraphQL.Tests.Sources
+namespace Mega.WebService.GraphQL.Tests.Sources.Requesters
 {
     public enum QueryType : byte
     {
         Query,
         Mutation
     }
-    public class GraphQLRequester
+    public class GraphQLRequester : BaseRequester
     { 
         private class Token
         {
@@ -58,20 +50,14 @@ namespace Mega.WebService.GraphQL.Tests.Sources
         }
 
         private static readonly string _hopexContext = "x-hopex-context";
-        private static readonly string _hopexSession = "x-hopex-sessiontoken";
-        private static readonly string _hopexTask = "x-hopex-task";
-        private static readonly string _hopexWait = "x-hopex-wait";
         private static readonly string _uasUrl = ConfigurationManager.AppSettings["AuthenticationUrl"];
         private static readonly object _locker = new object();
 
         public string Login { get; set; } = ConfigurationManager.AppSettings["Login"];
         public string Password { get; set; } = ConfigurationManager.AppSettings["Password"];
-        public Uri EndPoint { get; set; }
         public string EnvironmentId { get; set; }
         public string RepositoryId { get; set; }
         public string ProfileId { get; set; }
-
-        private readonly GraphQLClientOptions _options = new GraphQLClientOptions();
 
         private Token _token = null;
 
@@ -82,7 +68,17 @@ namespace Mega.WebService.GraphQL.Tests.Sources
 
         public GraphQLRequester(string uri) : this(new Uri(uri)) { }
 
-        private void PrepareHeadersForExecute(HttpClient client)
+        public override void SetConfig(ISessionInfos sessionInfos)
+        {
+            if(sessionInfos is SessionInfos oldSessionInfos)
+            {
+                EnvironmentId = oldSessionInfos.Environment;
+                RepositoryId = oldSessionInfos.Repository;
+                ProfileId = oldSessionInfos.Profile;
+            }
+        }
+
+        protected override void PrepareHeadersForExecute(HttpClient client)
         {
             SetToken(client);
             string newContext = $"{{\"EnvironmentId\":\"{EnvironmentId}\",\"RepositoryId\":\"{RepositoryId}\",\"ProfileId\":\"{ProfileId}\"}}";
@@ -90,7 +86,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources
             SetHeadersField(client, _hopexWait, "500");
         }
 
-        private void PrepareHeadersForResult(HttpClient client, IEnumerable<string> session, IEnumerable<string> task)
+        protected override void PrepareHeadersForResult(HttpClient client, IEnumerable<string> session, IEnumerable<string> task)
         {
             SetToken(client);
             SetHeadersField(client, _hopexWait, "500");
@@ -98,20 +94,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources
             SetHeadersField(client, _hopexTask, task);
         }
 
-        private void SetHeadersField(HttpClient client, string name, string value)
-        {
-            string [] values = new string[] {value};
-            SetHeadersField(client, name, values);
-        }
-
-        private void SetHeadersField(HttpClient client, string name, IEnumerable<string> values)
-        {
-            var headers = client.DefaultRequestHeaders;
-            headers.Remove(name);
-            headers.Add(name, values);
-        }
-
-        private void GenerateToken()
+    private void GenerateToken()
         {
             var fields = new Dictionary<string, string>()
             {
@@ -139,12 +122,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources
             }
         }
 
-        public async Task<GraphQLResponse> SendPostAsync(GraphQLRequest request, bool asyncMode)
-        {
-            return await SendPostAsync(request, asyncMode, CancellationToken.None);
-        }
-
-        private void CheckToken()
+        protected override void CheckToken()
         {
             lock(_locker)
             {
@@ -155,91 +133,9 @@ namespace Mega.WebService.GraphQL.Tests.Sources
             }
         }
 
-        private void SetToken(HttpClient client)
+        protected override void SetToken(HttpClient client)
         {
             client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {_token.AccessToken}");
-        }
-
-        public async Task<GraphQLResponse> SendPostAsync(GraphQLRequest request, bool asyncMode, CancellationToken cancellationToken)
-        {
-            CheckToken();
-            var graphQLString = JsonConvert.SerializeObject(request);
-            using(var httpContent = new StringContent(graphQLString))
-            {
-                httpContent.Headers.ContentType = _options.MediaType;
-                using(var client = new HttpClient() { Timeout = Timeout.InfiniteTimeSpan })
-                {
-                    PrepareHeadersForExecute(client);
-                    using (var httpResponseMessage = await client.PostAsync(EndPoint, httpContent, CancellationToken.None).ConfigureAwait(false))
-                    {
-                        httpResponseMessage.EnsureSuccessStatusCode();
-                        cancellationToken.ThrowIfCancellationRequested();
-                        if (asyncMode)
-                        {
-                            return await GetResultAsyncModeAsync(httpResponseMessage, cancellationToken).ConfigureAwait(false);
-                        }
-                        return await GetResultSyncModeAsync(httpResponseMessage).ConfigureAwait(false);
-                    }
-                }
-            }
-        }
-
-        private async Task<GraphQLResponse> GetResultSyncModeAsync(HttpResponseMessage httpResponseMessage)
-        {
-            var response = await ReadHttpResponseMessageAsync(httpResponseMessage).ConfigureAwait(false);
-            if(response == null)
-            {
-                throw new NullReferenceException($"No response returned by post request: {EndPoint.PathAndQuery}");
-            }
-            if(response.Errors != null && response.Errors.Length > 0)
-            {
-                throw new HttpRequestException(response.Errors [0].Message);
-            }
-            return response;
-        }
-
-        private async Task<GraphQLResponse> GetResultAsyncModeAsync(HttpResponseMessage httpResponseMessage, CancellationToken cancellationToken)
-        {
-            var headers = httpResponseMessage.Headers;
-            var client = new HttpClient() { Timeout = Timeout.InfiniteTimeSpan };
-            if (headers.TryGetValues(_hopexSession, out var sessionValue) && headers.TryGetValues(_hopexTask, out var taskValue))
-            {
-                PrepareHeadersForResult(client, sessionValue, taskValue);
-            }
-            while (httpResponseMessage.StatusCode == HttpStatusCode.PartialContent)
-            {
-                CheckToken();
-                SetToken(client);
-                httpResponseMessage = await client.PostAsync(EndPoint, null, CancellationToken.None).ConfigureAwait(false);
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-            httpResponseMessage.EnsureSuccessStatusCode();
-            return await GetResultSyncModeAsync(httpResponseMessage).ConfigureAwait(false);
-        }
-
-        private async Task<GraphQLResponse> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
-        {
-            using(var stream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
-            using(var streamReader = new StreamReader(stream))
-            using(var jsonTextReader = new JsonTextReader(streamReader))
-            {
-                var jsonSerializer = new JsonSerializer
-                {
-                    ContractResolver = _options.JsonSerializerSettings.ContractResolver
-                };
-                try
-                {
-                    return jsonSerializer.Deserialize<GraphQLResponse>(jsonTextReader);
-                }
-                catch(JsonReaderException exception)
-                {
-                    if(httpResponseMessage.IsSuccessStatusCode)
-                    {
-                        throw exception;
-                    }
-                    throw new GraphQLHttpException(httpResponseMessage);
-                }
-            }
         }
 
         private static string GenerateRequest(QueryType queryType,

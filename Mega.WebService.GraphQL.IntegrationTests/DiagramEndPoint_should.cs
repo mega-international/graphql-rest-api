@@ -24,11 +24,11 @@ namespace Mega.WebService.GraphQL.IntegrationTests
         [Fact]
         public async void Export_a_diagram()
         {
-            var request = await CreateDiagramRequestAsync();            
+            var request = await CreateDiagramRequestAsync();
 
             var response = await _fx.Client.SendAsync(request);
 
-            await response.Should().BeDiagramAsync();            
+            await response.Should().BeDiagramAsync();
         }
 
         [Fact]
@@ -41,54 +41,6 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             var response = await asyncQuery.PlayAsync(new DiagramAsyncQueryBuilder(this, uri), _fx.Client);
 
             await response.Should().BeDiagramAsync();
-        }
-
-        class DiagramAsyncQueryBuilder : IAsyncQueryBuilder
-        {
-            private readonly DiagramEndPoint_should _fx;
-            private readonly Uri _uri;
-
-            internal DiagramAsyncQueryBuilder(DiagramEndPoint_should fx, Uri uri)
-            {
-                _fx = fx;
-                _uri = uri;
-            }
-
-            public async Task<HttpRequestMessage> CreateFirstRequestAsync()
-            {
-                return await _fx.CreateDiagramRequestAsync(_uri);
-            }
-
-            public async Task<HttpRequestMessage> CreateNextRequestAsync()
-            {
-                return await CreateFirstRequestAsync();
-            }
-        }
-
-        private async Task<HttpRequestMessage> CreateDiagramRequestAsync(Uri uri = null)
-        {
-            var requestUri = uri ?? new Uri($"diagram/{DIAGRAM_ID}/image", UriKind.Relative);
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = requestUri
-            };
-            await _fx.FillHeadersAsync(request.Headers);
-            request.Headers.Accept.ParseAdd("image/svg+xml");
-            return request;
-        }
-
-        private async Task<DiagramListResponse.DiagramInstance> GetDiagramAsync()
-        {
-            var request = new GraphQLRequest()
-            {
-                Query = $"query {{diagram(filter:{{id: \"{DIAGRAM_ID}\"}}) {{ id, downloadUrl }} }}"
-            };
-            var graphQLClient = await _fx.GetGraphQLClientAsync("ITPM");
-            var response = await graphQLClient.SendQueryAsync<DiagramListResponse>(request);
-            response.Should().HaveNoError();
-
-            return response.Data.Diagram[0];
         }
 
         [Fact]
@@ -123,7 +75,32 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             applications[0].Diagram[0].DescribedOcc.Should().Be("bsROZBMFU1tD");
         }
 
-        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Local deserialization only")]
+        private async Task<HttpRequestMessage> CreateDiagramRequestAsync(Uri uri = null)
+        {
+            var requestUri = uri ?? new Uri($"diagram/{DIAGRAM_ID}/image", UriKind.Relative);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = requestUri
+            };
+            await _fx.FillHeadersAsync(request.Headers);
+            request.Headers.Accept.ParseAdd("image/svg+xml");
+            return request;
+        }
+
+        private async Task<DiagramListResponse.DiagramInstance> GetDiagramAsync()
+        {
+            var request = new GraphQLRequest()
+            {
+                Query = $"query {{diagram(filter:{{id: \"{DIAGRAM_ID}\"}}) {{ id, downloadUrl }} }}"
+            };
+            var graphQLClient = await _fx.GetGraphQLClientAsync("ITPM");
+            var response = await graphQLClient.SendQueryAsync<DiagramListResponse>(request);
+            response.Should().HaveNoError();
+
+            return response.Data.Diagram[0];
+        }
+
         public class ApplicationWithDiagramsResponse
         {
             public List<ApplicationWithDiagrams> Application { get; set; }
@@ -139,6 +116,28 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                     public string Step { get; set; }
                     public string DescribedOcc { get; set; }
                 }
+            }
+        }
+
+        class DiagramAsyncQueryBuilder : IAsyncQueryBuilder
+        {
+            private readonly DiagramEndPoint_should _fx;
+            private readonly Uri _uri;
+
+            internal DiagramAsyncQueryBuilder(DiagramEndPoint_should fx, Uri uri)
+            {
+                _fx = fx;
+                _uri = uri;
+            }
+
+            public async Task<HttpRequestMessage> CreateFirstRequestAsync()
+            {
+                return await _fx.CreateDiagramRequestAsync(_uri);
+            }
+
+            public async Task<HttpRequestMessage> CreateNextRequestAsync()
+            {
+                return await CreateFirstRequestAsync();
             }
         }
     }

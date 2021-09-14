@@ -39,6 +39,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
         {
             Name = "_InputCustomRelationChild";
             Field<NonNullGraphType<StringGraphType>>("id");
+            InputCustomPropertyType.AddCustomFields(this);
         }
     }
 }

@@ -1,4 +1,3 @@
-using Hopex.Model.MetaModel;
 
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace Hopex.Model.Abstractions.MetaModel
         TargetClass
     }
 
-    public interface IPropertyDescription
+    public interface IPropertyDescription : IFieldDescription
     {
         IClassDescription Owner { get; }
         string Name { get; }
@@ -22,6 +21,7 @@ namespace Hopex.Model.Abstractions.MetaModel
         IEnumerable<IEnumDescription> EnumValues { get; }
         PropertyType PropertyType { get; }
         bool IsReadOnly { get; }
+        bool IsUnique { get; }
         bool IsRequired { get; }
         bool IsTranslatable { get; }
         bool IsFormattedText { get; }
@@ -29,6 +29,7 @@ namespace Hopex.Model.Abstractions.MetaModel
         Type NativeType { get; }
         string SetterFormat { get; }
         string GetterFormat { get; }
+        string DisplayName { get; }
         PropertyScope Scope { get; }
     }
 }

@@ -5,6 +5,7 @@ using Hopex.Modules.GraphQL.Schema;
 using Moq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using GraphQL.Execution;
 using Xunit;
 
 namespace Hopex.WebService.Tests
@@ -28,12 +29,12 @@ namespace Hopex.WebService.Tests
                 mockModelElement_4,
                 mockModelElement_5,
             };
-            var arguments = new Dictionary<string, object>
+            var arguments = new Dictionary<string, ArgumentValue>
             {
-                {"first", 2},
-                {"after", "1"},
-                {"before", "4"},
-                {"skip", 1}
+                {"first", new ArgumentValue(2, ArgumentSource.Literal)},
+                {"after", new ArgumentValue("1", ArgumentSource.Literal)},
+                {"before", new ArgumentValue("4", ArgumentSource.Literal)},
+                {"skip", new ArgumentValue(1, ArgumentSource.Literal)}
             };
             var result = SchemaBuilder.GetPaginatedModelElements(orderedCollection, arguments);
             result.Should().Contain(mockModelElement_3);
@@ -55,12 +56,12 @@ namespace Hopex.WebService.Tests
                 mockModelElement_4,
                 mockModelElement_5,
             };
-            var arguments = new Dictionary<string, object>
+            var arguments = new Dictionary<string, ArgumentValue>
             {
-                {"last", 2},
-                {"after", "1"},
-                {"before", "4"},
-                {"skip", 1}
+                {"last", new ArgumentValue(2, ArgumentSource.Literal)},
+                {"after", new ArgumentValue("1", ArgumentSource.Literal)},
+                {"before", new ArgumentValue("4", ArgumentSource.Literal)},
+                {"skip", new ArgumentValue(1, ArgumentSource.Literal)}
             };
             var result = SchemaBuilder.GetPaginatedModelElements(orderedCollection, arguments);
             result.Should().Contain(mockModelElement_2);

@@ -4,6 +4,7 @@ using Mega.WebService.GraphQL.Tests.Models;
 using Mega.WebService.GraphQL.Tests.Sources.FieldModels;
 using Mega.WebService.GraphQL.Tests.Sources.FieldModels.Classes;
 using Mega.WebService.GraphQL.Tests.Sources.Metaclasses;
+using Mega.WebService.GraphQL.Tests.Sources.Requesters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -32,13 +33,18 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             [JsonProperty("profileId")]
             public string ProfileId { get; set; }
 
+            [JsonProperty("source")]
+            public object Source { get; set; }
+
+            [JsonProperty("destination")]
+            public object Destination { get; set; }
+
             [JsonProperty("synchronisation")]
             public string Synchronisation { get; set; }
         }
 
         protected ProgressionModel _progression;
-        protected GraphQLRequester _requester;
-        protected readonly Parameters _parameters;
+        protected IRequester _requester;
         protected readonly string _myServiceUrl = ConfigurationManager.AppSettings["HopexGraphQL"].TrimEnd('/');
         protected const string _schemaITPM = "ITPM";
         protected const string _schemaAudit = "Audit";
@@ -46,21 +52,43 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected const int _maxArgsSize = 30;
         protected TimeMessageManager timeMessageManager = new TimeMessageManager();
 
-        protected string EnvironmentId => _parameters.EnvironmentId;
-        protected string RepositoryIdFrom => _parameters.RepositoryIdFrom;
-        protected string RepositoryIdTo => _parameters.RepositoryIdTo;
-        protected string ProfileId => _parameters.ProfileId;
-        protected bool IsAsyncMode => _parameters.Synchronisation == "async";
+        protected ISessionInfos Source { get; set; }
+        protected ISessionInfos Destination { get; set; }
+        protected bool IsAsyncMode { get; set; }
+
+        protected bool HASMode = ConfigurationManager.AppSettings["HASMode"] == "1";
 
         protected AbstractTest(Parameters parameters)
         {
-            _parameters = parameters;
+            if(HASMode)
+            {
+                Source = JsonConvert.DeserializeObject<HASSessionInfos>(parameters.Source.ToString());
+                Destination = JsonConvert.DeserializeObject<HASSessionInfos>(parameters.Destination.ToString());
+            }
+            else
+            {
+                Source = JsonConvert.DeserializeObject<SessionInfos>(parameters.Source.ToString());
+                Destination = JsonConvert.DeserializeObject<SessionInfos>(parameters.Destination.ToString());
+            }
+            IsAsyncMode = parameters.Synchronisation == "async";
             Initialisation();
+        }
+
+        protected IRequester GenerateRequester(string uri)
+        {
+            if(HASMode)
+            {
+                return new HASGraphQLRequester(uri);
+            }
+            else
+            {
+                return new GraphQLRequester(uri);
+            }
         }
 
         protected virtual void Initialisation()
         {
-            _requester = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaITPM}");
+            _requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaITPM}");
         }
 
         protected abstract Task StepsAsync(ITestParam oTestParam);
@@ -89,16 +117,14 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             return _progression;
         }
 
-        protected void SetConfig(GraphQLRequester requester, string env, string repo, string profile)
+        protected void SetConfig(IRequester requester, ISessionInfos sessionInfos)
         {
-            requester.EnvironmentId = env;
-            requester.RepositoryId = repo;
-            requester.ProfileId = profile;
+            requester.SetConfig(sessionInfos);
         }
 
-        protected void SetConfig(string env, string repo, string profile)
+        protected void SetConfig(ISessionInfos sessionInfos)
         {
-            SetConfig(_requester, env, repo, profile);
+            SetConfig(_requester, sessionInfos);
         }
 
         protected async Task<List<Field>> GetFieldsRequest(string tableName, bool input, Kind flags = Kind.All)
@@ -181,7 +207,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             return fields;
         }
 
-        protected async Task<JToken> ProcessRawQuery(GraphQLRequester requester, string query, CancellationToken token)
+        protected async Task<JToken> ProcessRawQuery(IRequester requester, string query, CancellationToken token)
         {
             GraphQLRequest request = new GraphQLRequest()
             {
@@ -212,7 +238,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             return response.Data;
         }
 
-        protected async Task<JToken> ProcessRawQuery(GraphQLRequester requester, string query)
+        protected async Task<JToken> ProcessRawQuery(IRequester requester, string query)
         {
             return await ProcessRawQuery(requester, query, CancellationToken.None);
         }
@@ -307,7 +333,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             {
                 return (await ProcessRawQuery(query))["n1"] as JArray;
             }
-            catch(Exception exception)
+            catch(Exception)
             {
                 return null;
             }
@@ -720,7 +746,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected virtual async Task MetaclassSchema(MetaClass metaclass)
         {
             //set source repository
-            SetConfig(EnvironmentId, RepositoryIdFrom, ProfileId);
+            SetConfig(Source);
 
             //get schema
             (metaclass.InputFields, metaclass.Fields) = await GetInAndOutFields(metaclass);
@@ -763,7 +789,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected async Task<(List<JObject>, List<JObject>)> CopyFiltered(MetaClass metaclass, JObject filter, List<Field> filterInputs)
         {
             //Set to source repository
-            SetConfig(EnvironmentId, RepositoryIdFrom, ProfileId);
+            SetConfig(Source);
 
             //Get schema fields
             IReadOnlyList<Field> inputFields = metaclass.InputFields;
@@ -773,7 +799,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             var originals = (await TimedStep($"Get {metaclass.GetPluralName(true)} from first repository", GetFiltered, metaclass.Name, filter, filterInputs, outputFields)).ToObject<List<JObject>>();
 
             //Set to destination repository
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
 
             //Create elements into the second one
             SetExternalIds(ref originals);
@@ -1186,7 +1212,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected async Task LinkTransferTest(MetaClass metaclass1, MetaClass metaclass2, string linkName)
         {
             //Set source repository
-            SetConfig(EnvironmentId, RepositoryIdFrom, ProfileId);
+            SetConfig(Source);
 
             //Get original datas for class1
             var outputFields = new List<Field>
@@ -1201,7 +1227,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             var originals1 = (await TimedStep($"Get all {metaclass1.GetSingleName(true)} from source repository", GetAll, metaclass1.Name, outputFields)).ToObject<List<JObject>>();
 
             //Set source repository
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
 
             //Get created datas for class1
             outputFields = new List<Field>
@@ -1238,7 +1264,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected async Task DeletionTest(MetaClass metaclass)
         {
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
 
             //Delete all datas
             await TimedStep($"Deletion of {metaclass.GetPluralName(true)}", DeleteAllFromMetaClass, metaclass);
@@ -1268,7 +1294,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         {
             //Set token and config
             //CreateAndSetToken();
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
 
             //Delete links
             await TimedStep($"Deletion of {linkName} from {metaclass.GetPluralName(true)}", DeleteLinks, metaclass, linkName);

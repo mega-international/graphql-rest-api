@@ -226,7 +226,8 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             };
             var responseCreate = await _graphQLClient.SendQueryAsync<CreateUpdateApplication>(requestCreate);
             responseCreate.Should().HaveNoError();
-            responseCreate.Data.Application.Should().BeEquivalentTo(new ApplicationInstance {
+            responseCreate.Data.Application.Should().BeEquivalentTo(new ApplicationInstance
+            {
                 Name = "Name of the application 3",
                 OperatingApplicationDate = "2020-12-25",
                 ApplicationCode = "Code",

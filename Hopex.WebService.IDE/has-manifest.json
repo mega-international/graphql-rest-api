@@ -1,6 +1,6 @@
 {
     "ModuleType": "AddOn",
-    "Version": "1.0.0",
+    "Version": "1.1.0",
     "Id": "graphql.ide",
     "Name": "HOPEX GraphQL IDE",
     "Description": "A graphical interface to test your GraphQL queries",
@@ -8,11 +8,18 @@
     "EnabledOnSettingsMode": false,
     "ShowInPortal": true,
     "IgnoreSynchronization": false,
-    "Author": "Mega International",
+    "Author": "MEGA International",
+    "dependencies": [
+        {
+            "Id": "hopex.graphql"
+        },
+        {
+            "Id": "hopex.rest.api"
+        }
+    ],
     "Kind": "Site",
     "RequireLicenseAcceptance": false,
-    "Dependencies": [
-        { "Id": "hopex.graphql" },
-        { "Id": "hopex.rest.api" }
-    ]
+    "Constraints": {
+        "Modes": [ "Development", "Staging", "Training" ]
+    }
 }

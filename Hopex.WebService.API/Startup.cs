@@ -15,7 +15,8 @@ namespace Hopex.WebService.API
             var mvcBuilder = services
                       .AddControllersWithViews()
                       .AddViewLocalization()
-                      .AddDataAnnotationsLocalization();
+                      .AddDataAnnotationsLocalization()
+                      .AddNewtonsoftJson();
         }
 
         public void Configure(IApplicationBuilder app, IModuleConfiguration moduleConfiguration, ITraceInstrumentation traceInstrumentation)

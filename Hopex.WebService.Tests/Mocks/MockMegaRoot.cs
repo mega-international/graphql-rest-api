@@ -118,11 +118,16 @@ namespace Hopex.WebService.Tests.Mocks
             }            
         }
 
+        internal void AddNewObject(MockMegaObject newObject)
+        {
+            _objects.Add(newObject.Id, newObject);
+        }
+
         internal void AddMetaLegs(MockMegaObject child)
         {
-            if (_metaLegs.ContainsKey(child.GetClassId()))
+            if (_metaLegs.TryGetValue(child.GetClassId(), out var classLegs))
             {
-                foreach (var legId in _metaLegs[child.GetClassId()])
+                foreach (var legId in classLegs)
                 {
                     var col = new MockMegaCollection(legId) {Root = this};
                     child.WithRelation(col);

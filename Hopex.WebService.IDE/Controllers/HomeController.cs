@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Hopex.WebService.IDE.Models;
 using IdentityModel.Client;
 using Mega.Has.Commons;
@@ -9,6 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -35,65 +37,97 @@ namespace Hopex.WebService.IDE.Controllers
 
         public override async Task<IActionResult> Index()
         {
-            var result = await ProcessOpenSessionAsync();
-            if (result == null)
+            try
             {
-                ViewBag.Schemas = new SelectList(_schemas, _selectedSchema);
-                ViewBag.IsVoyagerEnabled = _isVoyagerEnabled;
-                result = View();
+                var result = await ProcessOpenSessionAsync();
+                if (result == null)
+                {
+                    ViewBag.Schemas = new SelectList(_schemas, _selectedSchema);
+                    ViewBag.IsVoyagerEnabled = _isVoyagerEnabled;
+                    result = View();
+                }
+                return result;
             }
-            return result;
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Critical, e, e.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("home/index/{selectedSchema}")]
         public async Task<IActionResult> Index(string selectedSchema)
         {
-            var result = await ProcessOpenSessionAsync();
-            if (result == null)
+            try
             {
-                ViewBag.Schemas = new SelectList(_schemas, selectedSchema);
-                ViewBag.IsVoyagerEnabled = _isVoyagerEnabled;
-                result = View();
+                var result = await ProcessOpenSessionAsync();
+                if (result == null)
+                {
+                    ViewBag.Schemas = new SelectList(_schemas, selectedSchema);
+                    ViewBag.IsVoyagerEnabled = _isVoyagerEnabled;
+                    result = View();
+                }
+                return result;
             }
-            return result;
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Critical, e, e.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("home/voyager/{selectedSchema}")]
         public async Task<IActionResult> Voyager(string selectedSchema = "")
         {
-            var result = await ProcessOpenSessionAsync();
-            if (result == null)
+            try
             {
-                ViewBag.Schemas = new SelectList(_schemas, string.IsNullOrEmpty(selectedSchema) ? _selectedSchema : selectedSchema);
-                result = View();
+                var result = await ProcessOpenSessionAsync();
+                if (result == null)
+                {
+                    ViewBag.Schemas = new SelectList(_schemas, string.IsNullOrEmpty(selectedSchema) ? _selectedSchema : selectedSchema);
+                    result = View();
+                }
+                return result;
             }
-            return result;
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Critical, e, e.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [Authorize(Policy = "Hopex")]
         [HttpPost("graphql/{schema}")]
         public async Task<IActionResult> CallGraphQl(string schema)
         {
-            var token = await HttpContext.GetTokenAsync("access_token");
-            using (var client = new HttpClient())
+            try
             {
-                client.SetBearerToken(token);
+                var token = await HttpContext.GetTokenAsync("access_token");
+                using (var client = new HttpClient())
+                {
+                    client.SetBearerToken(token);
 
-                var msg = new HttpRequestMessage(HttpMethod.Post, $"{_configurations.RuntimeClusterSettings.InternalAddress}/api/graphql/{schema}");
-                if (Request.Cookies.TryGetValue(HopexHeaders.SessionToken, out var sv))
-                {
-                    msg.Headers.Add(HopexHeaders.SessionToken, sv);
-                }
-                msg.Content = new StreamContent(Request.Body);
-                using (var response = await client.SendAsync(msg))
-                {
-                    if (response.IsSuccessStatusCode)
+                    var msg = new HttpRequestMessage(HttpMethod.Post, $"{_configurations.RuntimeClusterSettings.PublicAddress}/api/graphql/{schema}");
+                    if (Request.Cookies.TryGetValue(HopexHeaders.SessionToken, out var sv))
                     {
-                        var res = await response.Content.ReadAsStringAsync();
-                        return new ContentResult { Content = res, ContentType = "application/json", StatusCode = 200 };
+                        msg.Headers.Add(HopexHeaders.SessionToken, sv);
                     }
-                    return new StatusCodeResult((int)response.StatusCode);
+                    msg.Content = new StreamContent(Request.Body);
+                    using (var response = await client.SendAsync(msg))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var res = await response.Content.ReadAsStringAsync();
+                            return new ContentResult { Content = res, ContentType = "application/json", StatusCode = 200 };
+                        }
+                        return new StatusCodeResult((int)response.StatusCode);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Critical, e, e.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
     }

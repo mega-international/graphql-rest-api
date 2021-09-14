@@ -27,16 +27,23 @@ namespace Hopex.Model.Abstractions.DataModel
 
         protected CollectionSetter(IRelationshipDescription relationshipDescription,
                                 CollectionAction action,
-                                IEnumerable<object> listElements)
+                                IEnumerable<object> listElements, IPropertyDescription propertyDescription = null, object value = null)
         {
             RelationshipDescription = relationshipDescription;
             Action = action;
             ListElement = listElements;
+            PropertyDescription = propertyDescription;
+            Value = value;
         }
 
         public IRelationshipDescription RelationshipDescription { get; }
         public CollectionAction Action { get; }
         public IEnumerable<object> ListElement { get; }
+
+        private static string[] _unsettableNames = new string[] { "id", "idType", "creationMode" };
+
+        public IPropertyDescription PropertyDescription { get; }
+        public object Value { get; }
 
         public async Task UpdateElementAsync(IHopexDataModel model, IModelElement source)
         {
@@ -185,18 +192,46 @@ namespace Hopex.Model.Abstractions.DataModel
 
         private async Task CreateItemInRelationshipAsync(IHopexDataModel model, IModelElement source, IRelationshipDescription link, Dictionary<string, object> properties, string id, IdTypeEnum idType)
         {
-            var elemSchema = GetTargetSchema(source, link);
             bool useInstanceCreator = false;
             if (properties.TryGetValue("creationMode", out var useInstanceCreatorObj))
             {
                 useInstanceCreator = (bool)useInstanceCreatorObj;
             }
-            var setters = CreateSetters(link.TargetClass, properties);
-            var collection = source.IMegaObject.GetCollection(link.RoleId);
-            var element = await model.CreateElementFromParentAsync(elemSchema, id, idType, useInstanceCreator, setters, collection);
-            if (element.Errors?.Any() ?? false) //Get all errors from new item to report them if any occurs
+            var currentElement = source;
+            IDictionary<string, object> propertiesToSet = new Dictionary<string, object>(properties);
+            for(var pathIndex = 0; pathIndex < link.Path.Length; ++pathIndex)
             {
-                source.AddErrors(element);
+                var currentPath = link.Path[pathIndex];
+                var currentPathTargetClass = GetTargetSchema(source, currentPath);
+                var setters = CreateSetters(currentPathTargetClass, propertiesToSet, pathIndex, link.Path.Length-1, out propertiesToSet);
+                var collection = currentElement.IMegaObject.GetCollection(currentPath.RoleId);
+                var newElement = await model.CreateElementFromParentAsync(currentPathTargetClass, id, idType, useInstanceCreator, setters, collection);
+                if (newElement.Errors?.Any() ?? false) //Get all errors from new item to report them if any occurs
+                {
+                    source.AddErrors(newElement);
+                }
+                currentElement = newElement;
+            }
+        }
+
+        protected virtual async Task UpdateItemInRelationshipAsync(IHopexDataModel model, IModelElement source, IRelationshipDescription link, Dictionary<string, object> properties, IEnumerable<IMegaObject> itemsToUpdate)
+        {
+            if(itemsToUpdate.Count() != link.Path.Length)
+            {
+                throw new ExecutionError("List of items to update and array of paths must have same length");
+            }
+            IDictionary<string, object> propertiesToSet = new Dictionary<string, object>(properties);
+            for (var index = 0; index < link.Path.Length; ++index)
+            {
+                var currentPath = link.Path[index];
+                var currentItem = itemsToUpdate.ElementAt(index);
+                var currentPathTargetClass = GetTargetSchema(source, currentPath);
+                var setters = CreateSetters(currentPathTargetClass, propertiesToSet, index, link.Path.Length - 1, out propertiesToSet);
+                var updatedElement = await model.UpdateElementAsync(currentPathTargetClass, currentItem.MegaUnnamedField, IdTypeEnum.INTERNAL, setters);
+                if (updatedElement.Errors?.Any() ?? false) //Get all errors from new item to report them if any occurs
+                {
+                    source.AddErrors(updatedElement);
+                }
             }
         }
 
@@ -210,14 +245,9 @@ namespace Hopex.Model.Abstractions.DataModel
                 {
                     Enum.TryParse(properties["idType"].ToString(), out idType);
                 }
-                var elemSchema = GetTargetSchema(source, link);
-                var getElementByIdAsyncTask = model.GetElementByIdAsync(elemSchema, id, idType);
-                if (getElementByIdAsyncTask == null)
-                {
-                    throw new ExecutionError($"Element {elemSchema.Name} not found with id {id}");
-                }
-
-                if (!(await getElementByIdAsyncTask is IModelElement elemToInsert))
+                var elemSchema = GetLastTargetSchema(source, link);
+                var elemToInsert = await model.GetElementByIdAsync(elemSchema, id, idType);
+                if (elemToInsert == null)
                 {
                     switch (idType)
                     {
@@ -241,7 +271,7 @@ namespace Hopex.Model.Abstractions.DataModel
                     }
                 }
                 if (insert)
-                    InsertConnection(source, elemToInsert, link, properties);
+                    await InsertConnectionAsync(model, source, elemToInsert, link, properties);
                 else
                     RemoveConnection(source, elemToInsert, link.Path);
             }
@@ -251,78 +281,57 @@ namespace Hopex.Model.Abstractions.DataModel
             }
         }
 
-        protected virtual IClassDescription GetTargetSchema(IModelElement source, IRelationshipDescription link)
+        protected IClassDescription GetLastTargetSchema(IModelElement source, IRelationshipDescription link)
         {
-            return source.ClassDescription.MetaModel.GetClassDescription(link.Path.Last().TargetSchemaName);
+            return GetTargetSchema(source, link.Path.Last());
         }
 
-        private void InsertConnection(IModelElement source, IModelElement elemToInsert, IRelationshipDescription relationShip, Dictionary<string, object> propertyValues)
+        protected virtual IClassDescription GetTargetSchema(IModelElement source, IPathDescription path)
+        {
+            return source.ClassDescription.MetaModel.GetClassDescription(path.TargetSchemaName);
+        }
+
+        private async Task InsertConnectionAsync(IHopexDataModel model, IModelElement source, IModelElement elemToInsert, IRelationshipDescription relationShip, Dictionary<string, object> propertyValues)
         {
             var current = source.MegaObject;
             var iCurrent = source.IMegaObject;
             var interObjects = new List<IMegaObject>();
             var path = relationShip.Path;
             IMegaObject targetObjectThroughCollection = null;
+            List<IMegaObject> itemsToUpdate;
             var found = FillInterObjects(iCurrent, elemToInsert.IMegaObject, path, ref interObjects, ref targetObjectThroughCollection);
             if (found) 
             {
                 //adding a new connection from a source to a target already linked together is forbidden, but we must update link attributes
-                var firstSegmentTarget = interObjects.Count > 0 ? interObjects[0] : targetObjectThroughCollection;
-                UpdateLinkAttributes(elemToInsert, relationShip, propertyValues, firstSegmentTarget);
+                itemsToUpdate = new List<IMegaObject>(interObjects)
+                {
+                    targetObjectThroughCollection
+                };
+                await UpdateItemInRelationshipAsync(model, source, relationShip, propertyValues, itemsToUpdate);
+                //UpdateLinkAttributes(elemToInsert, relationShip, propertyValues, firstSegmentTarget);
                 return;
             }
 
             if (!CanCreateConnection(source.IMegaObject, elemToInsert.IMegaObject))
                 throw new ExecutionError($"You are not allowed to perform this action on this property ({relationShip.Path[0].RoleName})");
 
+            itemsToUpdate = new List<IMegaObject>();
             for (int ix = 0; ix < path.Length; ix++)
             {
                 bool isLast = ix == path.Length - 1;
                 IPathDescription hop = path[ix];
 
                 MegaId roleId = hop.RoleId;
-
-                if (isLast)
+                var collection = iCurrent.GetCollection(roleId);
+                iCurrent = isLast ? collection.Add(Utils.NormalizeHopexId(elemToInsert.Id)) : collection.Create();
+                if (iCurrent is RealMegaObject realCurrent)
                 {
-                    var collection = iCurrent.GetCollection(roleId);
-                    iCurrent = collection.Add(Utils.NormalizeHopexId(elemToInsert.Id));
-                    if (iCurrent is RealMegaObject)
-                        current = ((RealMegaObject)iCurrent).RealObject;
+                    current = realCurrent.RealObject;
                 }
-                else
-                {
-                    var collection = current.GetCollection(roleId);
-                    current = collection.Create();
-                    iCurrent = new RealMegaObject(current);
-                }
-                if (ix == 0)
-                {
-                    // First segment - Try to set link attributes
-                    UpdateLinkAttributes(elemToInsert, relationShip, propertyValues, iCurrent);
-                }
-
+                itemsToUpdate.Add(iCurrent);
                 CreateCondition(current, hop.Condition);
             }
-        }
-        
-        private void UpdateLinkAttributes(IModelElement elemToInsert, IRelationshipDescription relationShip, Dictionary<string, object> propertyValues, IMegaObject current)
-        {           
-            var linkProperties = relationShip.TargetClass.Properties.Where(p => p.Scope == PropertyScope.Relationship || p.Scope == PropertyScope.TargetClass);
-            if (linkProperties.Any())
-            {
-                foreach (var property in linkProperties)
-                {
-                    foreach (var kv in propertyValues)
-                    {
-                        if (string.Compare(kv.Key, property.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-                        {
-                            var elem = new HopexModelElement(elemToInsert.DomainModel, relationShip.TargetClass, current);
-                            elem.SetValue(property, kv.Value);
-                            break;
-                        }
-                    }
-                }
-            }
+            await UpdateItemInRelationshipAsync(model, source, relationShip, propertyValues, itemsToUpdate);
         }
 
         protected virtual bool CanCreateConnection(IMegaObject source, IMegaObject child)
@@ -364,18 +373,54 @@ namespace Hopex.Model.Abstractions.DataModel
             collection.RemoveChild(objectId);
         }
 
-        private IEnumerable<ISetter> CreateSetters(IClassDescription entity, Dictionary<string, object> properties)
+        private IEnumerable<ISetter> CreateSetters(IClassDescription entity, IDictionary<string, object> properties, int currentPathIndex, int lastPathIndex, out IDictionary<string, object> remainingProperties)
         {
-            var result = new List<ISetter>();
-            foreach (var kv in properties)
+            var propertiesNotSet = new Dictionary<string, object>();
+            remainingProperties = propertiesNotSet;
+            Dictionary<string, object> propertiesSet;
+            if (currentPathIndex == lastPathIndex)
             {
-                var prop = entity.GetPropertyDescription(kv.Key, false);
-                if (prop != null)
+                propertiesSet = new Dictionary<string, object>(properties);
+                foreach(var unsettableName in _unsettableNames)
                 {
-                    result.Add(PropertySetter.Create(prop, kv.Value));
+                    propertiesSet.Remove(unsettableName);
                 }
             }
-            return result;
+            else
+            {
+                propertiesSet = new Dictionary<string, object>();
+                foreach (var kv in properties)
+                {
+                    var fieldName = kv.Key;
+                    if(!IsSetterName(fieldName))
+                    {
+                        continue;
+                    }
+                    var prefix = $"link{currentPathIndex + 1}";
+                    if (fieldName.StartsWith(prefix))
+                    {
+                        fieldName = fieldName.Substring(prefix.Length);
+                        propertiesSet.Add(fieldName, kv.Value);
+                    }
+                    else
+                    {
+                        propertiesNotSet.Add(kv.Key, kv.Value);
+                    }
+                }
+            }
+            return entity.CreateSetter(propertiesSet);
+        }
+
+        private bool IsSetterName(string propertyName)
+        {
+            foreach(var unsettableName in _unsettableNames)
+            {
+                if(propertyName.Equals("id", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

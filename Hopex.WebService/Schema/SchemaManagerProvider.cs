@@ -17,14 +17,14 @@ namespace Hopex.Modules.GraphQL.Schema
     {
         private static GraphQLSchemaManager Instance;
 
-        public virtual async Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, IMegaRoot megaRoot, ILogger logger)
+        public virtual async Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, ILogger logger)
         {
             if (Instance == null)
             {
                 WriteLogFilenameToMegaErr(hopexContext);
                 var hopexSchemaManager = new HopexMetaModelManager(CreateSchemaLoader(), ctx => new PivotConvertor(ctx));
                 await hopexSchemaManager.LoadAllAsync(version);
-                Instance = new GraphQLSchemaManager(hopexSchemaManager, megaRoot, logger);
+                Instance = new GraphQLSchemaManager(hopexSchemaManager, logger);
             }
             return Instance;
         }

@@ -75,7 +75,83 @@ namespace Hopex.WebService.Tests
             "query {application(filter:{and: {iTOwner_PersonSystem_some:{name: \"Louis\"} businessOwner_PersonSystem_some:{name:\"Dan\"}}}){id}}",
             "SELECT ~MrUiM9B5iyM0[Application] WHERE (~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~ic5nTMC6H9fC\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].(~210000000900[Name] = \"Louis\" )) and ~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~fd5niMC6H1iC\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].(~210000000900[Name] = \"Dan\" )))"
         )]
+        [InlineData(
+            "query { application { businessProcess(filter: {costContributionKeyBusinessProcess_lt: 10}) { id}}}",
+            "SELECT ~pj)grmQ9pG90[BusinessProcess] WHERE ~i4n)MzlZpO00[Application]:~MrUiM9B5iyM0[Application].(~wdTPcZMsI1(O[CostContributionKeyBusinessProcess] < \"10\" AND ~310000000D00[AbsoluteIdentifier] = \"application-100\") AND ~i4n)MzlZpO00[Application]:~MrUiM9B5iyM0[Application].~310000000D00[AbsoluteIdentifier] = \"application-100\""
+        )]
+        [InlineData(
+            "query { application { businessCapability(filter: {link1CostContributionKeyRealization_lt: 10}) { id link1CostContributionKeyRealization}}}",
+            "SELECT ~IcfsZhjW9T90[BusinessCapability] WHERE ~nd9L6Ys9Bvf1[BusinessCapabilityFulfillment]:~Cd9LMSs9BnE1[BusinessCapabilityFulfillment].(~)W0hMxQOMPjU[CostContributionKeyRealization] < \"10\" AND ~IdRdxwf6ET5P[FulfillingEnterpriseAgent]:~MrUiM9B5iyM0[Application].~310000000D00[AbsoluteIdentifier] = \"application-100\") AND ~nd9L6Ys9Bvf1[BusinessCapabilityFulfillment]:~Cd9LMSs9BnE1[BusinessCapabilityFulfillment].~IdRdxwf6ET5P[FulfillingEnterpriseAgent]:~MrUiM9B5iyM0[Application].~310000000D00[AbsoluteIdentifier] = \"application-100\""
+        )]
+        [InlineData(
+            "query {personSystem { applicationOwner_SoftwareInstallation(filter: {link1ResponsibilityAssignmentName_contains: \"responsibility name\"}) { link1ResponsibilityAssignmentName }}}",
+            "SELECT ~x)XO7rMZFXj4[SoftwareInstallation] WHERE ~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~WzF2lb0yGb2U\" AND ~oI2N0pLfGjhP[ResponsibilityAssignmentName] Like \"#responsibility name#\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].~310000000D00[AbsoluteIdentifier] = \"personsystem-100\") AND ~gCr81RIpErMH[PersonAssignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~WzF2lb0yGb2U\" AND ~L2000000Ca80[AssignedPerson]:~T20000000s10[PersonSystem].~310000000D00[AbsoluteIdentifier] = \"personsystem-100\" )"
+        )]
+        [InlineData(
+            "query {portfolio(filter:{id: \"3i2lutR)VfV4\" or: [{ portfolioType: ApplicationInventory  }, { portfolio_Lower_some: [{ id_empty: false }] } ]}, skip: 0, first: 10) { id name }}",
+            "SELECT ~8A8iK3B1ETM6[Portfolio] WHERE ((~XqRLVWr8HLzJ[PortfolioType] = \"I\"  or ~YrbsDojUFLAL[SubPortfolio]:~8A8iK3B1ETM6[Portfolio].((~310000000D00[Absolute Identifier] Is Not Null ))) AND ~310000000D00[Absolute Identifier] = \"3i2lutR)VfV4\" )"
+        )]
         public async Task Query_with_filter(string query, params string[] expectedERQLs)
+        {
+            await ExecuteQueryAsync(@query);
+            var erqls = (ws.GetMegaRoot() as ISupportsDiagnostics).GeneratedERQLs;
+            erqls.Should().BeEquivalentTo(expectedERQLs);
+        }
+
+        [Theory]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count:0}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT = 0 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count:1}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT = 1"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_not:0}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT Not= 0"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_not:1}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT Not= 1 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_lt:0}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT < 0"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_lt:1}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT < 1 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_lte:0}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT <= 0 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_lte:1}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT <= 1 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_gt:0}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT > 0"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_gt:1}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT > 1"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_gte:0}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT >= 0 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count: {count_gte:1}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT >= 1"
+        )]
+        [InlineData(
+            "query {application(filter:{businessProcess_count:{count_gte:0 count_not:3}}) {id name businessProcess {id name}}}",
+            "SELECT ~MrUiM9B5iyM0[Application] WHERE ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT Not= 3 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL AND ~h4n)MzlZpK00[BusinessProcess] HAVING COUNT >= 0 OR ~h4n)MzlZpK00[BusinessProcess] IS NULL"
+        )]
+        public async Task Query_relations_with_having_count_filter(string query, params string[] expectedERQLs)
         {
             await ExecuteQueryAsync(@query);
             var erqls = (ws.GetMegaRoot() as ISupportsDiagnostics).GeneratedERQLs;
@@ -160,47 +236,7 @@ namespace Hopex.WebService.Tests
         {
             var resp = await ExecuteQueryAsync($@"{{{type} {{id uploadUrl}}}}", schema);
 
-            resp.Should().MatchGraphQL("errors[0].message", "Cannot query field \"uploadUrl\"*");
-        }
-
-        [Fact]
-        public async Task Create_an_application()
-        {
-            var resp = await ExecuteQueryAsync(@"mutation { createApplication (application : { name:""test""} ) {id name }}");
-
-            Assert.Equal(200, resp.StatusCode);
-            var collection = await ws.DataModel.GetCollectionAsync("Application");
-            var created = collection.FirstOrDefault(ap => ap.GetValue<string>("Name") == "test");
-            Assert.NotNull(created);
-        }
-
-        [Fact]
-        public async Task Create_an_application_with_relationShips()
-        {
-            var resp = await ExecuteQueryAsync(@"mutation { 
-                createApplication ( application : {
-                    name:""test""
-                    softwareTechnology_UsedTechnology: {
-                        action: add list: [{id:""businesscapability-0""}]
-                    } } )
-                {id name }}");
-
-            Assert.Equal(200, resp.StatusCode);
-            var collection = await ws.DataModel.GetCollectionAsync("Application");
-            var created = collection.FirstOrDefault(ap => ap.GetValue<string>("Name") == "test");
-            Assert.NotNull(created);
-        }
-
-        [Fact]
-        public async Task Enforce_maxLength()
-        {
-            var nameTooLong = new string('x', 1025);
-
-            var resp = await ExecuteQueryAsync($@"mutation {{ createApplication (application : {{ name:""{nameTooLong}""}} ) {{id name }}}}");
-
-            resp.Should().ContainsGraphQL("errors[0].message", $"Value {nameTooLong} for Name exceeds maximum length of 1024");
-            var collection = await ((MockDataModel)ws.DataModel).GetCollectionAsync("Application");
-            collection.Should().NotContain(a => a.GetValue<string>("Name", null, null).Contains("xxxxx"));
+            resp.Should().MatchGraphQL("errors[0].message", "Cannot query field 'uploadUrl'*");
         }
 
         [Fact]

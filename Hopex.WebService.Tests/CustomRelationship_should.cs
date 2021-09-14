@@ -1,8 +1,10 @@
 using Hopex.WebService.Tests.Assertions;
 using Hopex.WebService.Tests.Mocks;
 using Mega.Macro.API;
+using Mega.Macro.API.Library;
 using Moq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 using static Hopex.WebService.Tests.Assertions.MegaIdMatchers;
@@ -26,7 +28,7 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, @"query {
                 assessmentNode {
-                    docs: customRelationship(id: ""FXS9yxIOUf)V"") {
+                    docs: customRelationship(relationId: ""FXS9yxIOUf)V"") {
                         __typename
                         id  
                     }
@@ -48,7 +50,7 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, @"query {
                 assessmentNode {
-                    docs: customRelationship(id: ""FXS9yxIOUf)V"") {
+                    docs: customRelationship(relationId: ""FXS9yxIOUf)V"") {
                         customField(id: ""(YByTkohHrGG"")
                     }
                 }}", "Assessment");
@@ -72,7 +74,7 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, @"query {
                 assessmentNode {
-                    docs: customRelationship(id: ""FXS9yxIOUf)V"") {
+                    docs: customRelationship(relationId: ""FXS9yxIOUf)V"") {
                         customField(id: ""(YByTkohHrGG"", language: FR)
                     }
                 }}", "Assessment");
@@ -93,8 +95,8 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, @"query {
                 assessmentNode {
-                    docs: customRelationship(id: ""FXS9yxIOUf)V"") {
-                        customRelationship(id: ""(YByTkohHrGG"") {
+                    docs: customRelationship(relationId: ""FXS9yxIOUf)V"") {
+                        customRelationship(relationId: ""(YByTkohHrGG"") {
                             id
                         }
                     }
@@ -119,7 +121,7 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, @"query {
                 assessmentNode {
-                    docs: customRelationship(id: ""FXS9yxIOUf)V"") {
+                    docs: customRelationship(relationId: ""FXS9yxIOUf)V"") {
                         id                        
                     }
                 }}", "Assessment");
@@ -154,7 +156,7 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, $@"query {{
                 assessmentNode {{
-                    customRelationship(id: ""FXS9yxIOUf)V"", {argument}: {argumentValue}) {{
+                    customRelationship(relationId: ""FXS9yxIOUf)V"", {argument}: {argumentValue}) {{
                         id                        
                     }}
                 }}}}", "Assessment");
@@ -178,7 +180,7 @@ namespace Hopex.WebService.Tests
                 updateAssessmentNode(id: ""IubjeRlyFfT1"", assessmentNode: {
                     customRelationships: [{action: ADD, relationId: ""FXS9yxIOUf)V"", list:[{ id: ""39cXIxu2HHrI"" }]}]
                 }) {
-                    customRelationship(id: ""FXS9yxIOUf)V"") { id }
+                    customRelationship(relationId: ""FXS9yxIOUf)V"") { id }
                 }}", "Assessment");
 
             resp.Should().MatchGraphQL("data.updateAssessmentNode.customRelationship[0].id", "39cXIxu2HHrI");
@@ -221,7 +223,7 @@ namespace Hopex.WebService.Tests
                 updateAssessmentNode(id: ""IubjeRlyFfT1"", assessmentNode: {
                     customRelationships: [{action: REMOVE, relationId: ""FXS9yxIOUf)V"", list:[{ id: ""39cXIxu2HHrI"" }]}]
                 }) {
-                    customRelationship(id: ""FXS9yxIOUf)V"") { id }
+                    customRelationship(relationId: ""FXS9yxIOUf)V"") { id }
                 }}", "Assessment");
 
             resp.Should().MatchGraphQL("data.updateAssessmentNode.customRelationship", "[]");
@@ -270,7 +272,7 @@ namespace Hopex.WebService.Tests
                         relationId: ""FXS9yxIOUf)V"",
                         list:[{ id: ""A1UsXdTUU100"" }, { id: ""Ca3t3nTUU500"" }]}]
                 }) {
-                    customRelationship(id: ""FXS9yxIOUf)V"") { id }
+                    customRelationship(relationId: ""FXS9yxIOUf)V"") { id }
                 }}", "Assessment");
 
             resp.Should().ContainsGraphQLCount("data.updateAssessmentNode.customRelationship", 2);
@@ -327,7 +329,7 @@ namespace Hopex.WebService.Tests
                             relationId: ""FXS9yxIOUf)V"",
                             list:[{ id: ""A1UsXdTUU100"" }]}]
                 }) {
-                    customRelationship(id: ""FXS9yxIOUf)V"") { id }
+                    customRelationship(relationId: ""FXS9yxIOUf)V"") { id }
                 }}", "Assessment", new { action });
 
             resp.Should().ContainsGraphQLCount("data.createUpdateAssessmentNode.customRelationship", 1);
@@ -359,7 +361,7 @@ namespace Hopex.WebService.Tests
                             list:[{ id: ""A1UsXdTUU100"" }]}]
                 }) {
                     id
-                    customRelationship(id: ""FXS9yxIOUf)V"") { id }
+                    customRelationship(relationId: ""FXS9yxIOUf)V"") { id }
                 }}", "Assessment", new { action });
 
             resp.Should().MatchGraphQL("data.createUpdateAssessmentNode.id", "IubjeRlyFfT1");
@@ -382,7 +384,7 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, @"query {
                 assessmentNode {
-                    docs: customRelationship(id: ""FXS9yxIOUf)V"") {
+                    docs: customRelationship(relationId: ""FXS9yxIOUf)V"") {
                         __typename
                         id
                         ... on BusinessDocument {
@@ -396,11 +398,41 @@ namespace Hopex.WebService.Tests
             resp.Should().MatchGraphQL("data.assessmentNode[0].docs[0].gDPRDocumentID", "myGdprId");
         }
 
+        [Fact]
+        public async Task Set_business_process_cost_contribution_key_from_application_using_custom_relationship()
+        {
+            var root = new MockMegaRoot.Builder()
+                .WithObject(new MockMegaObject("~DaNn0YSwFjDT", MetaClassLibrary.Application)
+                .WithRelation(new MockMegaCollection(MetaAssociationEndLibrary.Application_BusinessProcess)
+                    .WithChildren(new MockMegaObject("~Skm3KLXHFfZI", MetaClassLibrary.BusinessProcess))))
+                .Build();
+
+            var query = @"mutation { application: updateApplication(id: ""DaNn0YSwFjDT"",
+                idType: INTERNAL
+                application: {
+                    customRelationships: [{ action: ADD relationId: ""h4n)MzlZpK00"" list:
+                    [{ id: ""Skm3KLXHFfZI"" customFields:[{ id: ""wdTPcZMsI1(O"", value: ""33""}]}]}]
+                }){
+                    id businessProcess: customRelationship(relationId: ""h4n)MzlZpK00""){
+                        id
+                        costContributionKey: customField(id: ""wdTPcZMsI1(O"", format: External)}
+                    }
+                }";
+            var resp = await ExecuteQueryAsync(root, query);
+            resp.Should().HaveNoGraphQLError();
+            resp.Should().MatchGraphQL("data.application.businessProcess[0].costContributionKey", "33");
+        }
+
+
+
         private Mock<MockMegaObject> CreateSpyNodeWithCRUD(string crud)
         {
             var spyNode = new Mock<MockMegaObject>(MegaId.Create("IubjeRlyFfT1"), MCID_ASSESSMENT_NODE) { CallBase = true };
             spyNode.Setup(n => n.CallFunctionString(IsId("~R2mHVReGFP46[WFQuery]"), IsIdObject("FXS9yxIOUf)V"), IsIdObject(MCID_BUSINESS_DOCUMENT), null, null, null, null))
                 .Returns(crud)
+                .Verifiable();
+            spyNode.Setup(n => n.CallFunctionString(IsId("~R2mHVReGFP46[WFQuery]"), "CRUD", null, null, null, null, null))
+                .Returns("CRUD")
                 .Verifiable();
             return spyNode;
         }

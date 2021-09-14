@@ -15,17 +15,36 @@
             <div id="TextTestDescription"></div>
         </div>
         <div class="col-md-2">
-            <div>Environment:</div>
-            <div id="LabelSrcBase">Repository source:</div>
-            <div id="LabelDstBase">Repository target:</div>
-            <div>Profile:</div>
+            @if (Model.HASMode)
+            {
+                <input id="HASMode" type="hidden" value="1" />
+                <div id="LabelSrcBase">API key source:</div>
+                <div id="LabelDstBase">API key target:</div>
+            }
+            else
+            {
+                <input id="HASMode" type="hidden" value="0" />
+                <div>Environment:</div>
+                <div id="LabelSrcBase">Repository source:</div>
+                <div id="LabelDstBase">Repository target:</div>
+                <div>Profile:</div>
+            }
             <div>Synchronisation:</div>
         </div>
         <div class="col-md-2">
-            @Html.DropDownList("SelectEnv", Model.EnvironmentSelectionList, new { onchange = "OnSelectedEnvChanged()" })
-            @Html.DropDownList("SelectSrcBase", Model.RepositorySelectionList)
-            @Html.DropDownList("SelectDstBase", Model.RepositorySelectionList)
-            @Html.DropDownList("SelectProfile", Model.ProfileSelectionList)
+            @if (Model.HASMode)
+            {
+                @Html.DropDownList("SelectSrcBase", Model.ApiKeysListSrc)
+                @Html.DropDownList("SelectDstBase", Model.ApiKeysListDst)
+            }
+            else
+            {
+                @Html.DropDownList("SelectEnv", Model.EnvironmentSelectionList, new { onchange = "OnSelectedEnvChanged()" })
+                @Html.DropDownList("SelectSrcBase", Model.RepositorySelectionList)
+                @Html.DropDownList("SelectDstBase", Model.RepositorySelectionList)
+                @Html.DropDownList("SelectProfile", Model.ProfileSelectionList)
+            }
+
             <select id="SelectSynchronisation">
                 <option value="async">Asynchronous</option>
                 <option value="sync">Synchronous</option>

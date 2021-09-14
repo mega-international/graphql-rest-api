@@ -15,7 +15,6 @@ namespace Hopex.Model.DataModel
     internal class HopexModelCollection : IModelCollection, IDisposable
     {
         protected IHopexDataModel _dataModel;
-        private readonly MegaRoot _root;
         protected readonly MegaObject _source;
         protected readonly IMegaRoot _iRoot;
         protected readonly IMegaObject _iSource;
@@ -49,13 +48,9 @@ namespace Hopex.Model.DataModel
             _erql = getCollectionArguments.Erql;
             _orderByClauses = getCollectionArguments.OrderByClauses;
 
-            if (iSource is RealMegaObject)
+            if (iSource is RealMegaObject realSource)
             {
-                _source = ((RealMegaObject)iSource).RealObject;
-            }
-            if (iRoot is RealMegaRoot)
-            {
-                _root = ((RealMegaRoot)iRoot).RealRoot;
+                _source = realSource.RealObject;
             }
         }
 
@@ -105,7 +100,7 @@ namespace Hopex.Model.DataModel
             }
             else if (_iSource == null)
             {
-                var items = SortCollection(_iRoot, _root, RelationshipDescription.ClassDescription.Id);
+                var items = SortCollection(_iRoot, RelationshipDescription.ClassDescription.Id);
                 foreach (var item in items)
                 {
                     yield return new HopexModelElement(_dataModel, schemaElement, item);
@@ -134,18 +129,13 @@ namespace Hopex.Model.DataModel
 
         private IEnumerable<IModelElement> ResolveByPath(IMegaObject iCurrent, IMegaCollection foundItems = null, int level = 0, HashSet<MegaId> distinctItemsIds = null)
         {
-            MegaObject current = null;
-            if (iCurrent is RealMegaObject)
-            {
-                current = ((RealMegaObject)iCurrent).RealObject;
-            }
             IMegaCollection megaCollection;
             var hop = RelationshipDescription.Path[level];
 
             List<IMegaObject> items;
             if (level == RelationshipDescription.Path.Count() - 1) // Last
             {
-                megaCollection = SortCollection(iCurrent, current, hop.RoleId);
+                megaCollection = SortCollection(iCurrent, hop.RoleId);
                 items = megaCollection.GetType(hop.TargetSchemaId).ToList();
                 var foundItemsInItems = new List<MegaId>();
                 if (foundItems != null)
@@ -173,41 +163,35 @@ namespace Hopex.Model.DataModel
             {
                 distinctItemsIds = new HashSet<MegaId>();
             }
-            try
+            var schemaElement = RelationshipDescription.ClassDescription.MetaModel.GetClassDescription(hop.TargetSchemaName);
+            if (level == RelationshipDescription.Path.Count() - 1) // Last
             {
-                var schemaElement = RelationshipDescription.ClassDescription.MetaModel.GetClassDescription(hop.TargetSchemaName);
-                if (level == RelationshipDescription.Path.Count() - 1) // Last
+                foreach (IMegaObject item in items)
                 {
-                    foreach (IMegaObject item in items)
+                    if (MetaAssociationConditionFilter(item, hop))
                     {
-                        if (MetaAssociationConditionFilter(item, hop))
+                        if (distinctItemsIds.Add(item.Id))
                         {
-                            if (distinctItemsIds.Add(item.Id))
-                            {
-                                yield return new HopexModelElement(_dataModel, schemaElement, item);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (IMegaObject item in items)
-                    {
-                        if (MetaAssociationConditionFilter(item, hop))
-                        {
-                            foreach (var item2 in ResolveByPath(item, foundItems, level + 1, distinctItemsIds))
-                            {
-                                yield return item2;
-                            }
+                            yield return new HopexModelElement(_dataModel, schemaElement, item);
                         }
                     }
                 }
             }
-            finally
+            else
             {
-                if (level != 0)
+                foreach (IMegaObject item in items)
                 {
-                    iCurrent?.Dispose();
+                    if (MetaAssociationConditionFilter(item, hop))
+                    {
+                        foreach (var item2 in ResolveByPath(item, foundItems, level + 1, distinctItemsIds))
+                        {
+                            if(level == 0)
+                            {
+                                item2.PathElement = new HopexModelElement(_dataModel, schemaElement, item);
+                            }
+                            yield return item2;
+                        }
+                    }
                 }
             }
         }
@@ -308,7 +292,7 @@ namespace Hopex.Model.DataModel
             return megaCollection;
         }
 
-        private IMegaCollection SortCollection(IMegaObject current, MegaObject nativeObject, string roleId)
+        private IMegaCollection SortCollection(IMegaObject current, string roleId)
         {
             IMegaCollection megaCollection;
             if (_orderByClauses != null)
@@ -328,11 +312,20 @@ namespace Hopex.Model.DataModel
                             _orderByClauses[1].Item2, _orderByClauses[1].Item1);
                         break;
                     default:
-                        megaCollection = new RealMegaCollection(nativeObject.NativeObject.GetCollection(
-                            roleId,
-                            _orderByClauses[0].Item2, _orderByClauses[0].Item1,
-                            _orderByClauses[1].Item2, _orderByClauses[1].Item1,
-                            _orderByClauses[2].Item2, _orderByClauses[2].Item1));
+                        if (current is RealMegaObject realMegaObject)
+                        {
+                            megaCollection = new RealMegaCollection(realMegaObject.RealObject.NativeObject.GetCollection(
+                                roleId,
+                                _orderByClauses[0].Item2, _orderByClauses[0].Item1,
+                                _orderByClauses[1].Item2, _orderByClauses[1].Item1,
+                                _orderByClauses[2].Item2, _orderByClauses[2].Item1));
+                        }
+                        else
+                        {
+                            megaCollection = current.GetCollection(roleId,
+                                _orderByClauses[0].Item2, _orderByClauses[0].Item1,
+                                _orderByClauses[1].Item2, _orderByClauses[1].Item1);    
+                        }
                         break;
                 }
             }

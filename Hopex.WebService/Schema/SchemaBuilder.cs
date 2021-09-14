@@ -7,21 +7,23 @@ using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
+using Hopex.Model.MetaModel;
 using Hopex.Modules.GraphQL.Schema.Filters;
 using Hopex.Modules.GraphQL.Schema.Formats;
 using Hopex.Modules.GraphQL.Schema.Types;
+using Hopex.Modules.GraphQL.Schema.Types.CustomScalarGraphTypes;
 using Mega.Macro.API;
 using Mega.Macro.API.Library;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GraphQL.Utilities;
-using Hopex.Model.MetaModel;
-using Hopex.Modules.GraphQL.Schema.Types.CustomScalarGraphTypes;
+using GraphQL.Execution;
+using GraphQL.Instrumentation;
 
 namespace Hopex.Modules.GraphQL.Schema
 {
@@ -29,12 +31,13 @@ namespace Hopex.Modules.GraphQL.Schema
     {
         private struct TypeInfo
         {
-            public ObjectGraphType<IModelElement> GraphType { get; set; }
-            public AggregationQueryType AggregationQueryType{ get; set; }
+            public ObjectWithParentGraphType<IModelElement> GraphType { get; set; }
+            public AggregationQueryType AggregationQueryType { get; set; }
             public IClassDescription Description { get; set; }
         }
 
         private readonly Dictionary<MegaId, TypeInfo> _types = new Dictionary<MegaId, TypeInfo>();
+
         private Dictionary<string, IGraphType> Enums { get; } = new Dictionary<string, IGraphType>();
 
         public global::GraphQL.Types.Schema Schema { get; internal set; }
@@ -57,85 +60,95 @@ namespace Hopex.Modules.GraphQL.Schema
             _schemaMappingResolver = new SchemaMappingResolver(_schemaManager);
             LanguagesType = new LanguagesEnumerationGraphType(languages, ToValidName);
             CurrenciesType = new CurrenciesEnumerationGraphType(currencies, ToValidName);
-            RegisterGraphTypes();
-        }
-
-        private static void RegisterGraphTypes()
-        {
-            GraphTypeTypeRegistry.Register<int, CustomIntGraphType>();
-            GraphTypeTypeRegistry.Register<long, CustomIntGraphType>();
-            GraphTypeTypeRegistry.Register<double, CustomFloatGraphType>();
-            GraphTypeTypeRegistry.Register<float, CustomFloatGraphType>();
-            GraphTypeTypeRegistry.Register<decimal, CustomDecimalGraphType>();
-            GraphTypeTypeRegistry.Register<DateTime, CustomDateGraphType>();
-            GraphTypeTypeRegistry.Register<DateTimeOffset, CustomDateTimeOffsetGraphType>();
-            GraphTypeTypeRegistry.Register<TimeSpan, CustomTimeSpanSecondsGraphType>();
-        }
-
-        public global::GraphQL.Types.Schema Create()
-        {
             Schema = new global::GraphQL.Types.Schema();
+            Schema.FieldMiddleware.Use(new InstrumentFieldMiddleware());
+            RegisterValueConverter();
+        }
 
-            Logger.LogInformation("  SchemaBuilder.CreateQuerySchema start");
-            Schema.Query = CreateQuerySchema(Schema, HopexSchema);
-            Logger.LogInformation("  SchemaBuilder.CreateQuerySchema terminated");
+        private static void RegisterValueConverter()
+        {
+            ValueConverter.Register<short, sbyte>(value => Convert.ToSByte(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register<short, byte>(value => Convert.ToByte(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register<short, ushort>(value => Convert.ToUInt16(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register(typeof(short), typeof(bool), value => Convert.ToBoolean(value, NumberFormatInfo.InvariantInfo).Boxed());
+            ValueConverter.Register<short, int>(value => Convert.ToInt32(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register<short, uint>(value => Convert.ToUInt32(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register<short, long>(value => value);
+            ValueConverter.Register<short, ulong>(value => Convert.ToUInt64(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register<short, BigInteger>(value => new BigInteger(value));
+            ValueConverter.Register<short, double>(value => Convert.ToDouble(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register<short, decimal>(value => Convert.ToDecimal(value, NumberFormatInfo.InvariantInfo));
+            ValueConverter.Register<short, TimeSpan>(value => TimeSpan.FromSeconds(value));
 
-            Logger.LogInformation("  SchemaBuilder.CreateMutationSchema start");
+            ValueConverter.Register<ushort, sbyte>(value => (sbyte)value);
+            ValueConverter.Register<ushort, byte>(value => (byte)value);
+            ValueConverter.Register<ushort, int>(value => value);
+            ValueConverter.Register<ushort, uint>(value => value);
+            ValueConverter.Register<ushort, long>(value => value);
+            ValueConverter.Register<ushort, ulong>(value => value);
+            ValueConverter.Register<ushort, short>(value => (short)value);
+            ValueConverter.Register<ushort, BigInteger>(value => new BigInteger(value));
+        }
+
+        public global::GraphQL.Types.Schema Create(IMegaRoot megaRoot)
+        {
+            //Logger.LogInformation("  SchemaBuilder.CreateQuerySchema start");
+            Schema.Query = CreateQuerySchema(Schema, HopexSchema, megaRoot);
+            //Logger.LogInformation("  SchemaBuilder.CreateQuerySchema terminated");
+
+            //Logger.LogInformation("  SchemaBuilder.CreateMutationSchema start");
             Schema.Mutation = CreateMutationSchema(Schema, HopexSchema);
-            Logger.LogInformation("  SchemaBuilder.CreateMutationSchema terminated");
+            //Logger.LogInformation("  SchemaBuilder.CreateMutationSchema terminated");
 
-            Schema.Directives = new List<DirectiveGraphType>
-            {
-                DirectiveGraphType.Deprecated,
-                DirectiveGraphType.Include,
-                DirectiveGraphType.Skip,
+            Schema.Directives.Register(new DirectiveGraphType("capitalize", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("deburr", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("pascalCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("camelCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("kebabCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("snakeCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("toLower", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("lowerFirst", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("toUpper", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("upperFirst", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("trim", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("trimStart", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("trimEnd", new List<DirectiveLocation> {DirectiveLocation.Field}));
 
-                new DirectiveGraphType("capitalize", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("deburr", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("pascalCase", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("camelCase", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("kebabCase", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("snakeCase", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("toLower", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("lowerFirst", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("toUpper", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("upperFirst", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("trim", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("trimStart", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                new DirectiveGraphType("trimEnd", new List<DirectiveLocation> {DirectiveLocation.Field}),
-
+            Schema.Directives.Register(
                 new DirectiveGraphType("phone", new List<DirectiveLocation> {DirectiveLocation.Field})
                 {
                     Arguments = new QueryArguments
                     {
-                        new QueryArgument(typeof(StringGraphType)) { Name = "format" }
+                        new QueryArgument(typeof(StringGraphType)) {Name = "format"}
                     }
-                },
+                });
+            Schema.Directives.Register(
                 new DirectiveGraphType("number", new List<DirectiveLocation> {DirectiveLocation.Field})
+                {
+                    Arguments = new QueryArguments
                     {
-                        Arguments = new QueryArguments
-                        {
-                            new QueryArgument(typeof(StringGraphType)) { Name = "format" }
-                        }
-                    },
-                new DirectiveGraphType("currency", new List<DirectiveLocation> {DirectiveLocation.Field})
+                        new QueryArgument(typeof(StringGraphType)) {Name = "format"}
+                    }
+                });
+            Schema.Directives.Register(new DirectiveGraphType("currency", new List<DirectiveLocation> {DirectiveLocation.Field})
                 {
                     Arguments = new QueryArguments
                     {
                         new QueryArgument(typeof(StringGraphType)) { Name = "format" },
                         new QueryArgument(typeof(StringGraphType)) { Name = "currency" }
                     }
-                },
+                });
+            Schema.Directives.Register(
                 new DirectiveGraphType("date", new List<DirectiveLocation> {DirectiveLocation.Field})
                 {
                     Arguments = new QueryArguments
                     {
-                        new QueryArgument(typeof(StringGraphType)) { Name = "format" }
+                        new QueryArgument(typeof(StringGraphType)) {Name = "format"}
                     }
-                }//,
-                //new DirectiveGraphType("isReadOnly", new List<DirectiveLocation> {DirectiveLocation.Field}),
-                //new DirectiveGraphType("isReadWrite", new List<DirectiveLocation> {DirectiveLocation.Field})
-            };
+                });
+            //Schema.Directives.Register(new DirectiveGraphType("isReadOnly", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            //Schema.Directives.Register(new DirectiveGraphType("isReadWrite", new List<DirectiveLocation> {DirectiveLocation.Field}));
+        
             return Schema;
         }
 
@@ -159,9 +172,9 @@ namespace Hopex.Modules.GraphQL.Schema
             return enumType;
         }
 
-        private IObjectGraphType CreateQuerySchema(global::GraphQL.Types.Schema schema, IHopexMetaModel hopexSchema)
+        private IObjectGraphType CreateQuerySchema(global::GraphQL.Types.Schema schema, IHopexMetaModel hopexSchema, IMegaRoot megaRoot)
         {
-            var genericObjectInterface = new GenericObjectInterface(schema, LanguagesType, CurrenciesType);
+            var genericObjectInterface = new GenericObjectInterface(schema, LanguagesType);
 
             var query = new ObjectGraphType<IHopexDataModel>
             {
@@ -171,39 +184,64 @@ namespace Hopex.Modules.GraphQL.Schema
             query.Field<CurrentContextType>("_currentContext", resolve: context => new CurrentContextType());
             query.Field<DiagnosticType>("_APIdiagnostic", resolve: context => new DiagnosticType());
 
-            Logger.LogInformation("    SchemaBuilder.IsFullTextSearchActivated start");
-            if (_schemaManager.MegaRoot.ConditionEvaluate("~PuC7Fh2WKv1H[Is Full Text Search Activated]"))
+            //Logger.LogInformation("    SchemaBuilder.IsFullTextSearchActivated start");
+            if (megaRoot.ConditionEvaluate("~PuC7Fh2WKv1H[Is Full Text Search Activated]"))
             {
                 AddSearchAllField(query, hopexSchema, genericObjectInterface);
             }
-            Logger.LogInformation("    SchemaBuilder.IsFullTextSearchActivated terminated");
+            //Logger.LogInformation("    SchemaBuilder.IsFullTextSearchActivated terminated");
 
             var filterArgumentBuilder = new FilterArgumentBuilder(this);
             var argumentsFactory = new GraphQLArgumentsFactory(filterArgumentBuilder, _schemaMappingResolver);
 
             EnrichInterface(hopexSchema, genericObjectInterface);
 
-            Logger.LogInformation("    SchemaBuilder.GenerateClasses start");
-            // First generate classes
+            //Logger.LogInformation("    SchemaBuilder.GenerateClasses start");
+            // First generate base classes
             foreach (var entity in hopexSchema.Classes)
             {
-                var type = new ObjectGraphType<IModelElement>
-                {
-                    Description = entity.Description,
-                    Name = entity.Name
-                };
-                var typeInfo = new TypeInfo {GraphType = type, Description = entity};
+                GenerateClass(entity, entity.Id, query, filterArgumentBuilder, genericObjectInterface);
+            }
+            //Logger.LogInformation("    SchemaBuilder.GenerateClasses terminated");
 
-                genericObjectInterface.ImplementInConcreteType(entity.Id, type);
+            // Then generate relationships
+            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 1st pass start");
+            GenerateRelationships(argumentsFactory, true);
+            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 1st pass terminated");
+            // Si target est <> (voir schemapivotconvertor line 167)
+            // alors générer un nouveau type qui hérite du précédent
+            // Du coup on le fait dans une dernière phase pour étre certain de récupérer les relations éventuelles
+            // qui vont être crées dans l'étape précédente
+            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 2nd pass start");
+            var extendedTypes = GenerateRelationships(argumentsFactory, false);
+            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 2nd pass terminated");
 
-                CreateSpecificFields(entity, type);
+            // Then extend and add extra fields on target classes from relationships
+            foreach (var extendedType in extendedTypes)
+            {
+                ExtendClass(extendedType);
+            }
 
-                CreateProperties(entity.Properties, type);
+            return query;
+        }
 
-                if (entity.IsEntryPoint)
-                {
-                    _filterArguments = filterArgumentBuilder.BuildFilterArguments(entity, LanguagesType);
-                    var arguments = new QueryArguments(_filterArguments)
+        private void GenerateClass(IClassDescription entity, string entityKey, ComplexGraphType<IHopexDataModel> query, FilterArgumentBuilder filterArgumentBuilder, GenericObjectInterface genericObjectInterface)
+        {
+            var type = new GenericObjectGraphType()
+            {
+                Description = entity.Description,
+                Name = entity.Name
+            };
+            var typeInfo = new TypeInfo { GraphType = type, Description = entity };
+
+            CreateSpecificFields(entity, type);
+            CreateProperties(entity, type);
+            genericObjectInterface.ImplementInConcreteType(entityKey, type, entity.Extends == null);
+
+            if (entity.IsEntryPoint)
+            {
+                _filterArguments = filterArgumentBuilder.BuildFilterArguments(entity, LanguagesType);
+                var arguments = new QueryArguments(_filterArguments)
                     {
                         new QueryArgument<IntGraphType> {Name = "first"},
                         new QueryArgument<StringGraphType> {Name = "after"},
@@ -212,52 +250,44 @@ namespace Hopex.Modules.GraphQL.Schema
                         new QueryArgument<IntGraphType> {Name = "skip"}
                     };
 
-                    query.Field<ListGraphType<ObjectGraphType<IModelElement>>>(
-                            entity.Name,
-                            entity.Description,
-                            arguments,
-                            (ctx) => GetElements(((UserContext)ctx.UserContext).IRoot, ctx.Arguments, ctx.Source, ctx.Errors, entity, true)
-                        )
-                        .ResolvedType = new ListGraphType(type);
+                query.Field<ListGraphType<ObjectGraphType<IModelElement>>>(
+                        entity.Name,
+                        entity.Description,
+                        arguments,
+                        (ctx) => GetElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.Arguments, ctx.Source, ctx.Errors, entity, true)
+                    )
+                    .ResolvedType = new ListGraphType(type);
 
-                    var aggregationQuery = CreateAggregationQuery(entity.Name, entity.Description, entity.Properties);
-                    typeInfo.AggregationQueryType = aggregationQuery;
+                var aggregationQuery = CreateAggregationQuery(entity.Name, entity.Description, entity.Properties);
+                typeInfo.AggregationQueryType = aggregationQuery;
 
-                    query.Field<ListGraphType<ObjectGraphType<AggregationQueryType>>>(
-                            aggregationQuery.Name,
-                            aggregationQuery.Description,
-                            arguments,
-                            (ctx) => GetAggregatedElements(((UserContext) ctx.UserContext).IRoot, ctx.SubFields, ctx.Arguments, ctx.Source, ctx.Errors, entity, true)
-                        )
-                        .ResolvedType = new ListGraphType(aggregationQuery);
-                }
-
-                _types.Add(entity.Id, typeInfo);
+                query.Field<ListGraphType<ObjectGraphType<AggregationQueryType>>>(
+                        aggregationQuery.Name,
+                        aggregationQuery.Description,
+                        arguments,
+                        (ctx) => GetAggregatedElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.SubFields, ctx.Arguments, ctx.Source, ctx.Errors, entity, true)
+                    )
+                    .ResolvedType = new ListGraphType(aggregationQuery);
             }
-            Logger.LogInformation("    SchemaBuilder.GenerateClasses terminated");
+            _types.Add(entityKey, typeInfo);
+        }
 
-            // Then generate relationships
-            Logger.LogInformation("    SchemaBuilder.GenerateRelationships 1st pass start");
-            GenerateRelationships(hopexSchema, argumentsFactory, true);
-            Logger.LogInformation("    SchemaBuilder.GenerateRelationships 1st pass terminated");
-            // Si target est <> (voir schemapivotconvertor line 167)
-            // alors générer un nouveau type qui hérite du précédent
-            // Du coup on le fait dans une dernière phase pour étre certain de récupérer les relations éventuelles
-            // qui vont être crées dans l'étape précédente
-            Logger.LogInformation("    SchemaBuilder.GenerateRelationships 2nd pass start");
-            GenerateRelationships(hopexSchema, argumentsFactory, false);
-            Logger.LogInformation("    SchemaBuilder.GenerateRelationships 2nd pass terminated");
+        private void ExtendClass(TypeInfo typeExtended)
+        {
+            var classDescription = typeExtended.Description;
+            var graphType = typeExtended.GraphType;
 
-            return query;
+            graphType.Extend();
+            CreateProperties(classDescription, graphType, false);
         }
 
         private void AddSearchAllField(ObjectGraphType<IHopexDataModel> query, IHopexMetaModel hopexSchema, GenericObjectInterface genericObjectInterface)
         {
-            var searchAllFilter = new InputObjectGraphType<object> {Name = "searchAllFilter"};
-            searchAllFilter.AddField(new FieldType {Name = "text", Type = typeof(StringGraphType)});
-            searchAllFilter.AddField(new FieldType {Name = "minRange", Type = typeof(IntGraphType)});
-            searchAllFilter.AddField(new FieldType {Name = "maxRange", Type = typeof(IntGraphType)});
-            var searchAllOrderBy = new HopexEnumerationGraphType {Name = "searchAllOrderBy"};
+            var searchAllFilter = new InputObjectGraphType<object> { Name = "searchAllFilter" };
+            searchAllFilter.AddField(new FieldType { Name = "text", Type = typeof(StringGraphType) });
+            searchAllFilter.AddField(new FieldType { Name = "minRange", Type = typeof(IntGraphType) });
+            searchAllFilter.AddField(new FieldType { Name = "maxRange", Type = typeof(IntGraphType) });
+            var searchAllOrderBy = new HopexEnumerationGraphType { Name = "searchAllOrderBy" };
             searchAllOrderBy.AddValue("ranking_ASC", "Order by ranking ascending", new Tuple<string, string>("Ranking", "ASC"));
             searchAllOrderBy.AddValue("ranking_DESC", "Order by ranking descending", new Tuple<string, string>("Ranking", "DESC"));
             searchAllOrderBy.AddValue("name_ASC", "Order by object name ascending", new Tuple<string, string>("ObjectName", "ASC"));
@@ -278,65 +308,83 @@ namespace Hopex.Modules.GraphQL.Schema
                 .ResolvedType = new ListGraphType(genericObjectInterface);
         }
 
-        private void CreateProperties(IEnumerable<IPropertyDescription> properties, ObjectGraphType<IModelElement> type)
+        private void CreateProperties(IClassDescription entity, ObjectGraphType<IModelElement> type, bool withParentProperties = true)
         {
+            var properties = withParentProperties ? entity.Properties : entity.PropertiesNotExtended;
             CreateProperties<IModelElement>(properties, type, (ctx, prop) =>
             {
                 string format = null;
-                if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format"))
+                if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
                 {
                     format = ctx.Arguments["format"].ToString();
                 }
 
                 object result = null;
-
-                foreach (var directive in ctx.FieldAst.Directives)
+                var directives = ctx.FieldAst.Directives;
+                var shouldBeSkipped = false;
+                if (directives != null)
                 {
-                    switch (directive.Name)
+                    foreach (var directive in directives)
                     {
-                        case "isReadOnly":
-                            var crud = ctx.Source.GetPropertyCrud(prop);
-                            if (crud.IsReadable && !crud.IsUpdatable && !crud.IsCreatable && ! crud.IsDeletable)
-                            {
-                                result = ctx.Source.GetValue<object>(prop, ctx.Arguments, format);
-                            }
-                            else
-                            {
-                                //TODO: result should not be returned
-                                result = $"Property {prop.Name} is not ReadOnly.";
-                            }
-                            break;
-                        case "isReadWrite":
-                            if (ctx.Source.GetPropertyCrud(prop).IsUpdatable)
-                            {
-                                result = ctx.Source.GetValue<object>(prop, ctx.Arguments, format);
-                            }
-                            else
-                            {
-                                //TODO: result should not be returned
-                                result = $"Property {prop.Name} is not ReadWrite.";
-                            }
-                            break;
+                        switch (directive.Name)
+                        {
+                            case "isReadOnly":
+                                var crud = ctx.Source.GetPropertyCrud(prop);
+                                if (!(crud.IsReadable && !crud.IsUpdatable && !crud.IsCreatable && !crud.IsDeletable))
+                                {
+                                    shouldBeSkipped = true;
+                                }
+                                break;
+                            case "isReadWrite":
+                                if (!ctx.Source.GetPropertyCrud(prop).IsUpdatable)
+                                {
+                                    shouldBeSkipped = true;
+                                }
+                                break;
+                        }
                     }
                 }
-
-                if (result == null)
-                {
-                    result = ctx.Source.GetValue<object>(prop, ctx.Arguments, format);
-                    //Logger.LogInformation($"  SchemaBuilder.GetValue of {ctx.Source.MegaObject?.MegaField}.{prop.Name} (including get CRUD) ended in: {stopwatch.ElapsedMilliseconds} ms");
-                }
-                if (result == null)
+                if(shouldBeSkipped)
                 {
                     return null;
                 }
 
-                if (ctx.FieldAst.Directives.Count > 0)
+                IModelElement targetElement;
+                if (entity.IsPathProperty(prop))
                 {
-                    result = ApplyCustomDirectives(ctx.FieldAst.Directives, result);
+                    targetElement = ctx.Source.PathElement ?? ctx.Source;
                 }
-                if (result is DateTime date && !string.IsNullOrEmpty(format))
+                else
                 {
-                    return date.ToString(format);
+                    targetElement = ctx.Source;
+                }
+                result = targetElement.GetValue<object>(prop, ctx.Arguments, format);
+                //Logger.LogInformation($"  SchemaBuilder.GetValue of {ctx.Source.MegaObject?.MegaField}.{prop.Name} (including get CRUD) ended in: {stopwatch.ElapsedMilliseconds} ms");
+                if (result == null)
+                {
+                    return null;
+                }
+                
+                if (prop.PropertyType == PropertyType.Date && ctx.Arguments != null && ctx.Arguments.TryGetValue("timeOffset", out var timeOffsetValue) && timeOffsetValue.Value is string timeOffset)
+                {
+                    try
+                    {
+                        var date = DateTime.Parse(result.ToString());
+                        var timeSpan = TimeSpan.Parse(timeOffset.TrimStart('+'));
+                        date = TimeZoneInfo.ConvertTime(date, TimeZoneInfo.Utc, TimeZoneInfo.CreateCustomTimeZone("MyTimeZone", timeSpan, "MyTimeZone", "MyTimeZone"));
+                        result = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ExecutionError(
+                            $"Time Offset must be a valid value between -14:00 and +14:00 (value: {timeOffset} is not accepted).",
+                            e);
+                    }
+                }
+
+                if ((directives?.Count ?? 0) > 0)
+                {
+                    result = ApplyCustomDirectives(ctx.FieldAst.Directives, result, prop.PropertyType);
                 }
 
                 return result;
@@ -351,7 +399,7 @@ namespace Hopex.Modules.GraphQL.Schema
             return regexNonAlphaNumeric.Replace(result, separator);
         }
 
-        private static object ApplyCustomDirectives(Directives directives, object value)
+        private static object ApplyCustomDirectives(Directives directives, object value, PropertyType propertyType)
         {
             if (directives.Count <= 0 || value == null)
             {
@@ -403,75 +451,77 @@ namespace Hopex.Modules.GraphQL.Schema
                     case "trimEnd" when value is string val:
                         return val.TrimEnd();
                     case "phone" when value is string val:
-                    {
-                        val = val.Replace("+", "").Replace("-", "")
-                            .Replace("(", "").Replace(")", "")
-                            .Replace("[", "").Replace("]", "")
-                            .Replace(" ", "");
-                        if (long.TryParse(val, out var phoneNumber))
+                        {
+                            val = val.Replace("+", "").Replace("-", "")
+                                .Replace("(", "").Replace(")", "")
+                                .Replace("[", "").Replace("]", "")
+                                .Replace(" ", "");
+                            if (long.TryParse(val, out var phoneNumber))
+                            {
+                                var format = directive.Arguments.ValueFor("format")?.Value.ToString();
+                                return string.Format(format ?? string.Empty, phoneNumber);
+                            }
+                            return $"Unable to format {value} as phone number";
+                        }
+                    case "number" when value is int || value is long || value is double || value is float || value is decimal:
                         {
                             var format = directive.Arguments.ValueFor("format")?.Value.ToString();
-                            return string.Format(format ?? string.Empty, phoneNumber);
-                        }
-                        return $"Unable to format {value} as phone number";
-                    }
-                    case "number" when value is int || value is long || value is double || value is float || value is decimal:
-                    {
-                        var format = directive.Arguments.ValueFor("format")?.Value.ToString();
-                        format = format ?? string.Empty;
+                            format = format ?? string.Empty;
 
-                        switch (value)
-                        {
-                            case int i:
-                                return i.ToString(format, CultureInfo.InvariantCulture);
-                            case long l:
-                                return l.ToString(format, CultureInfo.InvariantCulture);
-                            case double d:
-                                return d.ToString(format, CultureInfo.InvariantCulture);
-                            case float f:
-                                return f.ToString(format, CultureInfo.InvariantCulture);
-                            case decimal m:
-                                return m.ToString(format, CultureInfo.InvariantCulture);
+                            switch (value)
+                            {
+                                case int i:
+                                    return i.ToString(format, CultureInfo.InvariantCulture);
+                                case long l:
+                                    return l.ToString(format, CultureInfo.InvariantCulture);
+                                case double d:
+                                    return d.ToString(format, CultureInfo.InvariantCulture);
+                                case float f:
+                                    return f.ToString(format, CultureInfo.InvariantCulture);
+                                case decimal m:
+                                    return m.ToString(format, CultureInfo.InvariantCulture);
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case "currency" when value is int || value is long || value is double || value is float || value is decimal:
-                    {
-                        var format = directive.Arguments.ValueFor("format")?.Value.ToString();
-                        format = format ?? string.Empty;
-
-                        var currency = directive.Arguments.ValueFor("currency")?.Value.ToString();
-                        switch (value)
                         {
-                            case int i:
-                                return string.IsNullOrEmpty(currency) ? i.ToString(format, CultureInfo.InvariantCulture) : i.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
-                            case long l:
-                                return string.IsNullOrEmpty(currency) ? l.ToString(format, CultureInfo.InvariantCulture) : l.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
-                            case double d:
-                                return string.IsNullOrEmpty(currency) ? d.ToString(format, CultureInfo.InvariantCulture) : d.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
-                            case float f:
-                                return string.IsNullOrEmpty(currency) ? f.ToString(format, CultureInfo.InvariantCulture) : f.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
-                            case decimal m:
-                                return string.IsNullOrEmpty(currency) ? m.ToString(format, CultureInfo.InvariantCulture) : m.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
-                        }
-                        break;
-                    }
-                    case "date" when value is DateTime || value is DateTimeOffset || value is TimeSpan:
-                    {
-                        var format = directive.Arguments.ValueFor("format")?.Value.ToString();
-                        format = format == null ? string.Empty : format.Replace(":", "\\:");
+                            var format = directive.Arguments.ValueFor("format")?.Value.ToString();
+                            format = format ?? string.Empty;
 
-                        switch (value)
-                        {
-                            case DateTime dateTime:
-                                return dateTime.ToString(format);
-                            case DateTimeOffset dateTimeOffset:
-                                return dateTimeOffset.ToString(format);
-                            case TimeSpan timeSpan:
-                                return timeSpan.ToString(format);
+                            var currency = directive.Arguments.ValueFor("currency")?.Value.ToString();
+                            switch (value)
+                            {
+                                case int i:
+                                    return string.IsNullOrEmpty(currency) ? i.ToString(format, CultureInfo.InvariantCulture) : i.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
+                                case long l:
+                                    return string.IsNullOrEmpty(currency) ? l.ToString(format, CultureInfo.InvariantCulture) : l.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
+                                case double d:
+                                    return string.IsNullOrEmpty(currency) ? d.ToString(format, CultureInfo.InvariantCulture) : d.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
+                                case float f:
+                                    return string.IsNullOrEmpty(currency) ? f.ToString(format, CultureInfo.InvariantCulture) : f.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
+                                case decimal m:
+                                    return string.IsNullOrEmpty(currency) ? m.ToString(format, CultureInfo.InvariantCulture) : m.ToString(format, CultureInfo.InvariantCulture) + " " + currency;
+                            }
+                            break;
                         }
-                        break;
-                    }
+                    case "date" when value is DateTime || value is DateTimeOffset || value is TimeSpan || propertyType == PropertyType.Date:
+                        {
+                            var format = directive.Arguments.ValueFor("format")?.Value.ToString();
+                            format = format == null ? string.Empty : format.Replace(":", "\\:");
+
+                            switch (value)
+                            {
+                                case DateTime dateTime:
+                                    return dateTime.ToString(format);
+                                case DateTimeOffset dateTimeOffset:
+                                    return dateTimeOffset.ToString(format);
+                                case TimeSpan timeSpan:
+                                    return timeSpan.ToString(format);
+                                default:
+                                    var date = DateTime.Parse(value.ToString());
+                                    return date.ToString(format);
+                            }
+                        }
                 }
             }
             return value;
@@ -492,7 +542,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     typeof(StringGraphType),
                     "uploadUrl",
                     "Upload document from here",
-                    resolve: ctx => $"{((UserContext)ctx.UserContext).WebServiceUrl}/api/attachment/{ctx.Source.Id}/file");
+                    resolve: ctx => $"{((UserContext)ctx.UserContext["usercontext"]).WebServiceUrl}/api/attachment/{ctx.Source.Id}/file");
 
             var hasDownloadUrl = hasUploadUrl || entity.Id == ID_BUSINESS_DOCUMENT_VERSION || entity.Id == ID_SYSTEM_BUSINESS_DOCUMENT_VERSION;
             if (hasDownloadUrl)
@@ -500,7 +550,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     typeof(StringGraphType),
                     "downloadUrl",
                     "Download document from here",
-                    resolve: ctx => $"{((UserContext)ctx.UserContext).WebServiceUrl}/api/attachment/{ctx.Source.Id}/file");
+                    resolve: ctx => $"{((UserContext)ctx.UserContext["usercontext"]).WebServiceUrl}/api/attachment/{ctx.Source.Id}/file");
 
             var hasDiagramImageUrl = entity.Id == ID_DIAGRAM || entity.Id == ID_SYSTEM_DIAGRAM;
             if (hasDiagramImageUrl)
@@ -508,56 +558,51 @@ namespace Hopex.Modules.GraphQL.Schema
                     typeof(StringGraphType),
                     "downloadUrl",
                     "Download diagram image from here",
-                    resolve: ctx => $"{((UserContext)ctx.UserContext).WebServiceUrl}/api/diagram/{ctx.Source.Id}/image");
+                    resolve: ctx => $"{((UserContext)ctx.UserContext["usercontext"]).WebServiceUrl}/api/diagram/{ctx.Source.Id}/image");
 
             _schemaMappingResolver.CreateField(entity, type);
         }
 
-        static private readonly Dictionary<string, object> NO_ARGUMENTS = new Dictionary<string, object>();
+        static private readonly Dictionary<string, ArgumentValue> NO_ARGUMENTS = new Dictionary<string, ArgumentValue>();
 
-        private void GenerateRelationships(IHopexMetaModel hopexSchema, GraphQLArgumentsFactory argumentsFactory, bool firstPass)
+        private List<TypeInfo> GenerateRelationships(GraphQLArgumentsFactory argumentsFactory, bool firstPass)
         {
-            foreach (var entity in hopexSchema.Classes)
+            var extendedTypes = new List<TypeInfo>();
+            foreach (var typeInfo in _types)
             {
-                var type = _types[entity.Id];
-
+                var entity = typeInfo.Value.Description;
+                var type = typeInfo.Value.GraphType;
                 foreach (var link in entity.Relationships)
                 {
-                    var targetType = _types[link.Path.Last().TargetSchemaId];
-                    var graphType = targetType.GraphType;
-                    var aggregationQueryType = targetType.AggregationQueryType ?? CreateAggregationQuery(link.TargetClass.Name, link.TargetClass.Description, link.TargetClass.Properties);
-                    if (firstPass && targetType.Description == link.TargetClass)
+                    var linkBaseClassType = _types[link.Path.Last().TargetSchemaId];
+                    var linkBaseClassGraphType = linkBaseClassType.GraphType;
+                    var aggregationQueryType = linkBaseClassType.AggregationQueryType ?? CreateAggregationQuery(link.TargetClass.Name, link.TargetClass.Description, link.TargetClass.Properties);
+                    if (firstPass && linkBaseClassType.Description == link.TargetClass)
                     {
-                        CreateRelationship(argumentsFactory, link, type.GraphType, targetType.Description, graphType, aggregationQueryType);
+                        CreateRelationship(argumentsFactory, link, type, linkBaseClassType.Description, linkBaseClassGraphType, aggregationQueryType);
                         continue;
                     }
 
-                    if (!firstPass && link.TargetClass != null && targetType.Description != link.TargetClass)
+                    if (!firstPass && link.TargetClass != null && linkBaseClassType.Description != link.TargetClass)
                     {
-                        var tc = new ObjectGraphType<IModelElement>
+                        var linkClass = link.TargetClass;
+                        var linkClassGraphType = new ObjectWithParentGraphType<IModelElement>(linkBaseClassGraphType)
                         {
-                            Description = link.TargetClass.Description,
-                            Name = link.TargetClass.Name
+                            Description = linkClass.Description,
+                            Name = linkClass.Name
                         };
-                        CreateProperties<IModelElement>(link.TargetClass.Properties, tc, (ctx, prop) =>
+                        extendedTypes.Add(new TypeInfo
                         {
-                            string format = null;
-                            if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format"))
-                            {
-                                format = ctx.Arguments["format"].ToString();
-                            }
-                            var result = ctx.Source.GetValue<object>(prop, ctx.Arguments, format);
-                            if (result is DateTime date && !string.IsNullOrEmpty(format))
-                            {
-                                return date.ToString(format);
-                            }
-                            return result;
+                            GraphType = linkClassGraphType,
+                            Description = linkClass,
+                            AggregationQueryType = aggregationQueryType
                         });
-                        CreateRelationship(argumentsFactory, link, type.GraphType, link.TargetClass, tc, aggregationQueryType);
-                        _schemaMappingResolver.CreateField(link, tc);
+                        CreateRelationship(argumentsFactory, link, type, link.TargetClass, linkClassGraphType, aggregationQueryType);
+                        _schemaMappingResolver.CreateField(link, linkClassGraphType);
                     }
                 }
             }
+            return extendedTypes;
         }
 
         private void CreateRelationship(GraphQLArgumentsFactory argumentsFactory, IRelationshipDescription link, ObjectGraphType<IModelElement> type, IClassDescription entity, IGraphType targetClassType, AggregationQueryType aggregationQuery)
@@ -568,7 +613,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     link.Name,
                     link.Description,
                     arguments,
-                    async ctx => await GetElements(((UserContext)ctx.UserContext).IRoot, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, entity, false, link.Name)
+                    async ctx => await GetElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, entity, false, link.Name)
                 )
                 .ResolvedType = new ListGraphType(targetClassType);
 
@@ -576,7 +621,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     link.Name + "AggregatedValues",
                     link.Description,
                     arguments,
-                    async ctx => await GetAggregatedElements(((UserContext)ctx.UserContext).IRoot, ctx.SubFields, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, entity, false, link.Name)
+                    async ctx => await GetAggregatedElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.SubFields, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, entity, false, link.Name)
                 )
                 .ResolvedType = new ListGraphType(aggregationQuery);
         }
@@ -591,15 +636,15 @@ namespace Hopex.Modules.GraphQL.Schema
 
             foreach (var property in properties)
             {
-                var propertyType = typeof(double).GetGraphTypeFromType(true);
+                var propertyType = typeof(CustomFloatGraphType);
                 QueryArguments arguments;
                 if (property.PropertyType == PropertyType.Int || property.PropertyType == PropertyType.Long || property.PropertyType == PropertyType.Double || property.PropertyType == PropertyType.Currency)
                 {
-                    arguments = new QueryArguments(new QueryArgument(typeof(AggregateNumbersFunctionType)) {Name = "function"});
+                    arguments = new QueryArguments(new QueryArgument(typeof(AggregateNumbersFunctionType)) { Name = "function" });
                 }
                 else
                 {
-                    arguments = new QueryArguments(new QueryArgument(typeof(AggregateFunctionType)) {Name = "function"});
+                    arguments = new QueryArguments(new QueryArgument(typeof(AggregateFunctionType)) { Name = "function" });
                 }
                 var field = new FieldType
                 {
@@ -609,7 +654,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     Arguments = arguments,
                     Resolver = new FuncFieldResolver<double>(ctx =>
                     {
-                        var aggregationQueryResult = ((AggregationQueryType) ctx.Source).AggregationQueryResultType;
+                        var aggregationQueryResult = ((AggregationQueryType)ctx.Source).AggregationQueryResultType;
                         var fieldName = !string.IsNullOrEmpty(ctx.FieldAst.Alias) ? $"{ctx.FieldAst.Alias}:{ctx.FieldAst.Name}" : ctx.FieldAst.Name;
                         return aggregationQueryResult.AggregatedValues[fieldName];
                     })
@@ -638,12 +683,12 @@ namespace Hopex.Modules.GraphQL.Schema
                 }),
                 context =>
                 {
-                    var currentContext = context.GetArgument<Dictionary<string, object>>("currentContext");
-                    if (!(currentContext["language"] is IMegaObject language))
+                    var currentContext = context.GetArgument<Dictionary<string, ArgumentValue>>("currentContext");
+                    if (!(currentContext?["language"].Value is IMegaObject language))
                     {
                         return null;
                     }
-                    var userContext = (UserContext) context.UserContext;
+                    var userContext = (UserContext)context.UserContext["usercontext"];
                     var root = userContext.MegaRoot;
                     root.CurrentEnvironment.NativeObject.SetCurrentLanguage(language.MegaUnnamedField.Substring(0, 13));
                     var personSystem = root.GetObjectFromId<MegaObject>(root.CurrentEnvironment.CurrentUserId);
@@ -660,41 +705,51 @@ namespace Hopex.Modules.GraphQL.Schema
             // First generate input
             foreach (var entity in hopexSchema.Classes)
             {
-                var type = new InputObjectGraphType<object>
+                var typeInput = new InputObjectGraphType<object>
                 {
                     Description = $"Input type for {entity.Name}",
                     Name = "Input" + entity.Name
                 };
 
+                var typeUniqueInput = new InputObjectGraphType<object>
+                {
+                    Description = $"Input type for {entity.Name} including unique fields",
+                    Name = "InputUnique" + entity.Name
+                };
+
+                var types = new List<InputObjectGraphType<object>> { typeInput, typeUniqueInput };
                 // Add arguments
-                CreateProperties<IModelElement>(entity.Properties.Where(p => !p.IsReadOnly), type, (ctx, prop) =>
+                foreach (var type in types)
                 {
-                    string format = null;
-                    if(ctx.Arguments != null && ctx.Arguments.ContainsKey("format"))
+                    CreateProperties<IModelElement>(entity.Properties.Where(p => !p.IsReadOnly && (type != typeInput || !p.IsUnique)), type, (ctx, prop) =>
                     {
-                        format = ctx.Arguments["format"].ToString();
+                        string format = null;
+                        if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
+                        {
+                            format = ctx.Arguments["format"].ToString();
+                        }
+                        var val = ctx.GetArgument<object>(prop.Name, format);
+                        var elem = ctx.Source;
+                        elem.SetValue(prop, val, format);
+                        return val;
+                    }, true);
+
+                    // Then generate relationships
+                    foreach (var link in entity.Relationships.Where(r => !r.IsReadOnly))
+                    {
+                        var listType = mutationListFactory.CreateMutationList(link.TargetClass);
+                        var field = new FieldType
+                        {
+                            ResolvedType = listType,
+                            Name = link.Name,
+                            Description = link.Description,
+                        };
+                        type.AddField(field);
                     }
-                    var val = ctx.GetArgument<object>(prop.Name, format);
-                    var elem = ctx.Source;
-                    elem.SetValue(prop, val, format);
-                    return val;
-                }, true);
 
-                // Then generate relationships
-                foreach (var link in entity.Relationships)
-                {
-                    var listType = mutationListFactory.CreateMutationList(link.TargetClass);
-                    var field = new FieldType
-                    {
-                        ResolvedType = listType,
-                        Name = link.Name,
-                        Description = link.Description,
-                    };
-                    type.AddField(field);
+                    InputCustomPropertyType.AddCustomFields(type);
+                    InputCustomRelationshipType.AddCustomRelations(type);
                 }
-
-                InputCustomPropertyType.AddCustomFields(type);
-                InputCustomRelationshipType.AddCustomRelations(type);
 
                 var enumCreationMode = new HopexEnumerationGraphType { Name = "creationMode" };
                 enumCreationMode.AddValue("RAW", "Do not use InstanceCreator, but classic \"create mode\"", false);
@@ -702,7 +757,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 var queryArgumentsCreate = new QueryArguments(
                     new QueryArgument(typeof(StringGraphType)) { Name = "id" },
                     new QueryArgument(typeof(IdType)) { Name = "idType" },
-                    new QueryArgument(new NonNullGraphType(type)) { Name = entity.Name.ToCamelCase() });
+                    new QueryArgument(new NonNullGraphType(typeUniqueInput)) { Name = entity.Name.ToCamelCase() });
                 if (!Equals(entity.Id, "~UkPT)TNyFDK5"))
                 {
                     queryArgumentsCreate.Add(new QueryArgument(enumCreationMode) { Name = "creationMode" });
@@ -715,19 +770,19 @@ namespace Hopex.Modules.GraphQL.Schema
                     async (ctx) =>
                     {
                         var useInstanceCreator = false;
-                        if (ctx.Arguments != null && ctx.Arguments.ContainsKey("creationMode"))
+                        if (ctx.HasArgument("creationMode"))
                         {
-                            useInstanceCreator = (bool)ctx.Arguments["creationMode"];
+                            useInstanceCreator = ctx.GetArgument<bool>("creationMode");
                         }
                         string id = null;
-                        if(ctx.Arguments != null && ctx.Arguments.ContainsKey("id"))
+                        if (ctx.HasArgument("id"))
                         {
-                            id = ctx.Arguments["id"].ToString();
+                            id = ctx.GetArgument<string>("id");
                         }
                         var idType = IdTypeEnum.INTERNAL;
-                        if (ctx.Arguments != null && ctx.Arguments.ContainsKey("idType"))
+                        if (ctx.HasArgument("idType"))
                         {
-                            Enum.TryParse(ctx.Arguments["idType"].ToString(), out idType);
+                            Enum.TryParse(ctx.GetArgument<string>("idType"), out idType);
                         }
                         var result = await ctx.Source.CreateElementAsync(
                             entity,
@@ -747,19 +802,19 @@ namespace Hopex.Modules.GraphQL.Schema
                     async (ctx) =>
                     {
                         var useInstanceCreator = false;
-                        if (ctx.Arguments.ContainsKey("creationMode"))
+                        if (ctx.Arguments.ContainsKey("creationMode") && ctx.Arguments["creationMode"].Value != null)
                         {
-                            useInstanceCreator = (bool)ctx.Arguments["creationMode"];
+                            useInstanceCreator = (bool)ctx.Arguments["creationMode"].Value;
                         }
                         string id = null;
-                        if(ctx.Arguments != null && ctx.Arguments.ContainsKey("id"))
+                        if (ctx.Arguments != null && ctx.Arguments.ContainsKey("id") && ctx.Arguments["id"].Value != null)
                         {
-                            id = ctx.Arguments["id"].ToString();
+                            id = ctx.Arguments["id"].Value.ToString();
                         }
                         var idType = IdTypeEnum.INTERNAL;
-                        if (ctx.Arguments.ContainsKey("idType"))
+                        if (ctx.Arguments.ContainsKey("idType") && ctx.Arguments["idType"].Value != null)
                         {
-                            Enum.TryParse(ctx.Arguments["idType"].ToString(), out idType);
+                            Enum.TryParse(ctx.Arguments["idType"].Value.ToString(), out idType);
                         }
                         var result = await ctx.Source.CreateUpdateElementAsync(
                             entity,
@@ -776,24 +831,24 @@ namespace Hopex.Modules.GraphQL.Schema
                 {
                     new QueryArgument<NonNullGraphType<StringGraphType>> {Name = "id"},
                     new QueryArgument(typeof(IdType)) {Name = "idType"},
-                    new QueryArgument(new NonNullGraphType(type)) { Name = entity.Name.ToCamelCase() }
+                    new QueryArgument(new NonNullGraphType(typeUniqueInput)) { Name = entity.Name.ToCamelCase() }
                 };
                 mutation.FieldAsync<ObjectGraphType<object>>(
                         "Update" + entity.Name,
                         $"Update a {entity.Name}",
                         updateArguments,
-                        async ctx => await UpdateElement(((UserContext)ctx.UserContext).IRoot, ctx, entity))
+                        async ctx => await UpdateElement(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity))
                     .ResolvedType = new NonNullGraphType(_types[entity.Id].GraphType);
 
                 var updateManyArguments = new QueryArguments(_filterArguments)
                 {
-                    new QueryArgument(new NonNullGraphType(type)) { Name = entity.Name.ToCamelCase() }
+                    new QueryArgument(new NonNullGraphType(typeInput)) { Name = entity.Name.ToCamelCase() }
                 };
                 mutation.FieldAsync<ObjectGraphType<object>>(
                         "UpdateMany" + entity.Name,
                         $"Update multiple {entity.Name}",
                         updateManyArguments,
-                        async ctx => await UpdateManyElements(((UserContext)ctx.UserContext).IRoot, ctx, entity))
+                        async ctx => await UpdateManyElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity))
                     .ResolvedType = new ListGraphType(_types[entity.Id].GraphType);
 
                 var deleteArguments = new QueryArguments
@@ -806,7 +861,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     "Delete" + entity.Name,
                     $"Delete a {entity.Name}",
                     deleteArguments,
-                    async ctx => await DeleteElement(((UserContext) ctx.UserContext).IRoot, ctx, entity));
+                    async ctx => await DeleteElement(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity));
 
                 var deleteManyArguments = new QueryArguments(_filterArguments)
                 {
@@ -816,18 +871,18 @@ namespace Hopex.Modules.GraphQL.Schema
                         "DeleteMany" + entity.Name,
                         $"Delete multiple {entity.Name}",
                         deleteManyArguments,
-                        async ctx => await DeleteManyElements(((UserContext) ctx.UserContext).IRoot, ctx, entity));
+                        async ctx => await DeleteManyElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity));
             }
 
             return mutation;
         }
 
-        internal void CreateProperties<T>(IEnumerable<IPropertyDescription> properties, IComplexGraphType type, Func<ResolveFieldContext<T>, IPropertyDescription, object> resolver, bool isMutation = false)
+        internal void CreateProperties<T>(IEnumerable<IPropertyDescription> properties, IComplexGraphType type, Func<IResolveFieldContext<T>, IPropertyDescription, object> resolver, bool isMutation = false)
         {
             foreach (var prop in properties)
             {
-                var propertyName = ToValidName(prop.Name);
-                var propertyType = prop.NativeType.GetGraphTypeFromType(true);
+                var propertyName = ToValidName(prop.DisplayName);
+                var propertyType = TypeExtensions.GetGraphTypeFromType(prop.NativeType);
                 IGraphType resolvedType = null;
 
                 if (prop.EnumValues?.Count() > 0)
@@ -863,31 +918,38 @@ namespace Hopex.Modules.GraphQL.Schema
                         Resolver = new FuncFieldResolver<T, object>(ctx => resolver(ctx, prop)),
                         Arguments = new QueryArguments()
                     };
-
-                    if (prop.IsFormattedText)
+                    if (!isMutation)
                     {
-                        field.Arguments.Add(new QueryArgument(typeof(StringFormat)) { Name = "format" });
-                    }
-                    if (prop.IsTranslatable)
-                    {
-                        field.Arguments.Add(new QueryArgument(LanguagesType) { Name = "language" });
-                    }
-                    if (prop.Id == MetaAttributeLibrary.ShortName.Remove(13))
-                    {
-                        field.Arguments.Add(new QueryArgument(typeof(NameSpaceFormat)) { Name = "nameSpace" });
-                    }
-                    switch (prop.PropertyType)
-                    {
-                        case PropertyType.Id:
-                            field.Arguments.Add(new QueryArgument(typeof(IdFormat)) { Name = "format" });
-                            break;
-                        case PropertyType.Date:
-                            field.Arguments.Add(new QueryArgument(typeof(StringGraphType)) { Name = "format" });
-                            break;
-                        case PropertyType.Currency:
-                            field.Arguments.Add(new QueryArgument(CurrenciesType) { Name = "currency" });
-                            field.Arguments.Add(new QueryArgument(typeof(DateGraphType)) { Name = "dateRate" });
-                            break;
+                        if (prop.IsFormattedText)
+                        {
+                            field.Arguments.Add(new QueryArgument(typeof(StringFormat)) { Name = "format" });
+                        }
+                        if (prop.IsTranslatable)
+                        {
+                            field.Arguments.Add(new QueryArgument(LanguagesType) { Name = "language" });
+                        }
+                        if (prop.Id == MetaAttributeLibrary.ShortName.Remove(13))
+                        {
+                            field.Arguments.Add(new QueryArgument(typeof(NameSpaceFormat)) { Name = "nameSpace" });
+                        }
+                        switch (prop.PropertyType)
+                        {
+                            case PropertyType.Date:
+                                field.Arguments.Add(new QueryArgument(typeof(StringGraphType)) {Name = "format"});
+                                field.Arguments.Add(new QueryArgument(typeof(StringGraphType))
+                                {
+                                    Name = "timeOffset",
+                                    Description = "You can specify your time zone in format +hh:mm or -hh:mm"
+                                });
+                                break;
+                            case PropertyType.Currency:
+                                field.Arguments.Add(new QueryArgument(CurrenciesType) {Name = "currency"});
+                                field.Arguments.Add(new QueryArgument(typeof(CustomDateGraphType)) {Name = "dateRate"});
+                                break;
+                            case PropertyType.Enum:
+                                field.Arguments.Add(new QueryArgument(typeof(EnumFormat)) {Name = "format"});
+                                break;
+                        }
                     }
 
                     type.AddField(field);
@@ -902,8 +964,8 @@ namespace Hopex.Modules.GraphQL.Schema
                             Description = prop.Description,
                             Resolver = new FuncFieldResolver<T, object>(context =>
                             {
-                                var languageId = ((IModelElement) context.Source).GetValue<object>(prop).ToString();
-                                var userContext = (UserContext)context.UserContext;
+                                var languageId = ((IModelElement)context.Source).GetValue<object>(prop).ToString();
+                                var userContext = (UserContext)context.UserContext["usercontext"];
                                 var languageCode = userContext.Languages.FirstOrDefault(x => x.Value.MegaUnnamedField.Substring(1, 12) == languageId).Key;
                                 return languageCode;
                             }),
@@ -915,63 +977,13 @@ namespace Hopex.Modules.GraphQL.Schema
             }
         }
 
-        private IEnumerable<ISetter> CreateSetters(IClassDescription entity, ResolveFieldContext<IHopexDataModel> ctx = null)
+        private IEnumerable<ISetter> CreateSetters(IClassDescription entity, IResolveFieldContext<IHopexDataModel> ctx = null)
         {
-            var arguments = (Dictionary<string, object>)ctx.Arguments[entity.Name.ToCamelCase()];
-            foreach (var kv in arguments)
-            {
-                if (InputCustomPropertyType.IsCustomFieldsArgument(kv))
-                {
-                    foreach (var customPropertySetter in CustomFieldSetter.CreateSetters(kv.Value))
-                        yield return customPropertySetter;
-                }
-                else if (InputCustomRelationshipType.IsCustomRelationsArgument(kv))
-                {
-                    foreach (var customRelationSetter in CustomRelationshipSetter.CreateSetters(kv.Value))
-                        yield return customRelationSetter;
-                }
-                else if (kv.Key == "dataLanguageCode")
-                {
-                    var prop = entity.FindPropertyDescriptionById(MetaAttributeLibrary.DataLanguage.Substring(1, 12));
-                    if (prop != null)
-                    {
-                        var languageId = ((IMegaObject)kv.Value).MegaUnnamedField.Substring(1, 12);
-                        yield return PropertySetter.Create(prop, languageId);
-                    }
-                    else
-                    {
-                        throw new Exception($"dataLanguage is not a valid member of {entity.Name}");
-                    }
-                }
-                else
-                {
-                    var prop = entity.GetPropertyDescription(kv.Key, false);
-                    if (prop != null)
-                    {
-                        yield return PropertySetter.Create(prop, kv.Value);
-                    }
-                    else
-                    {
-                        var rel = entity.GetRelationshipDescription(kv.Key, false);
-                        if (rel != null)
-                        {
-                            if (kv.Value is Dictionary<string, object> dict)
-                            {
-                                var action = (CollectionAction)Enum.Parse(typeof(CollectionAction), dict["action"].ToString(), true);
-                                var list = (IEnumerable<object>)dict["list"];
-                                yield return CollectionSetter.Create(rel, action, list);
-                            }
-                        }
-                        else
-                        {
-                            throw new Exception($"{kv.Key} is not a valid member of {entity.Name}");
-                        }
-                    }
-                }
-            }
+            var arguments = (IDictionary<string, object>)ctx.Arguments[entity.Name.ToCamelCase()].Value;
+            return entity.CreateSetter(arguments);
         }
 
-        private async Task<IEnumerable<IModelElement>> EnumerateRootElements(IMegaRoot root, Dictionary<string, object> arguments, IHasCollection source, IClassDescription entity, string relationshipName, bool isRoot)
+        private async Task<IEnumerable<IModelElement>> EnumerateRootElements(IMegaRoot root, IDictionary<string, ArgumentValue> arguments, IHasCollection source, IClassDescription entity, string relationshipName, bool isRoot)
         {
             string erql = null;
             var list = new List<IModelElement>();
@@ -984,17 +996,17 @@ namespace Hopex.Modules.GraphQL.Schema
             }
 
             IMegaObject language = null;
-            if (arguments.TryGetValue("language", out var languageValue) && languageValue is IMegaObject value)
+            if (arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject value)
             {
                 language = value;
             }
 
-            if (arguments.TryGetValue("filter", out var obj) && obj is Dictionary<string, object> filter)
+            if (arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
             {
                 var compiler = new FilterCompiler(root, entity, relationship, isRoot ? null : sourceElement);
                 erql = $"SELECT {entity.Id}[{entity.GetBaseName()}]";
                 erql += " WHERE " + compiler.CreateHopexQuery(filter, language);
-                Logger.LogInformation($"{erql}");
+                //Logger.LogInformation($"{erql}");
                 if (root is ISupportsDiagnostics diags)
                 {
                     diags.AddGeneratedERQL(erql);
@@ -1002,13 +1014,13 @@ namespace Hopex.Modules.GraphQL.Schema
             }
 
             var orderByClauses = new List<Tuple<string, int>>();
-            if (arguments.TryGetValue("orderBy", out obj))
+            if (arguments.TryGetValue("orderBy", out var orderByArgument) && orderByArgument.Value != null)
             {
-                if (!(obj is List<object>))
+                if (!(orderByArgument.Value is IEnumerable<object>))
                 {
                     throw new ExecutionError("Order by must be an array of 1 to 3 values maximum. Ex: query{application(orderBy:[name_ASC]){id,name}}");
                 }
-                var orderBy = (List<object>)obj;
+                var orderBy = (IEnumerable<object>)orderByArgument.Value;
                 orderByClauses.AddRange(orderBy.Cast<Tuple<string, int>>());
             }
 
@@ -1035,7 +1047,7 @@ namespace Hopex.Modules.GraphQL.Schema
             return results;
         }
 
-        public static IEnumerable<IModelElement> GetPaginatedModelElements(IReadOnlyList<IModelElement> orderedCollection, IReadOnlyDictionary<string, object> arguments)
+        public static IEnumerable<IModelElement> GetPaginatedModelElements(IReadOnlyList<IModelElement> orderedCollection, IDictionary<string, ArgumentValue> arguments)
         {
             var list = new List<IModelElement>();
             int? first = null;
@@ -1044,25 +1056,25 @@ namespace Hopex.Modules.GraphQL.Schema
             var before = "";
             var skip = 0;
 
-            if (arguments.TryGetValue("first", out var obj))
+            if (arguments.TryGetValue("first", out var obj) && obj.Value != null)
             {
-                first = (int)obj;
+                first = (int)obj.Value;
             }
-            if (arguments.TryGetValue("after", out obj))
+            if (arguments.TryGetValue("after", out obj) && obj.Value != null)
             {
-                after = (string)obj;
+                after = (string)obj.Value;
             }
-            if (arguments.TryGetValue("last", out obj))
+            if (arguments.TryGetValue("last", out obj) && obj.Value != null)
             {
-                last = (int)obj;
+                last = (int)obj.Value;
             }
-            if (arguments.TryGetValue("before", out obj))
+            if (arguments.TryGetValue("before", out obj) && obj.Value != null)
             {
-                before = (string)obj;
+                before = (string)obj.Value;
             }
-            if (arguments.TryGetValue("skip", out obj))
+            if (arguments.TryGetValue("skip", out obj) && obj.Value != null)
             {
-                skip = (int)obj;
+                skip = (int)obj.Value;
             }
 
             if (last > 0 && first == null)
@@ -1166,22 +1178,22 @@ namespace Hopex.Modules.GraphQL.Schema
 
         private static void AddRangeExecutionErrors(Field fieldAst, ExecutionErrors executionErrors, IEnumerable<Exception> errors)
         {
-            foreach(var error in errors)
+            foreach (var error in errors)
             {
                 var prefix = $"Error occured on {fieldAst?.Alias ?? fieldAst?.Name ?? "null"}: ";
                 executionErrors.Add(new ExecutionError(prefix + error.Message + " See more details in log file", error.InnerException));
             }
         }
 
-        private async Task<IEnumerable<IModelElement>> GetElements(IMegaRoot iRoot, Dictionary<string, object> arguments, IHasCollection source, ExecutionErrors errors, IClassDescription entity, bool isRoot, string linkName = null)
+        private async Task<IEnumerable<IModelElement>> GetElements(IMegaRoot iRoot, IDictionary<string, ArgumentValue> arguments, IHasCollection source, ExecutionErrors errors, IClassDescription entity, bool isRoot, string linkName = null)
         {
-            Logger.LogInformation("  SchemaBuilder.GetCollectionMetaPermission start");
+            //Logger.LogInformation("  SchemaBuilder.GetCollectionMetaPermission start");
             var permissions = CrudComputer.GetCollectionMetaPermission(iRoot, entity.Id);
             if (!permissions.IsReadable)
                 return Enumerable.Empty<IModelElement>();
-            Logger.LogInformation("  SchemaBuilder.GetCollectionMetaPermission terminated");
+            //Logger.LogInformation("  SchemaBuilder.GetCollectionMetaPermission terminated");
 
-            if (arguments.TryGetValue("filter", out var obj) && obj is Dictionary<string, object> filter)
+            if (arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
             {
                 foreach (var filteredProperty in filter)
                 {
@@ -1197,19 +1209,19 @@ namespace Hopex.Modules.GraphQL.Schema
                 }
             }
 
-            Logger.LogInformation("  SchemaBuilder.GetCollectionMetaPermission start");
+            //Logger.LogInformation("  SchemaBuilder.EnumerateRootElements start");
             var megaCollection = await EnumerateRootElements(iRoot, arguments, source, entity, linkName, isRoot);
-            Logger.LogInformation("  SchemaBuilder.EnumerateRootElements terminated");
+            //Logger.LogInformation("  SchemaBuilder.EnumerateRootElements terminated");
 
             return megaCollection;
         }
 
-        private async Task<IEnumerable<AggregationQueryType>> GetAggregatedElements(IMegaRoot iRoot, IDictionary<string, Field> subFields, Dictionary<string, object> arguments, IHasCollection source, ExecutionErrors errors, IClassDescription entity, bool isRoot, string linkName = null)
+        private async Task<IEnumerable<AggregationQueryType>> GetAggregatedElements(IMegaRoot iRoot, IDictionary<string, Field> subFields, IDictionary<string, ArgumentValue> arguments, IHasCollection source, ExecutionErrors errors, IClassDescription entity, bool isRoot, string linkName = null)
         {
             var megaCollection = await GetElements(iRoot, arguments, source, errors, entity, isRoot, linkName);
             var modelElements = megaCollection.ToList();
 
-            var aggregatedElement = new AggregationQueryType {AggregationQueryResultType = new AggregationQueryResultType {Count = modelElements.Count()}};
+            var aggregatedElement = new AggregationQueryType { AggregationQueryResultType = new AggregationQueryResultType { Count = modelElements.Count() } };
             foreach (var field in subFields.Values)
             {
                 var fieldName = !string.IsNullOrEmpty(field.Alias) ? $"{field.Alias}:{field.Name}" : field.Name;
@@ -1221,10 +1233,10 @@ namespace Hopex.Modules.GraphQL.Schema
                 var aggregateFunctionValue = field.Arguments.ValueFor("function");
                 if (aggregateFunctionValue == null)
                 {
-                    throw new ExecutionError($"You must specify an aggregated function for the field: {fieldName}. Example: {fieldName}(aggregateFunction:SUM)");                        
+                    throw new ExecutionError($"You must specify an aggregated function for the field: {fieldName}. Example: {fieldName}(aggregateFunction:SUM)");
                 }
                 var value = double.NaN;
-                if (Enum.TryParse((string) aggregateFunctionValue.Value, true, out AggregateFunctionTypeEnum aggregateFunction))
+                if (Enum.TryParse((string)aggregateFunctionValue.Value, true, out AggregateFunctionTypeEnum aggregateFunction))
                 {
                     switch (aggregateFunction)
                     {
@@ -1238,7 +1250,7 @@ namespace Hopex.Modules.GraphQL.Schema
                             throw new ExecutionError($"The function {aggregateFunction} is not available for the field: {fieldName}.");
                     }
                 }
-                else if (Enum.TryParse((string) aggregateFunctionValue.Value, true, out AggregateNumbersFunctionTypeEnum aggregateNumbersFunction))
+                else if (Enum.TryParse((string)aggregateFunctionValue.Value, true, out AggregateNumbersFunctionTypeEnum aggregateNumbersFunction))
                 {
                     switch (aggregateNumbersFunction)
                     {
@@ -1255,19 +1267,19 @@ namespace Hopex.Modules.GraphQL.Schema
                             value = modelElements.Average(element => Convert.ToDouble(element.GetValue<object>(property)));
                             break;
                         case AggregateNumbersFunctionTypeEnum.MEDIAN:
-                        {
-                            var data = modelElements.Select(element => Convert.ToDouble(element.GetValue<object>(property))).ToArray();
-                            Array.Sort(data);
-                            if (data.Length % 2 == 0)
                             {
-                                value = (data[data.Length / 2 - 1] + data[data.Length / 2]) / 2;
+                                var data = modelElements.Select(element => Convert.ToDouble(element.GetValue<object>(property))).ToArray();
+                                Array.Sort(data);
+                                if (data.Length % 2 == 0)
+                                {
+                                    value = (data[data.Length / 2 - 1] + data[data.Length / 2]) / 2;
+                                }
+                                else
+                                {
+                                    value = data[data.Length / 2];
+                                }
+                                break;
                             }
-                            else
-                            {
-                                value = data[data.Length / 2];
-                            }
-                            break;
-                        }
                         case AggregateNumbersFunctionTypeEnum.MIN:
                             value = modelElements.Min(element => Convert.ToDouble(element.GetValue<object>(property)));
                             break;
@@ -1281,33 +1293,33 @@ namespace Hopex.Modules.GraphQL.Schema
                 aggregatedElement.AggregationQueryResultType.AggregatedValues.Add(fieldName, value);
             }
 
-            return new List<AggregationQueryType> {aggregatedElement};
+            return new List<AggregationQueryType> { aggregatedElement };
         }
 
-        private async Task<IModelElement> UpdateElement(IMegaRoot root, ResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
+        private async Task<IModelElement> UpdateElement(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
         {
             string id = null;
-            if(ctx.Arguments != null && ctx.Arguments.ContainsKey("id"))
+            if (ctx.Arguments != null && ctx.Arguments.ContainsKey("id") && ctx.Arguments["id"].Value != null)
             {
-                id = ctx.Arguments["id"].ToString();
+                id = ctx.Arguments["id"].Value.ToString();
             }
 
             var idType = IdTypeEnum.INTERNAL;
-            if (ctx.Arguments != null && ctx.Arguments.ContainsKey("idType"))
+            if (ctx.Arguments != null && ctx.Arguments.ContainsKey("idType") && ctx.Arguments["idType"].Value != null)
             {
-                Enum.TryParse(ctx.Arguments["idType"].ToString(), out idType);
+                Enum.TryParse(ctx.Arguments["idType"].Value.ToString(), out idType);
             }
 
-            var updatedElement =  await ctx.Source.UpdateElementAsync(entity, id, idType, CreateSetters(entity, ctx));
+            var updatedElement = await ctx.Source.UpdateElementAsync(entity, id, idType, CreateSetters(entity, ctx));
             AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, updatedElement.Errors);
             return updatedElement;
         }
 
-        private async Task<IEnumerable<IModelElement>> UpdateManyElements(IMegaRoot root, ResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
+        private async Task<IEnumerable<IModelElement>> UpdateManyElements(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
         {
             var updatedElements = new List<IModelElement>();
 
-            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj is Dictionary<string, object> filter)
+            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
             {
                 var objectsToUpdate = GetElements(filter, root, ctx, entity, true, null);
                 foreach (var megaObject in objectsToUpdate)
@@ -1322,20 +1334,20 @@ namespace Hopex.Modules.GraphQL.Schema
         }
 
 
-        private async Task<DeleteResultType> DeleteElement(IMegaRoot root, ResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
+        private async Task<DeleteResultType> DeleteElement(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
         {
             var objectsToDelete = new List<IMegaObject>();
 
             string id = null;
-            if(ctx.Arguments != null && ctx.Arguments.ContainsKey("id"))
+            if (ctx.Arguments != null && ctx.Arguments.ContainsKey("id") && ctx.Arguments["id"].Value != null)
             {
-                id = ctx.Arguments["id"].ToString();
+                id = ctx.Arguments["id"].Value.ToString();
             }
 
             var idType = IdTypeEnum.INTERNAL;
-            if (ctx.Arguments != null && ctx.Arguments.ContainsKey("idType"))
+            if (ctx.Arguments != null && ctx.Arguments.ContainsKey("idType") && ctx.Arguments["idType"].Value != null)
             {
-                Enum.TryParse(ctx.Arguments["idType"].ToString(), out idType);
+                Enum.TryParse(ctx.Arguments["idType"].Value.ToString(), out idType);
             }
 
             switch (idType)
@@ -1361,31 +1373,31 @@ namespace Hopex.Modules.GraphQL.Schema
             var isCascade = false;
             if (ctx.HasArgument("cascade"))
             {
-                isCascade = (bool)ctx.Arguments["cascade"];
+                isCascade = (bool)ctx.Arguments["cascade"].Value;
             }
 
             return await ctx.Source.RemoveElementAsync(objectsToDelete, isCascade);
         }
 
-        private async Task<DeleteResultType> DeleteManyElements(IMegaRoot root, ResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
+        private async Task<DeleteResultType> DeleteManyElements(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
         {
             var objectsToDelete = new List<IMegaObject>();
 
-            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj is Dictionary<string, object> filter)
+            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
             {
                 objectsToDelete.AddRange(GetElements(filter, root, ctx, entity, true, null));
             }
 
             var isCascade = false;
-            if (ctx.Arguments.ContainsKey("cascade"))
+            if (ctx.Arguments.ContainsKey("cascade") && ctx.Arguments["cascade"].Value != null)
             {
-                isCascade = (bool) ctx.Arguments["cascade"];
+                isCascade = (bool)ctx.Arguments["cascade"].Value;
             }
 
             return await ctx.Source.RemoveElementAsync(objectsToDelete, isCascade);
         }
 
-        private List<IMegaObject> GetElements(Dictionary<string, object> filter, IMegaRoot root, ResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity, bool isRoot, string linkName)
+        private List<IMegaObject> GetElements(Dictionary<string, object> filter, IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity, bool isRoot, string linkName)
         {
             var sourceElement = ctx.Source as IModelElement;
             IRelationshipDescription relationship = null;
@@ -1394,7 +1406,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 relationship = sourceElement.ClassDescription.GetRelationshipDescription(linkName);
             }
             IMegaObject language = null;
-            if (ctx.Arguments.TryGetValue("language", out var languageValue) && languageValue is IMegaObject value)
+            if (ctx.Arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject value)
             {
                 language = value;
             }
@@ -1423,7 +1435,7 @@ namespace Hopex.Modules.GraphQL.Schema
             CreateProperties<IModelElement>(genericObjectInterfaceProperties, genericObjectInterface, (ctx, prop) =>
             {
                 string format = null;
-                if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format"))
+                if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
                 {
                     format = ctx.Arguments["format"].ToString();
                 }
@@ -1440,9 +1452,9 @@ namespace Hopex.Modules.GraphQL.Schema
                 (ctx, prop) =>
                 {
                     string format = null;
-                    if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format"))
+                    if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
                     {
-                        format = ctx.Arguments["format"].ToString();
+                        format = ctx.Arguments["format"].Value.ToString();
                     }
 
                     var result = ctx.Source.GetValue<object>(prop, ctx.Arguments, format);

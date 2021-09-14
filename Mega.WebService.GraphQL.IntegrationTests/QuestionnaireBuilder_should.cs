@@ -29,7 +29,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
         [Fact]
         public async Task<MetaclassNodesResponse> List_concrete_metaclasses()
-        {            
+        {
             var request = new GraphQLRequest()
             {
                 Query = @"query metaclass($id:String!, $language:Languages!) {

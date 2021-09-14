@@ -1,9 +1,6 @@
-using Mega.Macro.API;
-using System.Collections.Generic;
-
 namespace Hopex.Model.Abstractions.MetaModel
 {
-    public interface IRelationshipDescription
+    public interface IRelationshipDescription : IFieldDescription
     {
         IClassDescription ClassDescription { get; }
         string Id { get; }
@@ -11,6 +8,7 @@ namespace Hopex.Model.Abstractions.MetaModel
         string Name { get; }
         string RoleId { get; }
         string Description { get; }
+        bool IsReadOnly { get; }
         IPathDescription[] Path { get; }
         IClassDescription TargetClass { get; }
     }

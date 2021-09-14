@@ -28,7 +28,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
         [Theory]
         [MemberData(nameof(DocumentTypes))]
         public async Task<BusinessDocument> Create_a_business_document(DocumentType type)
-        {            
+        {
             var request = new GraphQLRequest()
             {
                 Query = string.Format(@"mutation {{
@@ -46,7 +46,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             document.Name.Should().Be("My Document");
             return document;
         }
-        
+
         [Theory]
         [MemberData(nameof(DocumentTypes))]
         public async void Upload_a_business_document(DocumentType type)
@@ -54,28 +54,6 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             var document = await Create_a_business_document(type);
 
             await UploadFileContentAsync(document);
-        }
-
-        private async Task<HttpResponseMessage> UploadFileContentAsync(
-            BusinessDocument document,
-            string documentVersion = "Replace",
-            string content = "my file content",
-            string filename = "myfile.txt")
-        {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"attachment/{document.Id}/file", UriKind.Relative),
-                Content = new ByteArrayContent(Encoding.UTF8.GetBytes(content))
-            };
-            await _fx.FillHeadersAsync(request.Headers);
-            request.Headers.Add("X-Hopex-Filename", filename);
-            request.Headers.Add("X-Hopex-DocumentVersion", documentVersion);
-
-            var response = await _fx.Client.SendAsync(request);
-
-            await response.Should().BeOkUploadAsync(document);
-            return response;
         }
 
         [Theory]
@@ -102,21 +80,6 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             await content.Should().BeFileAsync("My Document v1.pdf", "my file content");
         }
 
-        private async Task<HttpContent> DownloadFileContent(string downloadUrl)
-        {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(downloadUrl)
-            };
-            await _fx.FillHeadersAsync(request.Headers);
-
-            var response = await _fx.Client.SendAsync(request);
-
-            var content = response.Content;
-            return content;
-        }
-
         [Theory]
         [MemberData(nameof(DocumentTypes))]
         public async void Add_a_new_business_document_version(DocumentType type)
@@ -135,6 +98,43 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
             content = await DownloadFileContent(versions[1].DownloadUrl);
             await content.Should().BeFileAsync("My Document v2.txt", "version 2");
+        }
+
+        private async Task<HttpResponseMessage> UploadFileContentAsync(
+            BusinessDocument document,
+            string documentVersion = "Replace",
+            string content = "my file content",
+            string filename = "myfile.txt")
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"attachment/{document.Id}/file", UriKind.Relative),
+                Content = new ByteArrayContent(Encoding.UTF8.GetBytes(content))
+            };
+            await _fx.FillHeadersAsync(request.Headers);
+            request.Headers.Add("X-Hopex-Filename", filename);
+            request.Headers.Add("X-Hopex-DocumentVersion", documentVersion);
+
+            var response = await _fx.Client.SendAsync(request);
+
+            await response.Should().BeOkUploadAsync(document);
+            return response;
+        }
+
+        private async Task<HttpContent> DownloadFileContent(string downloadUrl)
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(downloadUrl)
+            };
+            await _fx.FillHeadersAsync(request.Headers);
+
+            var response = await _fx.Client.SendAsync(request);
+
+            var content = response.Content;
+            return content;
         }
 
         private async Task<BusinessDocument> GetDocument(DocumentType type, string documentId)

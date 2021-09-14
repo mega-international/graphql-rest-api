@@ -63,7 +63,7 @@ namespace Hopex.WebService.Tests
                     currentState:customField
                 }}");
 
-            resp.Should().MatchGraphQL("errors[0].message", "*argument \"id\" * is required*");
+            resp.Should().MatchGraphQL("errors[0].message", "*Argument 'id' * is required*");
         }
 
         [Theory]

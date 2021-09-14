@@ -67,7 +67,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             response.Should().HaveNoError();
             var context = response.Data._currentContext;
             context.Should().BeEquivalentTo(new CurrentContextResponse.CurrentContext()
-            {                
+            {
                 UserId = "XgCp3syUNLAH",
                 DatabaseId = _fx.RepositoryId,
                 LibraryId = null,
@@ -144,7 +144,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             {
                 Language = "FR",
                 DatabaseLanguage = "EN",
-                SystemLanguage = "EN",                
+                SystemLanguage = "EN",
             });
         }
 
@@ -156,7 +156,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                                 name: ""Name in english""
                                 comment: ""Comment in english""
                             }) { name comment }}";
-            var createResponse =  await _itpmClient.SendQueryAsync<CreateBusinessProcessResponse>(createQuery);
+            var createResponse = await _itpmClient.SendQueryAsync<CreateBusinessProcessResponse>(createQuery);
             createResponse.Should().HaveNoError();
             createResponse.Data.CreateBusinessProcess.Should().BeEquivalentTo(new BasicObject
             {

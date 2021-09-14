@@ -1,4 +1,3 @@
-using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Hopex.Model.Abstractions.DataModel;
@@ -49,19 +48,19 @@ namespace Hopex.Modules.GraphQL.Schema
             var listType = new InputObjectGraphType<Dictionary<string, object>> { Name = $"_defaultActionElement{seq}" };
             listType.AddField(new FieldType
             {
-                Type = typeof(int).GetGraphTypeFromType(true),
+                Type = typeof(IntGraphType),
                 Name = "order",
                 Resolver = new FuncFieldResolver<Dictionary<string, object>, int>(ctx => (int)ctx.Source["order"])
             });
             listType.AddField(new FieldType
             {
-                Type = typeof(string).GetGraphTypeFromType(true),
+                Type = typeof(StringGraphType),
                 Name = "linkComment",
                 Resolver = new FuncFieldResolver<Dictionary<string, object>, string>(ctx => (string)ctx.Source["linkComment"])
             });
             listType.AddField(new FieldType
             {
-                Type = typeof(string).GetGraphTypeFromType(true),
+                Type = typeof(StringGraphType),
                 Name = "id",
                 Resolver = new FuncFieldResolver<Dictionary<string, object>, string>(ctx => (string)ctx.Source["id"])
             });
@@ -85,9 +84,9 @@ namespace Hopex.Modules.GraphQL.Schema
                 _schemaBuilder.CreateProperties<Dictionary<string,object>>(linkProperties, listType, (ctx, prop) =>
                 {
                     string format = null;
-                    if(ctx.Arguments != null && ctx.Arguments.ContainsKey("format"))
+                    if(ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
                     {
-                         format = ctx.Arguments["format"].ToString();
+                         format = ctx.Arguments["format"].Value.ToString();
                     }
                     var result = ctx.Source[prop.Name];
                     if (result is DateTime date && !string.IsNullOrEmpty(format))
@@ -99,7 +98,7 @@ namespace Hopex.Modules.GraphQL.Schema
             }
             type.AddField(new FieldType
             {
-                ResolvedType = new ListGraphType<NonNullGraphType> { ResolvedType = listType },                
+                ResolvedType = new ListGraphType<InputObjectGraphType<Dictionary<string, object>>> { ResolvedType = listType },
                 Name = "list",
                 Resolver = new FuncFieldResolver<Dictionary<string, object>, List<Dictionary<string, object>>>(ctx => (List<Dictionary<string, object>>)ctx.Source["list"])
             });

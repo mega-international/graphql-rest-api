@@ -1,0 +1,43 @@
+{
+    "version": "1.0",
+    "defaultProvider": "cdnjs",
+    "libraries": [
+        {
+            "library": "es6-promise@4.0.5",
+            "destination": "wwwroot/lib/es6-promise/",
+            "files": [
+                "es6-promise.auto.min.js"
+            ]
+        },
+        {
+            "library": "fetch@0.9.0",
+            "destination": "wwwroot/lib/fetch/",
+            "files": [
+                "fetch.min.js"
+            ]
+        },
+        {
+            "library": "react@16.14.0",
+            "destination": "wwwroot/lib/react/",
+            "files": [
+                "umd/react.production.min.js"
+            ]
+        },
+        {
+            "library": "react-dom@16.14.0",
+            "destination": "wwwroot/lib/react-dom/",
+            "files": [
+                "umd/react-dom.production.min.js"
+            ]
+        },
+        {
+            "provider": "jsdelivr",
+            "library": "graphql-voyager@1.0.0-rc.31",
+            "destination": "wwwroot/lib/graphql-voyager/",
+            "files": [
+                "dist/voyager.css",
+                "dist/voyager.min.js"
+            ]
+        }
+    ]
+}

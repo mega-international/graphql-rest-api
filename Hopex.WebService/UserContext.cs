@@ -11,5 +11,15 @@ namespace Hopex.Modules.GraphQL
         public string WebServiceUrl { get; set; }
         public SchemaReference Schema { get; set; }
         public Dictionary<string, IMegaObject> Languages { get; set; }
+        public IDictionary<string, object> ToDictionary()
+        {
+            var dictionary = new Dictionary<string, object>();
+            var properties = GetType().GetProperties();
+            foreach (var property in properties)
+            {
+                dictionary.Add(property.Name, property.GetValue(this));
+            }
+            return dictionary;
+        }
     }
 }

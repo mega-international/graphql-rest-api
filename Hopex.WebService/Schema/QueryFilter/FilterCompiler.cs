@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Hopex.Model.Abstractions;
+using System.Text.RegularExpressions;
 
 namespace Hopex.Modules.GraphQL.Schema.Filters
 {
@@ -105,6 +106,8 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             {
                 Write("(");
             }
+
+            //On écrit les expressions séparées par and/or => A and B and C ... ou A or B or C ...
             while (parser.NextToken())
             {
                 if (!first)
@@ -131,6 +134,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
         {
             CheckElement(elem);
             var connector = elem.Key.ToLower();
+            // si on entre dans un nouveau and/or, on se retrouve dans une node non finale (pas une feuille) qu'il faut créer
             if (connector == "and" || connector == "or")
             {
                 if (elem.Value is Dictionary<string, object>)
@@ -140,6 +144,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 if (elem.Value is IEnumerable<object> list)
                 {
                     bool first = true;
+                    if(list.Count() > 1) Write("(");
                     foreach (Dictionary<string, object> e in list)
                     {
                         if (!first)
@@ -149,9 +154,11 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                         first = false;
                         VisitExpression(e, language, connector);
                     }
+                    if (list.Count() > 1) Write(")");
                 }
                 return;
             }
+            //On est dans une node (finale ou non)
             VisitTerm(elem, defaultConnector, language);
         }
 
@@ -160,17 +167,29 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             var (id, op) = GetOperator(elem.Key);
             if (op.Pattern == "rel")
             {
-                var savedClassDescription = _itemClassDescription;
-                GenerateFilterRelationshipPrefix(id, out _itemClassDescription);
-                if (elem.Value is IEnumerable<object> e)
+                if (op.Name == "count")
                 {
-                    VisitExpression(e.First() as Dictionary<string, object>, language, connector, true);
+                    ApplyHavingCountFilter(elem, id);
+                    return;
                 }
-                GenerateFilterRelationshipSuffix();
-                _itemClassDescription = savedClassDescription;
+                var savedClassDescription = _itemClassDescription;
+                try
+                {
+                    GenerateFilterRelationshipPrefix(id, out _itemClassDescription);
+                    if (elem.Value is IEnumerable<object> e)
+                    {
+                        VisitExpression(e.First() as Dictionary<string, object>, language, connector, true);
+                    }
+                    WriteSuffix();
+                }
+                finally
+                {
+                    _itemClassDescription = savedClassDescription;
+                }
                 return;
             }
 
+            IRelationshipDescription reversedRelationship = null;
             var prop = _itemClassDescription.GetPropertyDescription(id);
             if (string.Equals(id, "id", StringComparison.OrdinalIgnoreCase))
             {
@@ -178,48 +197,43 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             }
             else
             {
-                var isAttributeWritten = false;
+                string propMegaField = null;
                 if (language != null)
                 {
+                    dynamic properties;
                     if (prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass)
                     {
                         var collectionDescription = _root.GetCollectionDescription("~msUikEB5iGM3[Component]");
-                        foreach (var property in collectionDescription.NativeObject.Properties)
-                        {
-                            if (property.SameID(property.RootId, prop.Id) && property.SameID(property.LanguageId, language.MegaUnnamedField))
-                            {
-                                var reverseRelation = _itemClassDescription.Relationships.Single(r => r.Id == _relationship.ReverseId);
-                                var segment1 = reverseRelation.Path[0];
-                                Write($"{segment1.RoleId}[{segment1.RoleName}]:{segment1.TargetSchemaId}[{segment1.TargetSchemaName}].({property.MegaField}");
-                                isAttributeWritten = true;
-                                break;
-                            }
-                        }
+                        properties = collectionDescription.NativeObject.Properties;
                     }
                     else
                     {
                         var classDescription = _root.GetClassDescription(prop.Owner.Id);
-                        foreach (var property in classDescription.NativeObject.Description.Item(1).Properties)
+                        properties = classDescription.NativeObject.Description.Item(1).Properties;
+                    }
+                    foreach (var property in properties)
+                    {
+                        if (property.SameID(property.RootId, prop.Id) && property.SameID(property.LanguageId, language.MegaUnnamedField))
                         {
-                            if (property.SameID(property.RootId, prop.Id) && property.SameID(property.LanguageId, language.MegaUnnamedField))
-                            {
-                                Write(property.MegaField);
-                                isAttributeWritten = true;
-                                break;
-                            }
+                            propMegaField = property.MegaField;
+                            break;
                         }
                     }
                 }
-                if(!isAttributeWritten)
+                if (prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass)
                 {
-                    if (prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass)
-                    {
-                        var reverseRelation = _itemClassDescription.Relationships.Single(r => r.Id == _relationship.ReverseId);
-                        var segment1 = reverseRelation.Path[0];
-                        Write($"{segment1.RoleId}[{segment1.RoleName}]:{segment1.TargetSchemaId}[{segment1.TargetSchemaName}].(");
-                    }
+                    reversedRelationship = _itemClassDescription.Relationships.Single(r => r.Id == _relationship.ReverseId);
+                    WriteRelationshipRangePrefix(reversedRelationship.Path, 0, 0);
+                }
+                if (language != null)
+                {
+                    Write(propMegaField);
+                }
+                else
+                {
                     WriteAttribute(prop);
                 }
+                
             }
 
             Write($" {op.Name} ");
@@ -232,42 +246,86 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 WriteRightStatement(op, elem.Value, prop);
             }
 
-            if (prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass)
+            if ((prop.Scope == PropertyScope.Relationship || prop.Scope == PropertyScope.TargetClass) && reversedRelationship != null)
             {
-                Write($"AND ~310000000D00[AbsoluteIdentifier] = \"{_sourceElement.Id}\")");
+                Write("AND ");
+                WriteRelationshipRangePrefix(reversedRelationship.Path, 1);
+                Write($"~310000000D00[AbsoluteIdentifier] = \"{_sourceElement.Id}\")");
             }
         }
 
         private void GenerateFilterRelationshipPrefix(string relationshipName, out IClassDescription targetClass)
         {
             var rel = _itemClassDescription.GetRelationshipDescription(relationshipName);
-            bool first = true;
-            foreach (var segment in rel.Path)
-            {
-                if (first)
-                {
-                    // On part du principe qu'il n'y a qu'une condition dans le 1er segment et qu'il n'y en aura pas d'autres
-                    Write($"{segment.RoleId}[{segment.RoleName}]:{segment.TargetSchemaId}[{segment.TargetSchemaName}].(");
-                    if (segment.Condition != null)
-                    {
-                        Write($"{segment.Condition.RoleId}[{segment.Condition.RoleName}]:{segment.Condition.MetaClassId}[{segment.Condition.MetaClassName}].~310000000D00[AbsoluteIdentifier] = \"~{segment.Condition.ObjectFilterId}\" AND ");
-                    }
-                    first = false;
-                }
-                else
-                {
-                    Write($"{segment.RoleId}[{segment.RoleName}]:{segment.TargetSchemaId}[{segment.TargetSchemaName}].");
-                } 
-            }
+            WriteRelationshipRangePrefix(rel.Path);
             targetClass = rel.TargetClass;
         }
 
-        private void GenerateFilterRelationshipSuffix()
+        private void WriteRelationshipRangePrefix(IPathDescription[] paths)
+        {
+            WriteRelationshipRangePrefix(paths, 0);
+        }
+
+        private void WriteRelationshipRangePrefix(IPathDescription[] paths, int firstPathIdx)
+        {
+            WriteRelationshipRangePrefix(paths, firstPathIdx, paths.Length - 1);
+        }
+
+        private void WriteRelationshipRangePrefix(IPathDescription[] paths, int firstPathIdx, int lastPathIdx)
+        {
+            for(var pathIdx = firstPathIdx; pathIdx <= lastPathIdx; ++pathIdx)
+            {
+                var path = paths[pathIdx];
+                Write($"{path.RoleId}[{path.RoleName}]:{path.TargetSchemaId}[{path.TargetSchemaName}].");
+                if (pathIdx == 0)
+                {
+                    // On part du principe qu'il n'y a qu'une condition dans le 1er segment et qu'il n'y en aura pas d'autres
+                    Write($"(");
+                    if (path.Condition != null)
+                    {
+                        Write($"{path.Condition.RoleId}[{path.Condition.RoleName}]:{path.Condition.MetaClassId}[{path.Condition.MetaClassName}].~310000000D00[AbsoluteIdentifier] = \"~{path.Condition.ObjectFilterId}\" AND ");
+                    }
+                }
+            }
+        }
+
+        private void WriteSuffix()
         {
             Write(")");
         }
 
-            private void Write(string txt)
+        private void ApplyHavingCountFilter(KeyValuePair<string, object> elem, string id)
+        {
+            if (!(elem.Value is Dictionary<string, object> countFilters))
+            {
+                return;
+            }
+            var rel = _itemClassDescription.GetRelationshipDescription(id);
+            for (var i = 0; i < countFilters.Count; i++)
+            {
+                var countFilter = countFilters.ElementAt(i);
+                var (_, countOperator) = GetOperator(countFilter.Key);
+                var countValue = (int) countFilter.Value;
+                
+                Write($"{rel.Path[0].RoleId}[{rel.Path[0].RoleName}] HAVING COUNT {countOperator.Name} {countValue}");
+                
+                if (countOperator.Name == "=" && countValue == 0
+                    || countOperator.Name == "Not=" && countValue != 0
+                    || countOperator.Name == "<" && countValue > 0
+                    || countOperator.Name == "<=" && countValue >= 0
+                    || countOperator.Name == ">=" && countValue <= 0)
+                {
+                    Write($" OR {rel.Path[0].RoleId}[{rel.Path[0].RoleName}] IS NULL");
+                }
+                
+                if (countFilters.Count > 1 && i < countFilters.Count - 1)
+                {
+                    Write(" AND ");
+                }
+            }
+        }
+
+        private void Write(string txt)
         {
             _sb.Append(txt);
         }
@@ -386,9 +444,10 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 { "_not_ends_with", new HopexOperator("not Like", "#{0}", true) },
                 { "_ends_with", new HopexOperator("Like", "#{0}") },
                 { "_some", new HopexOperator("some", "rel") },
+                { "_count", new HopexOperator("count", "rel") },
                 { "_every", new HopexOperator("every", "rel") },
                 { "_none", new HopexOperator("none", "rel") },
-                { "_null", new HopexOperator("Is", "null") }
+                { "_empty", new HopexOperator("Is", "null") }
             };
 
             foreach (var op in operatorNames)

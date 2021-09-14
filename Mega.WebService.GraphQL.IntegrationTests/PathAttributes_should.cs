@@ -64,7 +64,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                 {
                     Name = "App update via externalID",
                     Comment = "comment step 2 update",
-                    BusinessCapability = new List<OrderedBasicObject>{ businessCapability1, businessCapability2 },
+                    BusinessCapability = new List<OrderedBasicObject> { businessCapability1, businessCapability2 },
                     OwnedBusinessCapabilityFulfillment = new List<Fulfillment>
                     {
                         new Fulfillment { Order = 50, FullfilledBusinessCapability = new List<OrderedBasicObject>{ businessCapability1 } },

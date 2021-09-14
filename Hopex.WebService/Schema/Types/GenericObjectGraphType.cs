@@ -1,37 +1,29 @@
+using GraphQL;
 using GraphQL.Types;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.DataModel;
 using Mega.Macro.API;
 using System.Collections.Generic;
 using System.Linq;
-using Mega.Macro.API.Library;
 
 namespace Hopex.Modules.GraphQL.Schema.Types
 {
     internal class GenericObjectInterface : InterfaceGraphType<IModelElement>
     {
         private readonly IGraphType _languagesType;
-        private readonly IGraphType _currenciesType;
         private readonly Dictionary<MegaId, ObjectGraphType<IModelElement>> _concreteGraphTypes = new Dictionary<MegaId, ObjectGraphType<IModelElement>>();
-
-        private static readonly Dictionary<string, object> NO_ARGUMENTS = new Dictionary<string, object>();
 
         public GenericObjectGraphType WildcardType { get; set; }
 
-        internal GenericObjectInterface(global::GraphQL.Types.Schema schema, IGraphType languagesType, IGraphType currenciesType)
+        internal GenericObjectInterface(global::GraphQL.Types.Schema schema, IGraphType languagesType)
         {
             _languagesType = languagesType;
-            _currenciesType = currenciesType;
             WildcardType = new GenericObjectGraphType();
 
             schema.RegisterType(this);
             schema.RegisterType(WildcardType);
 
             Name = "GraphQLObjectInterface";
-            Field<StringGraphType>("id", "Absolute identifier", resolve: ctx => ctx.Source.GetGenericValue(MetaAttributeLibrary.AbsoluteIdentifier, ctx.Arguments ?? NO_ARGUMENTS));
-            Field<StringGraphType>("name", "Name", resolve: ctx =>  ctx.Source.GetGenericValue(MetaAttributeLibrary.ShortName, ctx.Arguments ?? NO_ARGUMENTS));
-            Field<DateGraphType>("creationDate", "Creation date", resolve: ctx => ctx.Source.GetGenericValue(MetaAttributeLibrary.CreationDate, ctx.Arguments ?? NO_ARGUMENTS));
-            Field<DateGraphType>("modificationDate", "Modification date", resolve: ctx => ctx.Source.GetGenericValue(MetaAttributeLibrary.ModificationDate, ctx.Arguments ?? NO_ARGUMENTS));
 
             AddCustomField(this);
             AddCustomRelationship(this);
@@ -52,17 +44,20 @@ namespace Hopex.Modules.GraphQL.Schema.Types
             return WildcardType;
         }
 
-        internal void ImplementInConcreteType(string metaclassId, ObjectGraphType<IModelElement> typeToEnrich)
+        internal void ImplementInConcreteType(string metaclassId, ObjectGraphType<IModelElement> typeToEnrich, bool baseClass)
         {
-            _concreteGraphTypes.Add(metaclassId, typeToEnrich);
+            if(baseClass)
+            {
+                _concreteGraphTypes.Add(metaclassId, typeToEnrich);
+            }
             ImplementInType(typeToEnrich);
         }
 
         private void ImplementInType(ObjectGraphType<IModelElement> typeToEnrich)
         {
-            typeToEnrich.AddResolvedInterface(this);
             AddCustomField(typeToEnrich);
             AddCustomRelationship(typeToEnrich);
+            typeToEnrich.AddResolvedInterface(this);
         }
 
         private void AddCustomField(ComplexGraphType<IModelElement> typeToEnrich)
@@ -88,7 +83,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
                 "CustomRelationship",
                 "Generic access to relationships not defined in the schema",
                 new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "relationId" },
                     new QueryArgument<IntGraphType> { Name = "first" },
                     new QueryArgument<StringGraphType> { Name = "after" },
                     new QueryArgument<IntGraphType> { Name = "last" },
@@ -97,8 +92,8 @@ namespace Hopex.Modules.GraphQL.Schema.Types
                 ),
                 ctx =>
                 {
-                    var collectionMegaId = ctx.GetArgument<string>("id");
-                    var root = ((UserContext)ctx.UserContext).IRoot;
+                    var collectionMegaId = ctx.GetArgument<string>("relationId");
+                    var root = ((UserContext)ctx.UserContext["usercontext"]).IRoot;
                     var permissions = CrudComputer.GetCollectionMetaPermission(root, collectionMegaId);
                     if (!permissions.IsReadable)
                         return Enumerable.Empty<IModelElement>().GetEnumerator();
@@ -111,17 +106,11 @@ namespace Hopex.Modules.GraphQL.Schema.Types
 
     }
 
-    internal class GenericObjectGraphType : ObjectGraphType<IModelElement>
+    internal class GenericObjectGraphType : ObjectWithParentGraphType<IModelElement>
     {
-        private static readonly Dictionary<string, object> NO_ARGUMENTS = new Dictionary<string, object>();
-
         internal GenericObjectGraphType()
         {
             Name = "GraphQLObject";
-            Field<StringGraphType>("id", "Absolute identifier", resolve: ctx => ctx.Source.GetGenericValue(MetaAttributeLibrary.AbsoluteIdentifier, ctx.Arguments ?? NO_ARGUMENTS));
-            Field<StringGraphType>("name", "Name", resolve: ctx =>  ctx.Source.GetGenericValue(MetaAttributeLibrary.ShortName, ctx.Arguments ?? NO_ARGUMENTS));
-            Field<DateGraphType>("creationDate", "Creation date", resolve: ctx => ctx.Source.GetGenericValue(MetaAttributeLibrary.CreationDate, ctx.Arguments ?? NO_ARGUMENTS));
-            Field<DateGraphType>("modificationDate", "Modification date", resolve: ctx => ctx.Source.GetGenericValue(MetaAttributeLibrary.ModificationDate, ctx.Arguments ?? NO_ARGUMENTS));
         }
     }
 }

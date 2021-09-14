@@ -52,11 +52,11 @@ namespace Hopex.Modules.GraphQL
 
             var megaRoot = GetRoot();
 
-            var schemaManager = await _schemaManagerProvider.GetInstanceAsync(HopexContext, schemaRef.Version, megaRoot, Logger);
+            var schemaManager = await _schemaManagerProvider.GetInstanceAsync(HopexContext, schemaRef.Version, Logger);
 
             var languages = _languagesProvider.GetLanguages(Logger, megaRoot);
 
-            var (graphQlSchema, _) = await schemaManager.GetSchemaAsync(schemaRef, languages);
+            var (graphQlSchema, _) = await schemaManager.GetSchemaAsync(megaRoot, schemaRef, languages);
 
             var printer = new SchemaPrinter(graphQlSchema);
             var response = new SchemaMacroResponse

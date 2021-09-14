@@ -18,7 +18,7 @@ namespace Hopex.WebService.IDE
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplicationSetting<HopexGraphQlSettings>("Hopex supervision settings");
+            services.AddApplicationSetting<HopexGraphQlSettings>("HOPEX GraphQL IDE settings");
 
             services.AddHASModule("6CAE27E7-FF79-4D33-A49E-6553CC766481", options => options.AuthenticationMode = AuthenticationMode.HopexSession);
             var mvcBuilder = services

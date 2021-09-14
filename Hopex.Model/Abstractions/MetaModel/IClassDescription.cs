@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Hopex.Model.Abstractions.DataModel;
 using Mega.Macro.API;
 
 namespace Hopex.Model.Abstractions.MetaModel
@@ -13,7 +14,9 @@ namespace Hopex.Model.Abstractions.MetaModel
         string Description { get; }
         bool IsEntryPoint { get; }
         IEnumerable<IPropertyDescription> Properties { get; }
+        IEnumerable<IPropertyDescription> PropertiesNotExtended { get; }
         IEnumerable<IRelationshipDescription> Relationships { get; }
+        IEnumerable<IRelationshipDescription> RelationshipsNotExtended { get; }
 
         void AddProperty(IPropertyDescription prop);
         void CloneProperties(IClassDescription clone);
@@ -25,5 +28,7 @@ namespace Hopex.Model.Abstractions.MetaModel
         IClassDescription Extends { get; }
         string GetBaseName();
         IPropertyDescription FindPropertyDescriptionById(MegaId id);
+        bool IsPathProperty(IPropertyDescription prop);
+        IEnumerable<ISetter> CreateSetter(IDictionary<string, object> arguments);
     }
 }

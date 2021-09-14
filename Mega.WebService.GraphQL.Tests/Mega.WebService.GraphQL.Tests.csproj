@@ -178,6 +178,8 @@
     <Compile Include="Sources\Filters\SegmentableFilterOperator.cs" />
     <Compile Include="Sources\Filters\SortableFilterOperator.cs" />
     <Compile Include="Models\SessionDatas\SessionEnvironment.cs" />
+    <Compile Include="Sources\Requesters\BaseRequester.cs" />
+    <Compile Include="Sources\Requesters\HASGraphQLRequester.cs" />
     <Compile Include="Sources\Metaclasses\AnswerAudit.cs" />
     <Compile Include="Sources\Metaclasses\Audit.cs" />
     <Compile Include="Sources\Metaclasses\AuditActivity.cs" />
@@ -190,13 +192,17 @@
     <Compile Include="Sources\Metaclasses\WorkPaper.cs" />
     <Compile Include="Models\SessionDatas\SessionRepository.cs" />
     <Compile Include="Models\SessionDatas\SessionData.cs" />
+    <Compile Include="Sources\Requesters\HASSessionInfos.cs" />
+    <Compile Include="Sources\Requesters\IRequester.cs" />
+    <Compile Include="Sources\Requesters\ISessionInfos.cs" />
+    <Compile Include="Sources\Requesters\SessionInfos.cs" />
     <Compile Include="Sources\Tests\AbstractTest.cs" />
     <Compile Include="Sources\FieldModels\EnumField.cs" />
     <Compile Include="Sources\FieldModels\Field.cs" />
     <Compile Include="Sources\FieldModels\ListField.cs" />
     <Compile Include="Sources\FieldModels\ObjectField.cs" />
     <Compile Include="Sources\FieldModels\ScalarField.cs" />
-    <Compile Include="Sources\GraphQLRequester.cs" />
+    <Compile Include="Sources\Requesters\GraphQLRequester.cs" />
     <Compile Include="Models\IndexModel.cs" />
     <Compile Include="Sources\ITestParam.cs" />
     <Compile Include="Sources\Metaclasses\Application.cs" />

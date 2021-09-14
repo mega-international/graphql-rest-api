@@ -44,6 +44,11 @@ namespace Hopex.WebService.Tests.Mocks
             return default(T);
         }
 
+        public dynamic CallFunction(MegaId methodId, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null)
+        {
+            return null;
+        }
+
         public virtual bool ConditionEvaluate(MegaId methodId)
         {
             var idComparer = new MegaIdComparer();

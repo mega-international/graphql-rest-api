@@ -1,7 +1,7 @@
 using GraphQL;
-using GraphQL.Http;
 using GraphQL.Instrumentation;
 using GraphQL.Language.AST;
+using GraphQL.NewtonsoftJson;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Common;
 using Hopex.Model;
@@ -14,7 +14,11 @@ using Hopex.Modules.GraphQL.Schema;
 using Mega.Macro.API;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Hopex.Modules.GraphQL
@@ -48,6 +52,8 @@ namespace Hopex.Modules.GraphQL
             {
                 Logger.LogInformation("GraphQL macro start");
 
+                PropertyCache.ResetCache();
+
                 var megaRoot = GetMegaRoot();
                 var environmentId = Utils.GetEnvironmentId(HopexContext);
                 var schema = ExtractSchemaPath(megaRoot, HopexContext.Request.Path, environmentId);
@@ -72,8 +78,8 @@ namespace Hopex.Modules.GraphQL
                 Logger.LogInformation("Get Languages and currencies terminated");
 
                 Logger.LogInformation("Schemas initialization start");
-                var schemaManager = await _schemaManagerProvider.GetInstanceAsync(HopexContext, schema.Version, megaRoot, Logger);
-                var (graphQlSchema, hopexSchema) = await schemaManager.GetSchemaAsync(schema, languages, currencies);
+                var schemaManager = await _schemaManagerProvider.GetInstanceAsync(HopexContext, schema.Version, Logger);
+                var (graphQlSchema, hopexSchema) = await schemaManager.GetSchemaAsync(megaRoot, schema, languages, currencies);
                 Logger.LogInformation("Schemas initialization terminated");
 
                 var root = CreateDataModel(hopexSchema);
@@ -93,32 +99,36 @@ namespace Hopex.Modules.GraphQL
                     {
                         _.Schema = graphQlSchema;
                         _.Root = root;
-                        _.UserContext = new UserContext
+                        _.UserContext = new Dictionary<string, object>
                         {
-                            MegaRoot = GetNativeMegaRoot(),
-                            IRoot = megaRoot,
-                            WebServiceUrl = args.WebServiceUrl,
-                            Schema = schema,
-                            Languages = languages
+                            {
+                                "usercontext", new UserContext
+                                {
+                                    MegaRoot = GetNativeMegaRoot(),
+                                    IRoot = megaRoot,
+                                    WebServiceUrl = args.WebServiceUrl,
+                                    Schema = schema,
+                                    Languages = languages
+                                }
+                            }
                         };
                         _.OperationName = args.OperationName;
                         _.Query = args.Query;
                         _.Inputs = variables;
-                        _.FieldMiddleware.Use<InstrumentFieldMiddleware>();
+                        //_.FieldMiddleware.Use<InstrumentFieldMiddleware>();
                     });
                     Logger.LogInformation($"Query terminated: {args.Query.Replace(Environment.NewLine, " ").Replace("\n", " ")}");
 
-                    var writer = new DocumentWriter(true);
                     if (Utils.IsRunningInHAS)
                     {
-                        return HopexResponse.Json(writer.Write(result));
+                        return HopexResponse.Json(await WriteResultAsync(result));
                     }
                     else
                     {
                         return HopexResponse.Json(JsonConvert.SerializeObject(new
                         {
                             HttpStatusCode = HttpStatusCode.OK,
-                            Result = writer.Write(result)
+                            Result = await WriteResultAsync(result)
                         }));
                     }
                 }
@@ -165,6 +175,11 @@ namespace Hopex.Modules.GraphQL
                     Error = ex.Message
                 }));
             }
+            finally
+            {
+                Debug.Print($"PropertyCache.HitCount = {PropertyCache.HitCount}");
+                Debug.Print($"PropertyCache.MissCount = {PropertyCache.MissCount}");
+            }
         }
 
         protected virtual void PublishSession()
@@ -198,6 +213,20 @@ namespace Hopex.Modules.GraphQL
         private SchemaReference ExtractSchemaPath(IMegaRoot iRoot, string requestPath, string environmentId)
         {
             return _schemaExtractor.Extract(iRoot, requestPath, WebServiceRoute, environmentId);
+        }
+
+        private async Task<string> WriteResultAsync(ExecutionResult result)
+        {
+            var writer = new DocumentWriter(true);
+            using(var stream = new MemoryStream())
+            {
+                await writer.WriteAsync(stream, result);
+                stream.Position = 0;
+                using(var reader = new StreamReader(stream, new UTF8Encoding(false)))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
         }
     }
 }

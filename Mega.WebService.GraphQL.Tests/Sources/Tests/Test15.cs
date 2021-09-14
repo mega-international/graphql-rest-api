@@ -11,7 +11,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected override void Initialisation()
         {
-            _requester = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}/{_schemaAudit}");
+            _requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}/{_schemaAudit}");
         }
 
         protected override async Task StepsAsync(ITestParam oTestParam)
@@ -70,7 +70,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected async Task CopyTree(TreeMetaClasses treeMetaClasses)
         {
             //Set to source repository
-            SetConfig(EnvironmentId, RepositoryIdFrom, ProfileId);
+            SetConfig(Source);
 
             //Get datas from first repository
             var outputFields = treeMetaClasses.GenerateOutputsFields();
@@ -80,7 +80,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             FilterItems(ref originalAudits);
 
             //Set to destination repository
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
 
             //Create data to second repository
             var originalsByMetaClass = treeMetaClasses.GetItemsByMetaClass(originalAudits);

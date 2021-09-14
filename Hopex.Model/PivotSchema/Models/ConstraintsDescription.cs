@@ -13,6 +13,8 @@ namespace Hopex.Model.PivotSchema.Models
         public int? MaxLength { get; set; }
         [JsonProperty("readOnly")]
         public bool? IsReadOnly { get; set; }
+        [JsonProperty("unique")]
+        public bool? IsUnique { get; set; }
         [JsonProperty("translatable")]
         public bool? IsTranslatable { get; set; }
         [JsonProperty("formattedText")]

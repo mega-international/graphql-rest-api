@@ -105,7 +105,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                     }
                 });
         }
-        
+
         private async Task<CreateAllResponse> CreateAllTestObjects()
         {
             var request = new GraphQLRequest()

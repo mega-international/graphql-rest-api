@@ -13,12 +13,12 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected override void Initialisation()
         {
-            _requester = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}/{_schemaAudit}");
+            _requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}/{_schemaAudit}");
         }
 
         protected override async Task StepsAsync(ITestParam oTestParam)
         {
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
             await DeleteItemsAsync();
             await CreateItemsAsync();
             await LinkItemsAsync();

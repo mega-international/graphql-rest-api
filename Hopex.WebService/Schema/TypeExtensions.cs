@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
+using Hopex.Modules.GraphQL.Schema.Types.CustomScalarGraphTypes;
 
 namespace Hopex.Modules.GraphQL.Schema
 {
@@ -84,7 +85,38 @@ namespace Hopex.Modules.GraphQL.Schema
             if (type.GetTypeInfo().IsEnum)
                 return typeof(EnumerationGraphType<>).MakeGenericType(type);
 
-            return type.GetGraphTypeFromType(true);
+            return GetGraphTypeFromType(type);
+        }
+
+        public static Type GetGraphTypeFromType(Type type)
+        {
+            Type propertyType;
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.DateTime:
+                    propertyType = typeof(CustomDateGraphType);
+                    break;
+                case TypeCode.Decimal:
+                    propertyType = typeof(CustomDecimalGraphType);
+                    break;
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    propertyType = typeof(CustomFloatGraphType);
+                    break;
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                    propertyType = typeof(CustomIntGraphType);
+                    break;
+                default:
+                    propertyType = type.GetGraphTypeFromType(true);
+                    break;
+            }
+            return propertyType;
         }
     }
 }

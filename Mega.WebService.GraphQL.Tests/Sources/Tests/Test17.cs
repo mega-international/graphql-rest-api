@@ -16,7 +16,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         protected override async Task StepsAsync(ITestParam oTestParam)
         {
             //set source repository for the whole test
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
             var fields = await GetFilterSchema("Application");
             ArrangeFields(ref fields);
             await TestFilters("Application", fields);

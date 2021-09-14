@@ -112,7 +112,7 @@ namespace Hopex.WebService.Tests.Mocks
             return this;
         }
 
-        internal MockMegaObject WithTypeObject(MockMegaObject typeObject)
+        internal new MockMegaObject WithTypeObject(MockMegaObject typeObject)
         {
             base.WithTypeObject(typeObject);
             return this;
@@ -140,7 +140,12 @@ namespace Hopex.WebService.Tests.Mocks
         public virtual IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null, int sortDirection2 = 1, string sortAttribute2 = null)
         {
             MegaIdUtils.EnsureValidPropertyId(linkId, "MegaObject.GetCollection");
-            return _links[linkId];
+            if(!_links.TryGetValue(linkId, out var collection))
+            {
+                collection = new MockMegaCollection(linkId) { Root = this.Root };
+                _links.Add(linkId, collection);
+            }
+            return collection;
         }
 
         public virtual MegaId GetClassId()
@@ -166,12 +171,16 @@ namespace Hopex.WebService.Tests.Mocks
         private T GetPropertyValueInternal<T>(MegaId propertyId, string format)
         {
             MegaIdUtils.EnsureValidPropertyId(propertyId, "MegaObject.GetPropertyValue");
-            var value = _properties[propertyId];
-            if (value is MegaPropertyWithFormat)
+            if (_properties.ContainsKey(propertyId))
             {
-                return ((MegaPropertyWithFormat)value).GetPropertyValue<T>(format);
+                var value = _properties[propertyId];
+                if (value is MegaPropertyWithFormat)
+                {
+                    return ((MegaPropertyWithFormat) value).GetPropertyValue<T>(format);
+                }
+                return (T) _properties[propertyId];
             }
-            return (T)_properties[propertyId];
+            return default(T);
         }      
 
         public void SetPropertyValue(MegaId propertyId, string value)

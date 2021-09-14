@@ -94,7 +94,7 @@ namespace Hopex.WebService.Tests.Assertions
 
         public AndConstraint<HopexResponseAssertions> ContainsGraphQL(string path, string expected)
         {
-            ParseGraphQLResponse().SelectToken(path).ToString().Should().Be(expected);
+            ParseGraphQLResponse().SelectToken(path).ToString().Should().Contain(expected);
             return new AndConstraint<HopexResponseAssertions>(this);
         }
 
@@ -104,6 +104,14 @@ namespace Hopex.WebService.Tests.Assertions
             var selectedToken = response.SelectToken(path);
             selectedToken.Should().NotBeNull($"data expected for path {path} in JSON {response}");
             selectedToken.ToString().Should().Match(wildcardPattern);
+            return new AndConstraint<HopexResponseAssertions>(this);
+        }
+
+        public AndConstraint<HopexResponseAssertions> MatchNull(string path)
+        {
+            var response = ParseGraphQLResponse();
+            var selectedToken = response.SelectToken(path);
+            selectedToken.Type.Should().Be(JTokenType.Null);
             return new AndConstraint<HopexResponseAssertions>(this);
         }
 

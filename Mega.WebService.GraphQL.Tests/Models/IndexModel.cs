@@ -6,6 +6,7 @@ using System.Configuration;
 using System.IO;
 using System.Net.Http;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Xml;
 
@@ -13,10 +14,16 @@ namespace Mega.WebService.GraphQL.Tests.Models
 {
     public class IndexModel
     {
+        public readonly bool HASMode = WebConfigurationManager.AppSettings["HASMode"] == "1";
+        //Ancien mode
         public readonly List<SelectListItem> TestSelectionList = new List<SelectListItem>();
         public readonly List<SelectListItem> EnvironmentSelectionList = new List<SelectListItem>();
         public readonly List<SelectListItem> RepositorySelectionList = new List<SelectListItem>();
         public readonly List<SelectListItem> ProfileSelectionList = new List<SelectListItem>();
+
+        //Nouveau mode
+        public readonly List<SelectListItem> ApiKeysListSrc = new List<SelectListItem>();
+        public readonly List<SelectListItem> ApiKeysListDst = new List<SelectListItem>();
 
         public readonly Dictionary<string, TestModel> TestModels = new Dictionary<string, TestModel>();
         public readonly Dictionary<string, SessionEnvironment> Environments = new Dictionary<string, SessionEnvironment>();
@@ -24,8 +31,15 @@ namespace Mega.WebService.GraphQL.Tests.Models
         public IndexModel()
         {
             GetTests();
-            GetEnvironments();
-            GetProfiles();
+            if (HASMode)
+            {
+                GetApiKeys();
+            }
+            else
+            {
+                GetEnvironments();
+                GetProfiles();
+            }
         }
 
         private void GetTests()
@@ -125,6 +139,22 @@ namespace Mega.WebService.GraphQL.Tests.Models
             {
                 Text = "HOPEX Customizer",
                 Value = "757wuc(SGjpJ"
+            });
+        }
+
+        private void GetApiKeys()
+        {
+            var keySrc = ConfigurationManager.AppSettings["KeySrc"];
+            var keyDst = ConfigurationManager.AppSettings["KeyDst"];
+            ApiKeysListSrc.Add(new SelectListItem
+            {
+                Text = keySrc,
+                Value = keySrc
+            });
+            ApiKeysListDst.Add(new SelectListItem
+            {
+                Text = keyDst,
+                Value = keyDst
             });
         }
     }

@@ -3,11 +3,11 @@ using Hopex.Model.DataModel;
 
 namespace Hopex.Modules.GraphQL.Schema.Formats
 {
-    public class IdFormat : EnumerationGraphType<IdFormatEnum>
+    public class EnumFormat : EnumerationGraphType<EnumFormatEnum>
     {
-        public IdFormat()
+        public EnumFormat()
         {
-            Name = "format";
+            Name = "EnumFormat";
         }
     }
 }

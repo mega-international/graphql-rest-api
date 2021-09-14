@@ -76,7 +76,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                         ReadProperties(clazz.Properties, existing);
                     }
 
-                    ReadRelationships(clazz, existing);
+                    ReadRelationships(clazz, existing, pivot.Classes);
                 }
             }
 
@@ -115,7 +115,7 @@ namespace Hopex.Model.PivotSchema.Convertors
             foreach (var clazz in pivot.Classes)
             {
                 var existing = schema.GetClassDescription(clazz.Name) as ClassDescription;
-                ReadRelationships(clazz, existing);
+                ReadRelationships(clazz, existing, pivot.Classes);
             }
 
             if (_validationContext.HasError)
@@ -125,7 +125,7 @@ namespace Hopex.Model.PivotSchema.Convertors
             return schema;
         }
 
-        private void ReadRelationships(PivotClassDescription clazz, ClassDescription cd)
+        private void ReadRelationships(PivotClassDescription clazz, ClassDescription cd, PivotClassDescription[] clazzes)
         {
             if (clazz.Relationships == null)
             {
@@ -141,12 +141,13 @@ namespace Hopex.Model.PivotSchema.Convertors
                 string roleId = rel.Path[0].RoleId;
                 if (!(cd.GetRelationshipDescription(rel.Name, false) is RelationshipDescription existing))
                 {
-                    existing = new RelationshipDescription(rel.Id, rel.ReverseId, cd, rel.Name, roleId, rel.Description);
+                    existing = new RelationshipDescription(rel.Id, rel.ReverseId, cd, rel.Name, roleId, rel.Description, rel.Constraints?.IsReadOnly);
                     cd.AddRelationship(existing);
                 }
                 else
                 {
                     existing.Description = rel.Description ?? existing.Description;
+                    existing.IsReadOnly = rel.Constraints?.IsReadOnly ?? existing.IsReadOnly;
                 }
                 var targetClass = cd.MetaModel.FindClassDescriptionById(rel.Path.Last().MetaClassId);
                 // TODO BUG dans json Implements est tjs null
@@ -162,28 +163,51 @@ namespace Hopex.Model.PivotSchema.Convertors
                     }
                 }
                 existing.TargetClass = targetClass;
-                existing.SetPath(rel.Path.Select(p =>
+                if(rel.Path.Length > 2)
+                {
+                    throw new Exception($"Relation {rel.Name} path should be less or equal to 2: current is {rel.Path.Length}");
+                }
+
+                var pathProperties = new List<PivotPropertyDescription>();
+                var pathClasses = new List<PivotClassDescription>();
+                existing.SetPath(rel.Path.Select((p, idx) =>
                 {
                     var newPath = new PathDescription(p.Id, p.RoleName, p.RoleId, p.MetaClassId, p.MetaClassName, p.Multiplicity, p.Condition);
-                    if (p.Properties != null)
+                    if (idx == 0) // On ne regarde que le premier path
                     {
-                        var extendedClassName = rel.TargetClassName;
-                        var extendedClass = new ClassDescription(targetClass.MetaModel,
-                                                        extendedClassName,
-                                                        targetClass.Id,
-                                                        targetClass.Description,
-                                                        false,
-                                                        targetClass);
-                        existing.TargetClass = extendedClass;
-
-                        ReadProperties(p.Properties, extendedClass, PropertyScope.TargetClass);
+                        if (p.Properties != null)
+                        {
+                            pathProperties.AddRange(p.Properties);
+                        }
+                        if (rel.Path.Length > 1)
+                        {
+                            var currentTarget = clazzes.FirstOrDefault(currentClazz => currentClazz.Id == rel.Path[idx].MetaClassId);
+                            pathClasses.Add(currentTarget);
+                        }
                     }
                     return newPath;
                 }));
+
+                if(pathClasses.Count() > 0 || pathProperties.Count() > 0)
+                {
+                    var extendedClassName = rel.TargetClassName;
+                    var extendedClass = new ClassDescription(targetClass.MetaModel,
+                                                    extendedClassName,
+                                                    targetClass.Id,
+                                                    targetClass.Description,
+                                                    false,
+                                                    targetClass);
+                    existing.TargetClass = extendedClass;
+                    ReadProperties(pathProperties, extendedClass, PropertyScope.TargetClass);
+                    for(var index = 0; index < pathClasses.Count; ++index)
+                    {
+                        ReadProperties(pathClasses[index].Properties, extendedClass, PropertyScope.TargetClass, $"link{index+1}");
+                    }
+                }
             }
         }
 
-        private static void ReadProperties(IEnumerable<PivotPropertyDescription> properties, IClassDescription cd, PropertyScope scope = PropertyScope.Class)
+        private static void ReadProperties(IEnumerable<PivotPropertyDescription> properties, IClassDescription cd, PropertyScope scope = PropertyScope.Class, string prefix = "")
         {
             foreach (PivotPropertyDescription property in properties)
             {
@@ -196,9 +220,11 @@ namespace Hopex.Model.PivotSchema.Convertors
                                                        property.Constraints?.PropertyType,
                                                        property.Constraints?.IsRequired,
                                                        property.Constraints?.IsReadOnly,
+                                                       property.Constraints?.IsUnique,
                                                        property.Constraints?.IsTranslatable,
                                                        property.Constraints?.IsFormattedText,
                                                        property.Constraints?.MaxLength,
+                                                       prefix + property.Name,
                                                        scope)
                     {
                         SetterFormat = property.SetterFormat ?? PropertyDescription.DefaultSetterFormat,
@@ -214,6 +240,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                     existing.GetterFormat = property.GetterFormat ?? existing.GetterFormat ?? PropertyDescription.DefaultGetterFormat;
                     existing.IsRequired = property.Constraints?.IsRequired ?? existing.IsRequired;
                     existing.IsReadOnly = property.Constraints?.IsReadOnly ?? existing.IsReadOnly;
+                    existing.IsUnique = property.Constraints?.IsUnique ?? existing.IsUnique;
                     existing.IsTranslatable = property.Constraints?.IsTranslatable ?? existing.IsTranslatable;
                     existing.IsFormattedText = property.Constraints?.IsFormattedText ?? existing.IsFormattedText;
                 }
@@ -222,7 +249,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                 {
                     foreach (PivotEnumDescription e in property.EnumValues)
                     {
-                        EnumDescription @enum = new EnumDescription(e.Name, e.Id, e.Description, e.InternalValue);
+                        EnumDescription @enum = new EnumDescription(e.Name, e.Id, e.Description, e.InternalValue, e.Order);
                         existing.AddEnumValue(@enum);
                     }
                 }

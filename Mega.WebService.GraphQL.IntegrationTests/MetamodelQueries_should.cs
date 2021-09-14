@@ -74,7 +74,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             metaclassNode.MetaClass_SuperMetaClass.Should().ContainSingle(c => c.Id == MCID_GENERIC_OBJECT);
             metaclassNode.FilteredSubMetaClass.Should().HaveCountLessThan(metaclassNode.MetaClass_SubMetaClass.Count);
             metaclassNode.FilteredSuperMetaClass.Should().HaveCountLessThan(metaclassNode.MetaClass_SuperMetaClass.Count);
-        }       
+        }
 
         [Fact]
         public async void List_schema_containing_a_metaclass()

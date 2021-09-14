@@ -5,7 +5,7 @@ using Hopex.Modules.GraphQL.Schema.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using GraphQL.Execution;
 using static Hopex.Model.MetaModel.Constants;
 
 namespace Hopex.Modules.GraphQL.Schema
@@ -68,11 +68,11 @@ namespace Hopex.Modules.GraphQL.Schema
             });
         }
 
-        internal Func<IModelElement, bool> CreateSchemaPredicate(Dictionary<string, object> arguments)
+        internal Func<IModelElement, bool> CreateSchemaPredicate(IDictionary<string, ArgumentValue> arguments)
         {
-            if (arguments.TryGetValue("fromSchema", out var obj))
+            if (arguments.TryGetValue("fromSchema", out var obj) && obj.Value != null)
             {
-                var candidateSchemas = ((List<object>)obj).Cast<string>()
+                var candidateSchemas = ((IEnumerable<object>)obj.Value).Cast<string>()
                         .SelectMany(name => _schemaManager.HopexSchemas.Where(schema => schema.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
                 return metaclass => candidateSchemas.Any(schema => schema.FindClassDescriptionById(metaclass.Id) != null);
             }

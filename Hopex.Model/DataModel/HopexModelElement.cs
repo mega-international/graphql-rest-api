@@ -7,8 +7,10 @@ using Mega.Macro.API;
 using Mega.Macro.API.Library;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL.Execution;
 
 
 namespace Hopex.Model.DataModel
@@ -27,34 +29,42 @@ namespace Hopex.Model.DataModel
 
         public IMegaObject Language { get; set; }
 
-        public HopexModelElement(IHopexDataModel domainModel, IClassDescription schema, MegaObject megaObject, MegaId id = null)
+        public IModelElement PathElement { get; set; }
+
+        private HopexModelElement(IHopexDataModel domainModel,
+            IClassDescription schema,
+            IMegaRoot iMegaRoot,
+            IMegaObject iMegaObject,
+            MegaObject megaObject,
+            MegaId id,
+            IMegaObject parent)
         {
             DomainModel = domainModel;
             ClassDescription = schema;
-
-            MegaObject = megaObject;
-            _iRoot = RealMegaRootFactory.FromNativeRoot(megaObject.Root);
-            IMegaObject = new RealMegaObject(megaObject);
-
-            Id = InitializeId(IMegaObject, id);
-        }
-
-        public HopexModelElement(IHopexDataModel domainModel, IClassDescription schema, IMegaObject iMegaObject, MegaId id = null, IMegaObject parent = null)
-        {
-            DomainModel = domainModel;
-            ClassDescription = schema;
-
             IMegaObject = iMegaObject;
-            _iRoot = iMegaObject.Root;
-            if (iMegaObject is RealMegaObject)
-            {
-                MegaObject = ((RealMegaObject)iMegaObject).RealObject;
-            }            
-
+            MegaObject = megaObject;
+            _iRoot = iMegaRoot;
             Id = InitializeId(IMegaObject, id);
-
             Parent = parent;
         }
+
+        public HopexModelElement(IHopexDataModel domainModel, IClassDescription schema, MegaObject megaObject, MegaId id = null) :
+            this(domainModel,
+                schema,
+                RealMegaRootFactory.FromNativeRoot(megaObject.Root),
+                new RealMegaObject(megaObject),
+                megaObject,
+                id,
+                null) {}
+
+        public HopexModelElement(IHopexDataModel domainModel, IClassDescription schema, IMegaObject iMegaObject, MegaId id = null, IMegaObject parent = null) :
+            this(domainModel,
+                schema,
+                iMegaObject.Root,
+                iMegaObject,
+                iMegaObject is RealMegaObject ? ((RealMegaObject)iMegaObject).RealObject : null,
+                id,
+                parent) {}
 
         private MegaId InitializeId(IMegaObject iMegaObject, MegaId id)
         {
@@ -87,22 +97,27 @@ namespace Hopex.Model.DataModel
             return Task.FromResult(collection);
         }        
 
-        public object GetGenericValue(string propertyMegaId, Dictionary<string, object> arguments)
+        public object GetGenericValue(string propertyMegaId, IDictionary<string, ArgumentValue> arguments)
         {
             var normalizedId = Utils.NormalizeHopexId(propertyMegaId);
-            if (! arguments.TryGetValue("format", out var format))
+            string format;
+            if (arguments.TryGetValue("format", out var formatArgument) && formatArgument.Value != null)
+            {
+                format = formatArgument.Value.ToString();
+            }
+            else
             {
                 format = "ASCII";
             }
-            var propertyDescription = new PropertyDescription(ClassDescription, propertyMegaId, normalizedId, "", "string", null, null)
+            var propertyDescription = new PropertyDescription(ClassDescription, propertyMegaId, normalizedId, "", "string", null, null, null)
             {
-                GetterFormat = format.ToString()
+                GetterFormat = format
             };
             var value = GetValue<string>(propertyDescription, arguments);
             return value;
         }
 
-        public T GetValue<T>(string propertyName, Dictionary<string, object> arguments = null, string format = null)
+        public T GetValue<T>(string propertyName, IDictionary<string, ArgumentValue> arguments = null, string format = null)
         {
             var property = ClassDescription.GetPropertyDescription(propertyName);
             return GetValue<T>(property, arguments, format);
@@ -114,7 +129,7 @@ namespace Hopex.Model.DataModel
             SetValue<T>(property, value, format);
         }
 
-        public T GetValue<T>(IPropertyDescription property, Dictionary<string, object> arguments = null, string format = null)
+        public T GetValue<T>(IPropertyDescription property, IDictionary<string, ArgumentValue> arguments = null, string format = null)
         {
             CheckRelationship(property);
             var permissions = GetPropertyCrud(property);
@@ -125,37 +140,28 @@ namespace Hopex.Model.DataModel
 
             var propertyGetterFormat = format ?? property.GetterFormat ?? PropertyDescription.DefaultGetterFormat;
 
+            if (PropertyCache.TryGetValue<T>(out var cachedResult, IMegaObject.Id, property.Id, arguments, format))
+            {
+                return cachedResult;
+            }
+            
+            T result;
             switch (property.PropertyType)
             {
                 case PropertyType.Id:
-                    T id;
-                    switch (format)
+                    result = IMegaObject.GetPropertyValue<T>(property.Id, "External");
+                    if (string.IsNullOrEmpty(result.ToString()))
                     {
-                        case nameof(IdFormatEnum.ID):
-                            id = IMegaObject.GetPropertyValue<T>(property.Id, "External");
-                            break;
-                        case nameof(IdFormatEnum.LABEL):
-                            id = IMegaObject.GetPropertyValue<T>(property.Id, "Display");
-                            break;
-                        case nameof(IdFormatEnum.SCHEMATYPE):
-                            id = (T)Convert.ChangeType(null, typeof(T));
-                            break;
-                        default:
-                            id = IMegaObject.GetPropertyValue<T>(property.Id, "External");
-                            break;
+                        result = (T)Convert.ChangeType(null, typeof(T));
                     }
-                    if (string.IsNullOrEmpty(id.ToString()))
-                    {
-                        return (T)Convert.ChangeType(null, typeof(T));
-                    }
-                    return id;
+                    break;
                 case PropertyType.String:
                 case PropertyType.RichText:
                     var propertyId = property.Id;
-                    if (arguments != null && arguments.ContainsKey("nameSpace"))
+                    if (arguments != null && arguments.ContainsKey("nameSpace") && arguments["nameSpace"].Value != null)
                     {
                         NameSpaceFormatEnum nameSpaceFormatEnum;
-                        if(Enum.TryParse(arguments["nameSpace"].ToString(), out nameSpaceFormatEnum))
+                        if(Enum.TryParse(arguments["nameSpace"].Value.ToString(), out nameSpaceFormatEnum))
                         {
                             switch (nameSpaceFormatEnum)
                             {
@@ -171,19 +177,21 @@ namespace Hopex.Model.DataModel
                             }
                         }
                     }
-                    if (arguments != null && arguments.TryGetValue("language", out var languageValue) && languageValue is IMegaObject language)
+                    if (arguments != null && arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject language)
                     {
                         var attribute = IMegaObject.GetAttribute(propertyId);
                         var translatedAttribute = attribute.Translate(language.Id);
                         //propertyId = translatedAttribute.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier).ToString();
-                        return (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
+                        result = (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
+                        break;
                     }
                     if (Language != null)
                     {
                         var attribute = IMegaObject.GetAttribute(propertyId);
                         var translatedAttribute = attribute.Translate(Language.Id);
                         //propertyId = translatedAttribute.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier).ToString();
-                        return (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
+                        result = (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
+                        break;
                     }
                     if (format != null)
                     {
@@ -191,56 +199,100 @@ namespace Hopex.Model.DataModel
                         {
                             format = "ANSI";
                         }
-                        return MegaObject.NativeObject.GetFormated(propertyId, format);
+                        result = MegaObject.NativeObject.GetFormated(propertyId, format);
+                        break;
                     }
                     if (property.IsFormattedText)
                     {
-                        return MegaObject.NativeObject.GetFormated(propertyId, "HTML");
+                        result = MegaObject.NativeObject.GetFormated(propertyId, "HTML");
+                        break;
                     }
-                    return IMegaObject.GetPropertyValue<T>(propertyId, propertyGetterFormat);
+                    result = IMegaObject.GetPropertyValue<T>(propertyId, propertyGetterFormat);
+                    break;
                 case PropertyType.Enum:
-                    var enumResult = MegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
-                    var q = from x in property.EnumValues
-                            where x.InternalValue == enumResult.ToString()
-                            select x.Name;
-                    return (T)Convert.ChangeType(q.FirstOrDefault(), typeof(T));
+                    var enumValue = MegaObject.GetPropertyValue<T>(property.Id);
+                    var enumValueString = enumValue.ToString();
+                    string enumResult;
+                    if (Enum.TryParse(propertyGetterFormat, out EnumFormatEnum enumFormat))
+                    {
+                        switch (enumFormat)
+                        {
+                            case EnumFormatEnum.SCHEMA_ID:
+                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Name).FirstOrDefault();
+                                break;
+                            case EnumFormatEnum.ID:
+                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Id).FirstOrDefault();
+                                break;
+                            case EnumFormatEnum.INTERNAL_VALUE:
+                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.InternalValue).FirstOrDefault();
+                                break;
+                            case EnumFormatEnum.LABEL:
+                                enumResult = MegaObject.GetPropertyValue(property.Id, "Display");
+                                break;
+                            case EnumFormatEnum.ORDER:
+                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Order + " - " + MegaObject.GetPropertyValue(property.Id, "Display")).FirstOrDefault();
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                    else
+                    {
+                        enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Name).FirstOrDefault();
+                    }
+                    result = (T)Convert.ChangeType(enumResult, typeof(T));
+                    break;
                 case PropertyType.Date:
-                    var dateResult = IMegaObject.GetPropertyValue<T>(property.Id);
+                    var dateResult = IMegaObject.GetPropertyValue<T>(property.Id, "");
                     if (dateResult.ToString() == "")
                     {
-                        return (T)Convert.ChangeType(null, typeof(T));
+                        result = (T)Convert.ChangeType(null, typeof(T));
+                        break;
                     }
                     if (propertyGetterFormat != "ASCII" && IMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
-                        return (T)Convert.ChangeType(null, typeof(T));
+                        result = (T)Convert.ChangeType(null, typeof(T));
+                        break;
                     }
-                    return dateResult;
+                    result = dateResult;
+                    break;
                 case PropertyType.Int:
                 case PropertyType.Long:
                 case PropertyType.Double:
                     var numericResult = IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
                     if (numericResult.ToString() == "")
                     {
-                        return (T)Convert.ChangeType(null, typeof(T));
+                        result = (T)Convert.ChangeType(null, typeof(T));
+                        break;
                     }
                     if (propertyGetterFormat != "ASCII" && IMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
-                        return (T)Convert.ChangeType(null, typeof(T));
+                        result = (T)Convert.ChangeType(null, typeof(T));
+                        break;
                     }
-                    return numericResult;
+                    result = numericResult;
+                    break;
                 case PropertyType.Currency:
                     var amountResult = FormatCurrency<T>(property, arguments, propertyGetterFormat);
                     if (amountResult == null)
                     {
-                        return (T)Convert.ChangeType(null, typeof(T));
+                        result = (T)Convert.ChangeType(null, typeof(T));
+                        break;
                     }
-                    return amountResult;
+                    result = amountResult;
+                    break;
                 default:
-                    return IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+                    result = IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+                    break;
             }
+            if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, arguments, format))
+            {
+                Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
+            }
+            return result;
         }
 
-        private T FormatCurrency<T>(IPropertyDescription property, IReadOnlyDictionary<string, object> arguments, string propertyGetterFormat)
+        private T FormatCurrency<T>(IPropertyDescription property, IDictionary<string, ArgumentValue> arguments, string propertyGetterFormat)
         {
             object result = null;
             if (arguments != null && (arguments.ContainsKey("currency") || arguments.ContainsKey("dateRate")))
@@ -248,9 +300,9 @@ namespace Hopex.Model.DataModel
                 var currency = MegaObject.Root.CurrentEnvironment.Currency;
                 var value = MegaObject.GetPropertyValue(property.Id);
                 var currencyId = currency.GetCurrencyId(value);
-                if (arguments.ContainsKey("currency"))
+                if (arguments.ContainsKey("currency") && arguments["currency"].Value != null)
                 {
-                    var currencyCode = arguments["currency"].ToString();
+                    var currencyCode = arguments["currency"].Value.ToString();
                     var availableCurrency = MegaObject.Root.GetSelection($"Select {MetaClassLibrary.Currency} Where {MetaAttributeLibrary.CurrencyCode} = \"{currencyCode}\"").FirstOrDefault();
                     if (availableCurrency != null && availableCurrency.Exists)
                     {
@@ -259,7 +311,7 @@ namespace Hopex.Model.DataModel
                             var currencyValue = MegaObject.NativeObject.GetAttribute(property.Id).Value;
                             result = currency.GetAmount(currencyValue);
                             DateTime dateRate;
-                            if(arguments.ContainsKey("dateRate") && DateTime.TryParse(arguments["dateRate"].ToString(), out dateRate))
+                            if(arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null && DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
                             {
                                 result = currency.NativeObject.GetInternalAmount(result, currencyId, currencyId, dateRate);
                             }
@@ -270,19 +322,19 @@ namespace Hopex.Model.DataModel
                             var currencyValue = MegaObject.NativeObject.GetAttribute(property.Id).Translate(availableCurrencyId).Value;
                             result = currency.GetAmount(currencyValue);
                             DateTime dateRate;
-                            if(arguments.ContainsKey("dateRate") && DateTime.TryParse(arguments["dateRate"].ToString(), out dateRate))
+                            if(arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null && DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
                             {
                                 result = currency.NativeObject.GetInternalAmount(result, currencyId, availableCurrencyId, dateRate);
                             }
                         }
                     }
                 }
-                if (arguments.ContainsKey("dateRate"))
+                if (arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null)
                 {
                     var currencyValue = MegaObject.NativeObject.GetAttribute("~bKxT)KisHnbR[Amount]").Value;
                     result = currency.GetAmount(currencyValue);
                     DateTime dateRate;
-                    if(DateTime.TryParse(arguments["dateRate"].ToString(), out dateRate))
+                    if(DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
                     {
                         result = currency.NativeObject.GetInternalAmount(result, currencyId, currencyId, dateRate);
                     }
@@ -309,12 +361,12 @@ namespace Hopex.Model.DataModel
             if (property.PropertyType == PropertyType.Id)
             {
                 var id  = MegaId.Create(Utils.NormalizeHopexId(value.ToString()).Substring(0, 13));
-                MegaObject.NativeObject.SetProp(property.Id, id.Value);
+                IMegaObject.NativeObject.SetProp(property.Id, id.Value);
             }
             else if (value is DateTime)
             {
                 var dateTimeValue = (DateTime)Convert.ChangeType(value, typeof(DateTime));
-                MegaObject.SetPropertyValue(property.Id, dateTimeValue.ToString("yyyy/MM/dd HH:mm:ss"));
+                IMegaObject.SetPropertyValue(property.Id, dateTimeValue.ToString("yyyy/MM/dd HH:mm:ss"));
             }
             else
             {
@@ -322,7 +374,17 @@ namespace Hopex.Model.DataModel
                 {
                     format = "HTML";
                 }
+
                 IMegaObject.SetPropertyValue(property.Id, (object)value ?? "", format ?? property.SetterFormat ?? PropertyDescription.DefaultSetterFormat);
+
+                if(value != null && property.Id == MetaAttributeLibrary.ShortName.Substring(0, 13))
+                {
+                    var updatedName = IMegaObject.GetPropertyValue(MetaAttributeLibrary.Name);
+                    if (updatedName != null && updatedName != value.ToString())
+                    {
+                        throw new ExecutionError($@"An object {{{IMegaObject.MegaUnnamedField.Substring(0, 13)}}} named {{{value}}} already exists, name as been automatically updated to {{{updatedName}}}.");
+                    }
+                }
             }
         }
 
@@ -337,6 +399,16 @@ namespace Hopex.Model.DataModel
             {
                 try
                 {
+                    //if (setter.PropertyDescription?.Name.ToLower() == "name" /*&& setter.PropertyDescription?.IsUnique*/)
+                    //{
+                    //    var name = setter.Value.ToString();
+                    //    var existingObjects = _iRoot.GetCollection(setter.PropertyDescription.Owner.Id).CallFunction("~nLn(jj)SCf30[LinkableQuery]", name, "ExactName=Yes, ListAll=Yes");
+                    //    if (existingObjects != null && existingObjects.Count > 0)
+                    //    {
+                    //        _errors.Add(new Exception($@"Property name cannot be updated, an object named ""{name}"" already exists."));
+                    //        continue;
+                    //    }
+                    //}
                     await setter.UpdateElementAsync(DomainModel, this);
                 }
                 catch(Exception ex)
@@ -359,7 +431,19 @@ namespace Hopex.Model.DataModel
 
         public CrudResult GetPropertyCrud(IPropertyDescription property)
         {
-            return CrudComputer.GetPropertyCrud(IMegaObject, property);
+            if (PropertyCache.TryGetValue<CrudResult>(out var cachedResult, IMegaObject.Id, property.Id, cacheType:"CRUD"))
+            {
+                return cachedResult;
+            }
+
+            var result = CrudComputer.GetPropertyCrud(IMegaObject, property);
+
+            if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, cacheType:"CRUD"))
+            {
+                Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
+            }
+
+            return result;
         }
 
         private void CheckRelationship(IPropertyDescription property)

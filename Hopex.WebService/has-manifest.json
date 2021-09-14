@@ -1,13 +1,18 @@
 {
-    "ModuleType": "AddOn",
-    "Version": "1.0.0",
-    "Id": "hopex.graphql",
-    "Name": "hopex.graphql",
-    "Description": "Hopex Domain Data Access GraphQL Api",
-    "EnabledOnSettingsMode": false,
-    "ShowInPortal": false,
-    "IgnoreSynchronization": false,
-    "Author": "Mega International",
-    "Kind": "WebService",
-    "RequireLicenseAcceptance": false
+  "ModuleType": "AddOn",
+  "Version": "1.1.0",
+  "Id": "hopex.graphql",
+  "Name": "HOPEX GraphQL",
+  "Description": "HOPEX Domain Data Access GraphQL API",
+  "EnabledOnSettingsMode": false,
+  "ShowInPortal": false,
+  "IgnoreSynchronization": false,
+  "Author": "MEGA International",
+  "dependencies": [
+    {
+      "Id": "hopex.core"
+    }
+  ],
+  "Kind": "WebService",
+  "RequireLicenseAcceptance": false
 }

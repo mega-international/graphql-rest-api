@@ -175,7 +175,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             var response = await _graphQLClient.SendQueryAsync<CreateUpdateBusinessDocumentResponse>(request);
 
             response.Should().HaveNoError();
-            response.Data.CreateUpdateBusinessDocument.Id.Should().NotBeNull();            
+            response.Data.CreateUpdateBusinessDocument.Id.Should().NotBeNull();
         }
 
         [Fact]

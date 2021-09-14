@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
+using GraphQL;
 
 namespace Hopex.Model.Mocks
 {
@@ -143,7 +144,7 @@ namespace Hopex.Model.Mocks
             return Task.FromResult<IModelCollection>(_collections.GetOrAdd(schema.Name, _ => new MockModelCollection(this, schema)));
         }
 
-        public Task<List<IModelElement>> SearchAllAsync(ResolveFieldContext<IHopexDataModel> ctx)
+        public Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx)
         {
             var collection = _elements.Select(modelElement => modelElement.Value).ToList();
             return Task.FromResult(collection);

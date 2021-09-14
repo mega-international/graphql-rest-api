@@ -1,5 +1,4 @@
 using GraphQL;
-using GraphQL.Types;
 using Hopex.ApplicationServer.WebServices;
 using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
@@ -37,11 +36,22 @@ namespace Hopex.Model.DataModel
         public string Name { get; }
         public string RoleId { get; }
         public string Description { get; }
+        public bool IsReadOnly { get; }
         public IPathDescription[] Path { get; }
         public IClassDescription ClassDescription { get; }
         public IClassDescription TargetClass { get; }
 
         string IRelationshipDescription.ReverseId => throw new NotImplementedException();
+
+        public IEnumerable<ISetter> CreateSetters(object value)
+        {
+            if (value is IDictionary<string, object> dict)
+            {
+                var action = (CollectionAction)Enum.Parse(typeof(CollectionAction), dict["action"].ToString(), true);
+                var list = (IEnumerable<object>)dict["list"];
+                yield return CollectionSetter.Create(this, action, list);
+            }
+        }
     }
 
     public class HopexDataModel : IHopexDataModel, IDisposable
@@ -99,9 +109,9 @@ namespace Hopex.Model.DataModel
             return Task.FromResult(collection);
         }
 
-        public Task<List<IModelElement>> SearchAllAsync(ResolveFieldContext<IHopexDataModel> ctx)
+        public Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx)
         {
-            if (ctx.Arguments.TryGetValue("filter", out var filterObject) && filterObject is Dictionary<string, object> filter && filter.ContainsKey("text") && filter["text"] is string value && !string.IsNullOrWhiteSpace(value))
+            if (ctx.Arguments.TryGetValue("filter", out var filterObject) && filterObject.Value is Dictionary<string, object> filter && filter.ContainsKey("text") && filter["text"] is string value && !string.IsNullOrWhiteSpace(value))
             {
                 var minRange = 0;
                 if (filter.ContainsKey("minRange") && filter["minRange"] is int minRangeValue)
@@ -129,7 +139,7 @@ namespace Hopex.Model.DataModel
                 var orderByClause = "";
                 if (ctx.Arguments.TryGetValue("orderBy", out var orderByObject))
                 {
-                    switch (orderByObject)
+                    switch (orderByObject.Value)
                     {
                         case object[] orderBy:
                         {
@@ -159,7 +169,7 @@ namespace Hopex.Model.DataModel
                     }
                 }
                 var languageId = "";
-                if (ctx.Arguments.TryGetValue("language", out var languageValue) && languageValue is IMegaObject language)
+                if (ctx.Arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject language)
                 {
                     languageId = language.GetPropertyValue(MetaAttributeLibrary._hexaidabs);
                 }
@@ -210,13 +220,24 @@ namespace Hopex.Model.DataModel
             }
 
             var permissions = CrudComputer.GetCollectionMetaPermission(_iRoot, schema.Id);
-            if (!permissions.IsCreatable || setters.Any() && !permissions.IsUpdatable)
+            var settersList = setters.ToList();
+            if (!permissions.IsCreatable || settersList.Any() && !permissions.IsUpdatable)
             {
                 throw new ExecutionError("You are not allowed to perform this action");
             }
 
             var collection = _iRoot.GetCollection(schema.Id);
-            return await CreateElementFromParentAsync(schema, id, idType, useInstanceCreator, setters, collection);
+            //var setter = settersList.FirstOrDefault(x => x.PropertyDescription?.Name.ToLower() == "name" /*&& x.PropertyDescription?.IsUnique*/);
+            //if (setter != null)
+            //{
+            //    var name = setter.Value.ToString();
+            //    var existingObjects = collection.CallFunction("~nLn(jj)SCf30[LinkableQuery]", name, "ExactName=Yes, ListAll=Yes");
+            //    if (existingObjects != null && existingObjects.Count > 0)
+            //    {
+            //        throw new ExecutionError($@"An object named ""{name}"" already exists.");
+            //    }
+            //}
+            return await CreateElementFromParentAsync(schema, id, idType, useInstanceCreator, settersList, collection);
         }
 
         public async Task<IModelElement> CreateElementFromParentAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters, IMegaCollection iColParent)
@@ -319,13 +340,8 @@ namespace Hopex.Model.DataModel
                 throw new ArgumentNullException(nameof(schema));
             }
 
-            var getElementByIdAsyncTask = GetElementByIdAsync(schema, id, idType);
-            if (getElementByIdAsyncTask == null)
-            {
-                throw new ExecutionError($"Element {schema.Name} not found with id {id}");
-            }
-            var element = await getElementByIdAsyncTask;
-            if (!(element is HopexModelElement))
+            var element = await GetElementByIdAsync(schema, id, idType);
+            if (element == null)
             {
                 throw new ExecutionError($"Element {schema.Name} not found with id {id}");
             }

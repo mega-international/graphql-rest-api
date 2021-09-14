@@ -2,21 +2,17 @@ using FluentAssertions;
 using GraphQL;
 using GraphQL.Client.Http;
 using Mega.WebService.GraphQL.IntegrationTests.Assertions;
+using Mega.WebService.GraphQL.IntegrationTests.DTO;
 using Mega.WebService.GraphQL.IntegrationTests.Utils;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Mega.WebService.GraphQL.IntegrationTests.DTO;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Mega.WebService.GraphQL.IntegrationTests
 {
-    [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Local deserialization only")]
-    // ReSharper disable once InconsistentNaming
     public class Query_should : BaseFixture
     {
-        // ReSharper disable once InconsistentNaming
         private GraphQLHttpClient _graphQLClient;
 
         public Query_should(GlobalFixture fixture, ITestOutputHelper output) : base(fixture, output)

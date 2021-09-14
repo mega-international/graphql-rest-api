@@ -2,6 +2,7 @@ using GraphQL.Common.Request;
 using Mega.WebService.GraphQL.Tests.Models.Interfaces.Crud;
 using Mega.WebService.GraphQL.Tests.Sources;
 using Mega.WebService.GraphQL.Tests.Sources.FieldModels;
+using Mega.WebService.GraphQL.Tests.Sources.Requesters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace Mega.WebService.GraphQL.Tests.Models.Crud
 {
     public class Crud : ICrud
     {
-        private readonly GraphQLRequester _requester;
-        public Crud(GraphQLRequester requester)
+        private readonly IRequester _requester;
+        public Crud(IRequester requester)
         {
             _requester = requester;
         }

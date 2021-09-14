@@ -1,3 +1,4 @@
+using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Hopex.Model.MetaModel
         private List<IEnumDescription> _enumValues;
         private string _propertyTypeName;
 
-        public PropertyDescription(IClassDescription classDescription, string name, string id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isTranslatable = false, bool? isFormattedText = false, int? maxLength = null, PropertyScope scope=PropertyScope.Class)
+        public PropertyDescription(IClassDescription classDescription, string name, string id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isUnique, bool? isTranslatable = false, bool? isFormattedText = false, int? maxLength = null, string displayName = null, PropertyScope scope=PropertyScope.Class)
         {
             Owner = classDescription;
             Name = name;
@@ -23,9 +24,11 @@ namespace Hopex.Model.MetaModel
             PropertyTypeName = propertyType;
             IsRequired = isRequired == true;
             IsReadOnly = isReadOnly == true;
+            IsUnique = isUnique == true;
             IsTranslatable = isTranslatable == true;
             IsFormattedText = isFormattedText == true;
             MaxLength = maxLength;
+            DisplayName = displayName ?? Name;
             Constraints = new List<IConstraintDescription>();
         }
 
@@ -39,6 +42,11 @@ namespace Hopex.Model.MetaModel
             PropertyType = PropertyType.Enum;
         }
 
+        public virtual IEnumerable<ISetter> CreateSetters(object value)
+        {
+            yield return PropertySetter.Create(this, value);
+        }
+
         public string Name { get; }
         public PropertyScope Scope { get; }
         public string Id { get; }
@@ -46,6 +54,7 @@ namespace Hopex.Model.MetaModel
         public IEnumerable<IConstraintDescription> Constraints { get; }
         public IEnumerable<IEnumDescription> EnumValues => _enumValues;
         public bool IsReadOnly { get; internal set; }
+        public bool IsUnique { get; internal set; }
         public bool IsRequired { get; internal set; }
         public bool IsTranslatable { get; internal set; }
         public bool IsFormattedText { get; internal set; }
@@ -53,6 +62,7 @@ namespace Hopex.Model.MetaModel
         public IClassDescription Owner { get; }
         public string SetterFormat { get; internal set; }
         public string GetterFormat { get; internal set; }
+        public string DisplayName { get; internal set; }
 
         internal string PropertyTypeName
         {

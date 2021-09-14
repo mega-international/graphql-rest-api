@@ -56,15 +56,15 @@ namespace Hopex.WebService.Tests.Mocks
             _generateNewSchema = generateNewSchema;
         }
 
-        public override async Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, IMegaRoot megaRoot, ILogger logger)
+        public override async Task<GraphQLSchemaManager> GetInstanceAsync(IHopexContext hopexContext, string version, ILogger logger)
         {
             if (_generateNewSchema)
             {
                 var hopexSchemaManager = new HopexMetaModelManager(CreateSchemaLoader(), ctx => new PivotConvertor(ctx));
                 await hopexSchemaManager.LoadAllAsync(version);
-                return new GraphQLSchemaManager(hopexSchemaManager, megaRoot, logger);
+                return new GraphQLSchemaManager(hopexSchemaManager, logger);
             }
-            return await base.GetInstanceAsync(hopexContext, version, megaRoot, logger);
+            return await base.GetInstanceAsync(hopexContext, version, logger);
         }
 
         protected override void WriteLogFilenameToMegaErr(IHopexContext hopexContext) { }

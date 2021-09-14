@@ -6,16 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Hopex.WebService.API.Controllers
+namespace HAS.Modules.WebService.API.Controllers
 {
     [Route("api/diagram")]
-    [Authorize(AuthenticationSchemes = "PublicApiKeyScheme, Bearer, Cookies")]
-    public class DiagramController : Controller
+    [Authorize(AuthenticationSchemes = "PublicApiKeyScheme, BasicAuthScheme, Bearer, Cookies")]
+    public class DiagramController : BaseController
     {
         private readonly IHASClient _hopex;
         private readonly ILogger<HopexSessionController> _logger;
@@ -29,12 +31,77 @@ namespace Hopex.WebService.API.Controllers
         [HttpGet("{diagramId}/image")]
         public async Task<IActionResult> GetImage(string diagramId)
         {
-            _logger.Log(LogLevel.Trace, $"{GetType().Name}.GetImage(diagramId: {diagramId}) enter.");
-            var path = $"/api/diagram/{diagramId}/image";
+            try
+            {
+                _logger.Log(LogLevel.Trace, $"{GetType().Name}.GetImage(diagramId: {diagramId}) enter.");
+                var path = $"/api/diagram/{diagramId}/image";
+                if (!TryGetDiagramArgs(out var userData, out var actionResult))
+                {
+                    return actionResult;
+                }
+                var macroResponse = await _hopex.CallWebService<string>(path, userData);
+                var macroResult = JsonConvert.DeserializeObject<FileDownloadMacroResponse>(macroResponse);
+                var fileResult = File(new MemoryStream(Convert.FromBase64String(macroResult.Content)), macroResult.ContentType, macroResult.FileName);
+                _logger.Log(LogLevel.Trace, $"{GetType().Name}.GetImage(diagramId: {diagramId}) leave.");
+                return fileResult;
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Critical, e, e.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        [Route("async/diagram/{diagramId}/image")]
+        public async Task<IActionResult> AsyncGetImage(string diagramId)
+        {
+            try
+            {
+                _logger.Log(LogLevel.Trace, $"{GetType().Name}.AsyncGetImage(diagramId: {diagramId}) enter.");
+                var path = $"/api/diagram/{diagramId}/image";
+
+                //If no x-hopex-task header, we want to start a new job
+                if (!Request.Headers.TryGetValue("x-hopex-task", out var taskIds))
+                {
+                    if (!TryGetDiagramArgs(out var userData, out var actionResult))
+                    {
+                        return actionResult;
+                    }
+                    HttpResponseMessage startJobResponse;
+                    //If x-hopex-wait header has a value, we want to start a new job and wait for the macro to respond in x milliseconds or return the x-hopex-task in the response header
+                    if (Request.Headers.TryGetValue("x-hopex-wait", out var hopexWait) && int.TryParse(hopexWait.FirstOrDefault(), out var hopexWaitMilliseconds))
+                    {
+                        startJobResponse = await _hopex.CallWebService(path, userData, new Dictionary<string, string> { { "x-hopex-wait", hopexWaitMilliseconds.ToString() } });
+                    }
+                    //If no x-hopex-wait header, we want to start a new job and wait for the macro to respond immediately or return the x-hopex-task in the response header
+                    else
+                    {
+                        startJobResponse = await _hopex.CallWebService(path, userData, new Dictionary<string, string> { { "x-hopex-wait", "1" } });
+                    }
+                    _logger.Log(LogLevel.Trace, $"{GetType().Name}.AsyncExecute(diagramId: {diagramId}, start job) leave.");
+                    return await ConvertWebServiceResponseToFileStream(startJobResponse);
+                }
+                //If x-hopex-task header has a value, we get the result of the job or partial content if the job is not finished or error if the task does not exist any more
+                var getJobResponse = await _hopex.CallWebService(path, null, new Dictionary<string, string> { { "x-hopex-task", taskIds.FirstOrDefault() } });
+                _logger.Log(LogLevel.Trace, $"{GetType().Name}.AsyncExecute(diagramId: {diagramId}, get job result) leave.");
+                return await ConvertWebServiceResponseToFileStream(getJobResponse);
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Critical, e, e.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        private bool TryGetDiagramArgs(out string userData, out IActionResult actionResult)
+        {
             var format = GetImageFormatFromHeader();
             if (!format.HasValue)
             {
-                return StatusCode((int) HttpStatusCode.NotAcceptable);
+                userData = null;
+                actionResult = StatusCode((int)HttpStatusCode.NotAcceptable);
+                return false;
             }
             var diagramArgs = new DiagramExportArguments
             {
@@ -42,16 +109,15 @@ namespace Hopex.WebService.API.Controllers
             };
             if (!TryParseQualityHeader(ref diagramArgs))
             {
-                return BadRequest("Invalid x-hopex-jpegquality, should a number between 1 and 100");
+                userData = null;
+                actionResult = BadRequest("Invalid x-hopex-jpegquality, should a number between 1 and 100");
+                return false;
             }
-            var userData = JsonConvert.SerializeObject(diagramArgs);
-            var macroResponse = await _hopex.CallWebService<string>(path, userData);
-            var macroResult = JsonConvert.DeserializeObject<FileDownloadMacroResponse>(macroResponse);
-            var fileResult = File(new MemoryStream(Convert.FromBase64String(macroResult.Content)), macroResult.ContentType, macroResult.FileName);
-            _logger.Log(LogLevel.Trace, $"{GetType().Name}.GetImage(diagramId: {diagramId}) leave.");
-            return fileResult;
+            userData = JsonConvert.SerializeObject(diagramArgs);
+            actionResult = null;
+            return true;
         }
-        
+
         private ImageFormat? GetImageFormatFromHeader()
         {
             if (Request.Headers.TryGetValue("accept", out var acceptValues))
@@ -68,7 +134,7 @@ namespace Hopex.WebService.API.Controllers
             }
             return null;
         }
-        
+
         private bool TryParseQualityHeader(ref DiagramExportArguments diagramArgs)
         {
             if (diagramArgs.Format == ImageFormat.Jpeg)

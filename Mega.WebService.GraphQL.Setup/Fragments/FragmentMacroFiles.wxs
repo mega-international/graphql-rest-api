@@ -11,35 +11,38 @@
         </ComponentGroup>
 
         <ComponentGroup Id="MacroConfigV3StandardFiles" Directory="MacroConfigV3Standard">
-            <Component Id="Config_Assessment.json" Guid="{2093D550-1035-4F47-BEBA-628AD58572F0}">
-                <File Id="Config_Assessment.json" Name="Assessment.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Assessment.json" />
+            <Component Id="Config_Assessment.JSON" Guid="{2093D550-1035-4F47-BEBA-628AD58572F0}">
+                <File Id="Config_Assessment.JSON" Name="Assessment.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Assessment.JSON" />
             </Component>
-            <Component Id="Config_Audit.json" Guid="{0BB2AB4E-4ECE-42B9-9518-A1E8ADE0B72F}">
-                <File Id="Config_Audit.json" Name="Audit.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Audit.json" />
+            <Component Id="Config_Audit.JSON" Guid="{0BB2AB4E-4ECE-42B9-9518-A1E8ADE0B72F}">
+                <File Id="Config_Audit.JSON" Name="Audit.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Audit.JSON" />
             </Component>
-            <Component Id="Config_BPA.json" Guid="{C243546F-0CE1-48DE-AAA4-1DD63CEB2FF3}">
-                <File Id="Config_BPA.json" Name="BPA.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\BPA.json" />
+            <Component Id="Config_BPA.JSON" Guid="{C243546F-0CE1-48DE-AAA4-1DD63CEB2FF3}">
+                <File Id="Config_BPA.JSON" Name="BPA.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\BPA.JSON" />
             </Component>
-            <Component Id="Config_Data.json" Guid="{6B2E4FEA-47E4-4963-BDC3-D29A86BEC9BD}">
-                <File Id="Config_Data.json" Name="Data.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Data.json" />
+            <Component Id="Config_Data.JSON" Guid="{6B2E4FEA-47E4-4963-BDC3-D29A86BEC9BD}">
+                <File Id="Config_Data.JSON" Name="Data.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Data.JSON" />
             </Component>
-            <Component Id="Config_DataPrivacy.json" Guid="{4ACA6800-4DB5-4B0F-B484-9D0C6F0EC088}">
-                <File Id="Config_DataPrivacy.json" Name="DataPrivacy.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\DataPrivacy.json" />
+            <Component Id="Config_DataPrivacy.JSON" Guid="{4ACA6800-4DB5-4B0F-B484-9D0C6F0EC088}">
+                <File Id="Config_DataPrivacy.JSON" Name="DataPrivacy.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\DataPrivacy.JSON" />
             </Component>
-            <Component Id="Config_ITPM.json" Guid="{8C1ECD8D-0B96-48D1-87EF-7CF3F41A43FA}">
-                <File Id="Config_ITPM.json" Name="ITPM.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\ITPM.json" />
+            <Component Id="Config_ITARC.JSON" Guid="{2AC10293-66BC-4F13-97D3-85871A5183B9}">
+                <File Id="Config_ITARC.JSON" Name="ITARC.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\ITARC.JSON" />
             </Component>
-            <Component Id="Config_MetaModel.json" Guid="{E12AD817-11F4-4EE0-801B-1228CF61C4D3}">
-                <File Id="Config_MetaModel.json" Name="MetaModel.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\MetaModel.json" />
+            <Component Id="Config_ITPM.JSON" Guid="{8C1ECD8D-0B96-48D1-87EF-7CF3F41A43FA}">
+                <File Id="Config_ITPM.JSON" Name="ITPM.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\ITPM.JSON" />
             </Component>
-            <Component Id="Config_Reporting.json" Guid="{667EAA1F-47E6-448D-AC63-A47243820F52}">
-                <File Id="Config_Reporting.json" Name="Reporting.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Reporting.json" />
+            <Component Id="Config_MetaModel.JSON" Guid="{E12AD817-11F4-4EE0-801B-1228CF61C4D3}">
+                <File Id="Config_MetaModel.JSON" Name="MetaModel.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\MetaModel.JSON" />
             </Component>
-            <Component Id="Config_Risk.json" Guid="{CEC43209-2588-4E79-B991-911C75616E78}">
-                <File Id="Config_Risk.json" Name="Risk.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Risk.json" />
+            <Component Id="Config_Reporting.JSON" Guid="{667EAA1F-47E6-448D-AC63-A47243820F52}">
+                <File Id="Config_Reporting.JSON" Name="Reporting.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Reporting.JSON" />
             </Component>
-            <Component Id="Config_Workflow.json" Guid="{5DAA710C-265C-4EDC-B177-5827B1927D2A}">
-                <File Id="Config_Workflow.json" Name="Workflow.json" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Workflow.json" />
+            <Component Id="Config_Risk.JSON" Guid="{CEC43209-2588-4E79-B991-911C75616E78}">
+                <File Id="Config_Risk.JSON" Name="Risk.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Risk.JSON" />
+            </Component>
+            <Component Id="Config_Workflow.JSON" Guid="{5DAA710C-265C-4EDC-B177-5827B1927D2A}">
+                <File Id="Config_Workflow.JSON" Name="Workflow.JSON" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\CONFIG\V3\Standard\Workflow.JSON" />
             </Component>
         </ComponentGroup>
 
@@ -50,11 +53,14 @@
         </ComponentGroup>
 
         <ComponentGroup Id="MacroFiles" Directory="MacroVersion">
-            <Component Id="Macro.GraphQLParser.dll" Guid="{7D699ECF-EE41-417B-8293-C6242FD95F4F}">
-                <File Id="Macro.GraphQLParser.dll" Name="GraphQL-Parser.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\GraphQL-Parser.dll" />
-            </Component>
             <Component Id="Macro.GraphQL.dll" Guid="{F8523445-9405-4745-95D8-675781AE4CBB}">
                 <File Id="Macro.GraphQL.dll" Name="GraphQL.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\GraphQL.dll" />
+            </Component>
+            <Component Id="Macro.GraphQL.NewtonsoftJson.dll" Guid="{87621804-C0CA-4C6B-9472-9F66A782B2AA}">
+                <File Id="Macro.GraphQL.NewtonsoftJson.dll" Name="GraphQL.NewtonsoftJson.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\GraphQL.NewtonsoftJson.dll" />
+            </Component>
+            <Component Id="Macro.GraphQLParser.dll" Guid="{7D699ECF-EE41-417B-8293-C6242FD95F4F}">
+                <File Id="Macro.GraphQLParser.dll" Name="GraphQL-Parser.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\GraphQL-Parser.dll" />
             </Component>
             <Component Id="Macro.Hopex.ApplicationServer.WebServices.dll" Guid="{04FCB3F3-B01A-4622-9792-5671356C4D82}">
                 <File Id="Macro.Hopex.ApplicationServer.WebServices.dll" Name="Hopex.ApplicationServer.WebServices.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\Hopex.ApplicationServer.WebServices.dll" />
@@ -128,23 +134,11 @@
             <Component Id="Macro.System.ComponentModel.Annotations.dll" Guid="{BFB879BA-0266-4AA0-A915-E7864B6B1E12}">
                 <File Id="Macro.System.ComponentModel.Annotations.dll" Name="System.ComponentModel.Annotations.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.ComponentModel.Annotations.dll" />
             </Component>
-            <Component Id="Macro.System.ComponentModel.dll" Guid="{2CBC778F-092A-488E-85B4-C191BDC0C5EC}">
-                <File Id="Macro.System.ComponentModel.dll" Name="System.ComponentModel.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.ComponentModel.dll" />
-            </Component>
-            <Component Id="Macro.System.Configuration.ConfigurationManager.dll" Guid="{B25FCC30-F820-4DBA-B9A0-43C2A221A05D}">
+            <Component Id="Macro.System.Configuration.ConfigurationManager.dll" Guid="">
                 <File Id="Macro.System.Configuration.ConfigurationManager.dll" Name="System.Configuration.ConfigurationManager.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Configuration.ConfigurationManager.dll" />
             </Component>
-            <Component Id="Macro.System.Diagnostics.Contracts.dll" Guid="{A11C71B9-CB45-423B-9C4F-8E7E0320F859}">
-                <File Id="Macro.System.Diagnostics.Contracts.dll" Name="System.Diagnostics.Contracts.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Diagnostics.Contracts.dll" />
-            </Component>
-            <Component Id="Macro.System.Dynamic.Runtime.dll" Guid="{D5701F47-D3EA-4B4E-AA45-9061F3893D53}">
-                <File Id="Macro.System.Dynamic.Runtime.dll" Name="System.Dynamic.Runtime.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Dynamic.Runtime.dll" />
-            </Component>
-            <Component Id="Macro.System.Linq.dll" Guid="{E34E4442-4862-4604-B9A8-8F4FD9734D1B}">
-                <File Id="Macro.System.Linq.dll" Name="System.Linq.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Linq.dll" />
-            </Component>
-            <Component Id="Macro.System.Linq.Expressions.dll" Guid="{6F840F91-8286-4C5A-914E-68C64844BEA1}">
-                <File Id="Macro.System.Linq.Expressions.dll" Name="System.Linq.Expressions.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Linq.Expressions.dll" />
+            <Component Id="Macro.System.Linq.Dynamic.Core.dll" Guid="{CF289E2C-EA7C-4EA3-A107-7ACAB4138E6D}">
+                <File Id="Macro.System.Linq.Dynamic.Core.dll" Name="System.Linq.Dynamic.Core.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Linq.Dynamic.Core.dll" />
             </Component>
             <Component Id="Macro.System.Memory.dll" Guid="{D5E602A9-B218-4DE7-ABE2-907C3F070063}">
                 <File Id="Macro.System.Memory.dll" Name="System.Memory.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Memory.dll" />
@@ -152,38 +146,17 @@
             <Component Id="Macro.System.Numerics.Vectors.dll" Guid="{E17BBFB9-C352-4D1C-AEF0-C9255B0B9F79}">
                 <File Id="Macro.System.Numerics.Vectors.dll" Name="System.Numerics.Vectors.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Numerics.Vectors.dll" />
             </Component>
-            <Component Id="Macro.System.ObjectModel.dll" Guid="{C88A2CF3-5D09-4252-A7B0-1A281083C77B}">
-                <File Id="Macro.System.ObjectModel.dll" Name="System.ObjectModel.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.ObjectModel.dll" />
-            </Component>
-            <Component Id="Macro.System.Reactive.Core.dll" Guid="{FA89A671-D125-4F5B-A1FA-31C12B6481DB}">
-                <File Id="Macro.System.Reactive.Core.dll" Name="System.Reactive.Core.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Reactive.Core.dll" />
-            </Component>
-            <Component Id="Macro.System.Reactive.Interfaces.dll" Guid="{2C2D8554-4A46-494F-8C4C-5B342D7CFB5F}">
-                <File Id="Macro.System.Reactive.Interfaces.dll" Name="System.Reactive.Interfaces.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Reactive.Interfaces.dll" />
-            </Component>
-            <Component Id="Macro.System.Reactive.Linq.dll" Guid="{06A5CE92-4CA4-4B34-9D0A-DAB955A604E0}">
-                <File Id="Macro.System.Reactive.Linq.dll" Name="System.Reactive.Linq.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Reactive.Linq.dll" />
-            </Component>
             <Component Id="Macro.System.Reflection.Emit.dll" Guid="{7E2A73D7-8F55-4C1E-8D92-E3A1A90CE940}">
                 <File Id="Macro.System.Reflection.Emit.dll" Name="System.Reflection.Emit.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Reflection.Emit.dll" />
             </Component>
             <Component Id="Macro.System.Reflection.Emit.ILGeneration.dll" Guid="{FA801C96-355E-4BD0-B857-5EB2A58EA8FF}">
                 <File Id="Macro.System.Reflection.Emit.ILGeneration.dll" Name="System.Reflection.Emit.ILGeneration.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Reflection.Emit.ILGeneration.dll" />
             </Component>
-            <Component Id="Macro.System.Reflection.Emit.Lightweight.dll" Guid="{706E6352-B3F9-4142-98D3-B8C0170A006C}">
-                <File Id="Macro.System.Reflection.Emit.Lightweight.dll" Name="System.Reflection.Emit.Lightweight.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Reflection.Emit.Lightweight.dll" />
-            </Component>
-            <Component Id="Macro.System.Reflection.TypeExtensions.dll" Guid="{EEBBE963-4C44-4CDF-A9CB-D5F7DB4CA89F}">
-                <File Id="Macro.System.Reflection.TypeExtensions.dll" Name="System.Reflection.TypeExtensions.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Reflection.TypeExtensions.dll" />
-            </Component>
             <Component Id="Macro.System.Runtime.Caching.dll" Guid="{EBB0A051-E72C-484C-A44C-072A395AE76C}">
                 <File Id="Macro.System.Runtime.Caching.dll" Name="System.Runtime.Caching.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Runtime.Caching.dll" />
             </Component>
             <Component Id="Macro.System.Runtime.CompilerServices.Unsafe.dll" Guid="{6A2C05DE-B753-4CBA-8C7C-46E786190559}">
                 <File Id="Macro.System.Runtime.CompilerServices.Unsafe.dll" Name="System.Runtime.CompilerServices.Unsafe.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Runtime.CompilerServices.Unsafe.dll" />
-            </Component>
-            <Component Id="Macro.System.Runtime.InteropServices.WindowsRuntime.dll" Guid="{4BF119D6-7301-459B-939A-0901C36481F5}">
-                <File Id="Macro.System.Runtime.InteropServices.WindowsRuntime.dll" Name="System.Runtime.InteropServices.WindowsRuntime.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Runtime.InteropServices.WindowsRuntime.dll" />
             </Component>
             <Component Id="Macro.System.Security.AccessControl.dll" Guid="{14D163DC-136C-4D14-802D-B68E750FC655}">
                 <File Id="Macro.System.Security.AccessControl.dll" Name="System.Security.AccessControl.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Security.AccessControl.dll" />
@@ -199,9 +172,6 @@
             </Component>
             <Component Id="Macro.System.Text.Encodings.Web.dll" Guid="{F0DED28B-95A2-4058-86C6-81B378E634FD}">
                 <File Id="Macro.System.Text.Encodings.Web.dll" Name="System.Text.Encodings.Web.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Text.Encodings.Web.dll" />
-            </Component>
-            <Component Id="Macro.System.Threading.dll" Guid="{4A448BA5-3F20-4F31-8C8C-8D927DD6D69C}">
-                <File Id="Macro.System.Threading.dll" Name="System.Threading.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Threading.dll" />
             </Component>
         </ComponentGroup>
 

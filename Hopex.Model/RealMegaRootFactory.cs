@@ -161,6 +161,11 @@ namespace Hopex.Model
                 return (T)wrappedResult.NativeObject;
         }
 
+        public dynamic CallFunction(MegaId methodId, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null)
+        {
+            return _realItem.NativeObject.CallFunction(methodId.ToString(), arg1, arg2, arg3, arg4, arg5, arg6);
+        }
+
         public bool ConditionEvaluate(MegaId methodId)
         {
             return _realItem.NativeObject.ConditionEvaluate($"ApplyTest({methodId})");

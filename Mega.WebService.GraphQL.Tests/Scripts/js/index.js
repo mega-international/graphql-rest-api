@@ -22,8 +22,10 @@ function GetSelectedJsonValue(id) {
 
 function GetSelectedStringValue(id) {
     let selected = document.getElementById(id);
-    let strSelected = selected.hidden ? "" : selected.options[selected.selectedIndex].value;
-    return strSelected;
+    if (selected == null || selected.hidden) {
+        return "";
+    }
+    return selected.options[selected.selectedIndex].value;
 }
 
 function OnPageLoaded()
@@ -111,6 +113,20 @@ function CheckSessionDatas()
     return true;
 }
 
+function enableElement(elementName) {
+    let element = document.getElementById(elementName);
+    if (element != null) {
+        element.disabled = false;
+    }
+}
+
+function disableElement(elementName) {
+    let element = document.getElementById(elementName);
+    if (element != null) {
+        element.disabled = true;
+    }
+}
+
 function OnBeginTest()
 {
     //get items to update
@@ -120,11 +136,11 @@ function OnBeginTest()
 
     //update
     selectTest.disabled = true;
-    document.getElementById(selectEnvId).disabled = true;
-    document.getElementById(selectSrcBaseId).disabled = true;
-    document.getElementById(selectDstBaseId).disabled = true;
-    document.getElementById(selectProfileId).disabled = true;
-    document.getElementById(selectSynchronisation).disabled = true;
+    disableElement(selectEnvId);
+    disableElement(selectSrcBaseId);
+    disableElement(selectDstBaseId);
+    disableElement(selectProfileId);
+    disableElement(selectSynchronisation);
     imageState.src = "Resources/Animations/running.gif";
     imageState.style.pointerEvents = "none";
     imageResult.hidden = true;
@@ -141,6 +157,39 @@ function UpdateMessagesError() {
     document.getElementById("TestMessageDetails").innerHTML = "error";
 }
 
+function GetTestParametersStr()
+{
+    let hasMode = document.getElementById("HASMode").value;
+    let src, dst;
+    if (hasMode) {
+        src = {
+            apiKey: GetSelectedStringValue(selectSrcBaseId)
+        };
+        dst = {
+            apiKey: GetSelectedStringValue(selectDstBaseId)
+        };
+    }
+    else {
+        src = {
+            environmentId: GetSelectedStringValue(selectEnvId),
+            repositoryId: GetSelectedStringValue(selectSrcBaseId),
+            profileId: GetSelectedStringValue(selectProfileId)
+        }
+        dst = {
+            environmentId: GetSelectedStringValue(selectEnvId),
+            repositoryId: GetSelectedStringValue(selectDstBaseId),
+            profileId: GetSelectedStringValue(selectProfileId)
+        }
+    }
+    let testParams = {
+        source: src,
+        destination: dst,
+        synchronisation: GetSelectedStringValue(selectSynchronisation)
+    }
+    return JSON.stringify(testParams);
+
+}
+
 function CallTest(selectedTest)
 {
     let testParams =
@@ -152,13 +201,15 @@ function CallTest(selectedTest)
         synchronisation: GetSelectedStringValue(selectSynchronisation)
     }
 
+    let testParamsStr = GetTestParametersStr();
+
     UpdateMessages(null);
     document.getElementById("TestCurrent").innerHTML = selectedTest.nameDisplay;
     $.ajax({
         url: "/home/runtestasync",
         type: "GET",
         data: "testName=" + selectedTest.name
-            + "&testParams=" + JSON.stringify(testParams),
+            + "&testParams=" + testParamsStr,
         success: function (response)
         {
             let result = JSON.parse(response);
@@ -203,11 +254,11 @@ function OnEndTest(success)
     
     //update
     selectTest.disabled = false;
-    document.getElementById(selectEnvId).disabled = false;
-    document.getElementById(selectSrcBaseId).disabled = false;
-    document.getElementById(selectDstBaseId).disabled = false;
-    document.getElementById(selectProfileId).disabled = false;
-    document.getElementById(selectSynchronisation).disabled = false;
+    enableElement(selectEnvId);
+    enableElement(selectSrcBaseId);
+    enableElement(selectDstBaseId);
+    enableElement(selectProfileId);
+    enableElement(selectSynchronisation);
     imageState.src = "Resources/Images/play.png";
     imageState.style.pointerEvents = "auto";
     imageResult.src = success ? "Resources/Images/success.png" : "Resources/Images/failure.png";

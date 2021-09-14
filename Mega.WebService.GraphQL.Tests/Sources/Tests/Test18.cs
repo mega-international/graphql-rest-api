@@ -65,9 +65,11 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             public const string GetFinding = "GetFinding";
         }
 
+        private static int findingCount = 0;
+
         protected override void Initialisation()
         {
-            _requester = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaAudit}");
+            _requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaAudit}");
         }
 
         private readonly string[] _actions = new string[]
@@ -84,17 +86,62 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected override async Task StepsAsync(ITestParam oTestParam)
         {
-            SetConfig(EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(Destination);
             var (activities, findings) = await GetAllIds();
             if(activities.Count <= 0)
             {
-                throw new Exception("Missing data in audit activities");
+                activities = await CreateOneActivity();
+                //throw new Exception("Missing data in audit activities");
             }
             if(findings.Count <= 0)
             {
-                throw new Exception("Missing data in findings");
+                findings = await CreateOneFinding();
+                //throw new Exception("Missing data in findings");
             }
-            await ProcessActionsAsync(activities, findings, 25).ConfigureAwait(false);
+            await ProcessActionsAsync(activities, findings, 20).ConfigureAwait(false);
+        }
+
+        private async Task<List<string>> CreateOneActivity()
+        {
+            string query = "mutation\n" +
+                            "{\n" +
+                                "createAuditActivity(auditActivity:\n" +
+                                "{\n" +
+                                    "name: \"new activity\"\n" +
+                                "})\n" +
+                                "{\n" +
+                                    "id\n" +
+                                "}\n" +
+                            "}";
+            var items = (await ProcessRawQuery(query))["n1"] as JArray;
+            var item = items[0] as JObject;
+            return  new List<string>
+            {
+                item["id"].ToString()
+            };
+        }
+
+        private async Task<List<string>> CreateOneFinding()
+        {
+            string query = "mutation\n" +
+                            "{\n" +
+                                "createFinding(finding:\n" +
+                                "{\n" +
+                                    "name: \"new finding\"\n" +
+                                    "findingImpact: High\n" +
+                                    "findingType: Weakness\n" +
+                                    "detailedDescription: \"a\"\n" +
+                                "})\n" +
+                                "{\n" +
+                                    "id\n" +
+                                "}\n" +
+                            "}";
+            var items = (await ProcessRawQuery(query))["n1"] as JArray;
+            var item = items[0] as JObject;
+            return new List<string>
+            {
+                item["id"].ToString()
+            };
         }
 
         private async Task<List<string>> GetIdsFromMetaclass(string metaclassName)
@@ -120,7 +167,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         private string GenerateRandom(IReadOnlyList<string> datas)
         {
-            if(datas.Count > 1) //never generate if last data
+            if(datas.Count > 0)
             {
                 var random = new Random();
                 var idx = random.Next(0, datas.Count);
@@ -214,6 +261,13 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             }
         }
 
+        protected async Task<JToken> CommonQueryInterlock(string query, CancellationToken token)
+        {
+            var requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaAudit}");
+            SetConfig(requester, Destination);
+            return await ProcessRawQuery(requester, query, token);
+        }
+
         //Step 4: Display activity infos
         protected async Task GetActivity(string id, CancellationToken token)
         {
@@ -229,17 +283,19 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                             "activityStatus\n" +
                           "}\n" +
                         "}";
-            await ProcessRawQuery(query, token);
+            await CommonQueryInterlock(query, token);
         }
 
         //Step 5: Within an activity
         protected async Task CreateFindingInActivity(string activityId, CancellationToken token)
         {
+            var newCount = Interlocked.Increment(ref findingCount);
+            var newName = $"finding number {newCount}";
             string query = "mutation\n" +
                             "{\n" +
                                 "createFinding(finding:\n" +
                                 "{\n" +
-                                    "name: \"name new finding\"\n" +
+                                    $"name: \"{newName}\"\n" +
                                     "findingImpact: High\n" +
                                     "findingType: Weakness\n" +
                                     "detailedDescription: \"a\"\n" +
@@ -254,7 +310,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                                     "name\n" +
                                 "}\n" +
                             "}";
-            var result = await ProcessRawQuery(query, token);
+            var result = await CommonQueryInterlock(query, token);
         }
 
         protected async Task GetFindingsInActivity(string activityId, CancellationToken token)
@@ -271,7 +327,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                                 "}\n" +
                             "}\n" +
                         "}";
-            await ProcessRawQuery(query, token);
+            await CommonQueryInterlock(query, token);
         }
 
         protected async Task UpdateActivity(string id, CancellationToken token)
@@ -294,7 +350,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                                     "activityEndDate\n" +
                                 "}\n" +
                             "}";
-            await ProcessRawQuery(query, token);
+            await CommonQueryInterlock(query, token);
         }
 
         //Step 6: Within findings list
@@ -320,7 +376,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                                 "detailedDescription\n" +
                             "}\n" +
                         "}";
-            await ProcessRawQuery(query, token);
+            await CommonQueryInterlock(query, token);
         }
     }
 }

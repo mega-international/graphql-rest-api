@@ -1,14 +1,13 @@
+using System;
 using Hopex.WebService.Tests.Assertions;
 using Hopex.WebService.Tests.Mocks;
 using Mega.Macro.API;
-using System.Diagnostics.CodeAnalysis;
 using Mega.Macro.API.Library;
 using Xunit;
 using Moq;
 
 namespace Hopex.WebService.Tests
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Query_should : MockRootBasedFixture
     {
         [Fact]
@@ -40,7 +39,7 @@ namespace Hopex.WebService.Tests
                 .WithObject(new MockMegaObject(applicationId, MetaClassLibrary.Application)
                     .WithProperty(MetaAttributeLibrary.CurrentState, currentStateId.ToString() ))
                 .WithObject(new MockMegaObject(currentStateId, fakeCurrentStateMetaclass)
-                    .WithProperty(MetaAttributeLibrary.ShortName, "Production"))
+                    .WithProperty(MetaAttributeLibrary.Name, "Production"))
                 .Build();
 
             var resp = await ExecuteQueryAsync(root, @"query{application{id,currentState{id,name}}}");
@@ -132,6 +131,65 @@ namespace Hopex.WebService.Tests
 
             var resp = await ExecuteQueryAsync(root, @"query{application{applicationOwner_PersonSystem(filter:{ email_contains: ""webeval""}) {id} }}");
             resp.Should().ContainsGraphQLCount("data.application[0].applicationOwner_PersonSystem", 1);
+        }
+
+        [Fact]
+        public async void Query_with_link_property_should_work()
+        {
+            var businessCapability = new MockMegaObject(MegaId.Create("ofUZ9w8WOL(9"), MetaClassLibrary.BusinessCapability).
+                WithProperty(MetaAttributeLibrary.ShortName, "Business Capability");
+
+            var fulfillment = new MockMegaObject(MegaId.Create("SwR5lQHMPf36"), MetaClassLibrary.BusinessCapabilityFulfillment).
+                WithProperty(MetaAttributeLibrary.ShortName, "Fulfillment").
+                WithProperty(MetaAttributeLibrary.RealizationCostContributionKey, 10.0).
+                WithRelation(new MockMegaCollection(MetaAssociationEndLibrary.BusinessCapabilityFulfillment_FulfilledBusinessCapability).
+                    WithChildren(businessCapability));
+                                
+            var applicaiton = new MockMegaObject(MegaId.Create("Yl4vNYExH9U5"), MetaClassLibrary.Application).
+                WithProperty(MetaAttributeLibrary.ShortName, "Application").
+                WithRelation(new MockMegaCollection(MetaAssociationEndLibrary.ClassOfEnterpriseAgentExternalStructure_OwnedBusinessCapabilityFulfillment).
+                    WithChildren(fulfillment));
+
+            var root = new MockMegaRoot.Builder().WithObject(applicaiton).Build();
+
+            var query = @"
+                query {
+                    application(filter:{id:""Yl4vNYExH9U5""}) {
+                        id
+                        name
+                        businessCapability {
+                            id
+                            name
+                            link1CostContributionKeyRealization
+                        }
+                    }
+                }";
+            var resp = await ExecuteQueryAsync(root, query);
+            resp.Should().HaveNoGraphQLError();
+        }
+
+        [Fact]
+        public async void Query_an_application_deployment_date_with_specific_format()
+        {
+            var applicationId = MegaId.Create("IubjeRlyFfT1");
+
+            var root = new MockMegaRoot.Builder()
+                .WithObject(new MockMegaObject(applicationId, MetaClassLibrary.Application)
+                    .WithProperty(MetaAttributeLibrary.DeploymentDate, new DateTime(2020, 12, 31) ))
+                .Build();
+
+            var query = @"
+                query application
+                {
+                    application(filter:{id:""IubjeRlyFfT1""})
+                    {
+                        deploymentDate (timeOffset:""+02:00"") @date(format:""yyyy/MM/dd HH:mm:ss"")
+                    }
+                }";
+
+            var resp = await ExecuteQueryAsync(root, query);
+
+            resp.Should().MatchGraphQL("data.application[0].deploymentDate", "2020/12/31 02:00:00");
         }
     }
 }

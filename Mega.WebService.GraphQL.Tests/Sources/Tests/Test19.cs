@@ -1,5 +1,6 @@
 using Mega.WebService.GraphQL.Tests.Sources.FieldModels;
 using Mega.WebService.GraphQL.Tests.Sources.Metaclasses;
+using Mega.WebService.GraphQL.Tests.Sources.Requesters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -67,15 +68,16 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected override void Initialisation()
         {
-            _requester = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaAudit}");
-            _requester2 = new GraphQLRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaAudit}")
+            _requester = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaAudit}");
+            _requester2 = GenerateRequester($"{_myServiceUrl}/api/{(IsAsyncMode ? "async/" : "")}{_schemaAudit}");
+            if(_requester2 is GraphQLRequester graphQLRequester)
             {
-                Login = "scr",
-                Password = "Hopex"
-            };
+                graphQLRequester.Login = "scr";
+                graphQLRequester.Password = "Hopex";
+            }
         }
 
-        private GraphQLRequester _requester2;
+        private IRequester _requester2;
 
         private readonly string[] _actions = new string[]
         {
@@ -87,8 +89,8 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
 
         protected override async Task StepsAsync(ITestParam oTestParam)
         {
-            SetConfig(_requester, EnvironmentId, RepositoryIdTo, ProfileId);
-            SetConfig(_requester2, EnvironmentId, RepositoryIdTo, ProfileId);
+            SetConfig(_requester, Destination);
+            SetConfig(_requester2, Destination);
             var activities = await GetAllIds();
             if (activities.Count <= 0)
             {
@@ -159,7 +161,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             CountedStep("Number of succeeded tasks", successCounter, results.Length);
         }
 
-        protected async Task<TaskResult> ProcessActionAsync(GraphQLRequester requester, string actionName, string id)
+        protected async Task<TaskResult> ProcessActionAsync(IRequester requester, string actionName, string id)
         {
             if (id == null)
             {
@@ -182,7 +184,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             }
         }
 
-        protected async Task ProcessActionFromName(GraphQLRequester requester, string name, string id, CancellationToken token)
+        protected async Task ProcessActionFromName(IRequester requester, string name, string id, CancellationToken token)
         {
             switch (name)
             {
@@ -197,7 +199,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
         }
 
         //Step 5: Within an activity
-        protected async Task CreateFindingInActivity(GraphQLRequester requester, string activityId, CancellationToken token)
+        protected async Task CreateFindingInActivity(IRequester requester, string activityId, CancellationToken token)
         {
             string query = "mutation\n" +
                             "{\n" +
@@ -221,7 +223,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
             await ProcessRawQuery(requester, query, token);
         }
 
-        protected async Task GetFindingsInActivity(GraphQLRequester requester, string activityId, CancellationToken token)
+        protected async Task GetFindingsInActivity(IRequester requester, string activityId, CancellationToken token)
         {
             string query = "query {\n" +
                             $"auditActivity(filter:{{ id: \"{activityId}\" }}) {{\n" +

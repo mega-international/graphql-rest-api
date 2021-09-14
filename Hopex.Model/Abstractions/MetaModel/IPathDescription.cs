@@ -1,6 +1,4 @@
 using Hopex.Model.MetaModel;
-using Mega.Macro.API;
-using System.Collections.Generic;
 
 namespace Hopex.Model.Abstractions.MetaModel
 {

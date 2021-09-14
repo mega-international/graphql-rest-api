@@ -25,6 +25,7 @@ namespace Mega.WebService.GraphQL.Tests.Sources.Tests
                 //Run test and return result
                 return await Task.FromResult(test.Run(null));*/
             }
+            await Task.FromResult<object>(null);
         }
     }
 }

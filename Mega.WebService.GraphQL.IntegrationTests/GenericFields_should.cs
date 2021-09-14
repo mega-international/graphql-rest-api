@@ -79,7 +79,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                             text:  customField(id: ""HZS9LrIOUHoV"")
                             boolCheck: customField(id: ""zXS9yvIOUXwV"")
                         }}"
-            };           
+            };
 
             var createResponse = await graphQLClient.SendQueryAsync<CreateAssessmentNodeResponse>(createRequest);
 
@@ -129,7 +129,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             node.Text.Should().Be("second text");
             node.BoolCheck.Should().Be("1");
             node.Docs[0].Id.Should().Be("MYS9E)IOUr6W");
-        }      
+        }
 
         [Fact]
         public async void Remove_assessment_node_document()
@@ -157,7 +157,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             updateResponse.Should().HaveNoError();
             node = updateResponse.Data.UpdateAssessmentNode;
             node.Docs.Should().BeEmpty();
-        }        
+        }
 
         [Fact]
         public async void Replace_assessment_node_document()
