@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.mega.generator.Arguments;
 import com.mega.generator.Generator;
 import com.mega.mappingJSON.ConstraintsMetaClass;
 import com.mega.mappingJSON.MetaClassJSON;
@@ -23,7 +22,6 @@ public class MetaClass  extends CommonAttributes  {
 	private MegaObject pMetaClass;
 
 	private MegaCollection pColMetaAttribute;
-	private MegaCollection pColTaggedValue;
 	private MegaCollection pColMetaAssociationEnd;
 
 	private boolean isValidMetaClass = true; 
@@ -44,36 +42,22 @@ public class MetaClass  extends CommonAttributes  {
 		this.overrideNameList = overrideNameList;
 		this.globalUniqueName = globalUniqueName;
 
-		this.isCustom = computeIsCustom(oMetaClass);			
-		if (getIsCustom()) {
-			setAtLeastOneCustom(true);
-		}
-		
-
-		
-
-		
 		boolean isAvailable = (boolean) oMetaClass.callFunction("IsAvailable");	;		
 		if (doNotRestrictConfidentiality(oMetaClass)) {
 			isAvailable = true;
 		}
 		
+		Generator.logger.info("MetaClass = " +oMetaClass.getProp(StaticFields.shortName));
 		Generator.logger.finest("MetaClass = isAvailable = " + isAvailable );
 		
 	
 		if (isAvailable) {
 			pMetaClass = megaRoot.getCollection(StaticFields.pMetaClass).get(oMetaClass);			
-			pColMetaAttribute = pMetaClass.getCollection(StaticFields.pDescription).get(1).getCollection(StaticFields.pMainProperties);			
-			pColTaggedValue = oMetaClass.getCollection(StaticFields.metaClassTaggedValue);
+			pColMetaAttribute = pMetaClass.getCollection(StaticFields.pDescription).get(1).getCollection(StaticFields.pMainProperties);
 			pColMetaAssociationEnd = pMetaClass.getCollection(StaticFields.pDescription).get(1).getCollection(StaticFields.pCollections);
 		
 			setProperties();
 		} else {
-			isValidMetaClass = false;
-		}
-
-		// we take only customization if getExtendOnly = true		
-		if (Arguments.getExtendOnly() && !getAtLeastOneCustom()) {
 			isValidMetaClass = false;
 		}
 		
@@ -164,12 +148,7 @@ public class MetaClass  extends CommonAttributes  {
 		
 		
 		setMetaAttribute();
-		setTaggedValue();
 		setMetaAssociation();
-		
-		MetaModel.reportDuplicateName("TaggedValue", propertiesJSONList, ensureUniqueName);
-		MetaModel.reportDuplicateName("MetaAssociation", relationshipsJSONList, ensureUniqueName);
-
 		
 	} // setProperties
 	
@@ -223,12 +202,7 @@ public class MetaClass  extends CommonAttributes  {
 		while(pColMetaAttribute.hasNext()) {
 			MegaObject pMetaAttribute = pColMetaAttribute.next();
 			MetaAttribute metaAttribute = new MetaAttribute(megaRoot,oMetamodel,pMetaAttribute, overrideNameList);
-						
-			if (metaAttribute.getAtLeastOneCustom()) {
-				this.setAtLeastOneCustom(true);
-			}
-			
-			if (metaAttribute.getIsValid()) {
+			if (metaAttribute.getIsValideMetaAttribute()) {
 				PropertiesJSON propertiesJSON = metaAttribute.getPropertiesJSON();
 				propertiesJSONList.add(propertiesJSON);	
 			} // if valid	
@@ -239,43 +213,13 @@ public class MetaClass  extends CommonAttributes  {
 
 		} //while
 		
-		//MetaModel.reportDuplicateName("MetaAttribute", propertiesJSONList, ensureUniqueName);
+		MetaModel.reportDuplicateName("MetaAttribute", propertiesJSONList, ensureUniqueName);
 		
 		// we wanted to threat MetaAttribute Object in a different way but not possible for now
 		//setMetaAttributeAsRelationShip(metaAttributeObjectList);
 		
 	} // setMetaAttribute
 
-	
-	
-	
-	
-	private void setTaggedValue() {
-		Generator.logger.fine("Start TaggedValue");
-		Generator.logger.finest("Will take only TaggedValue connected to the metaclass");
-		
-		Generator.logger.fine("Size = "+pColTaggedValue.size());
-		
-		while(pColTaggedValue.hasNext()) {
-			MegaObject pTaggedValue = pColTaggedValue.next();
-			
-			TaggedValue taggedValue = new TaggedValue(megaRoot,oMetamodel,pTaggedValue, overrideNameList);
-			
-			if (taggedValue.getAtLeastOneCustom()) {
-				this.setAtLeastOneCustom(true);
-			}
-			
-			
-			if (taggedValue.getIsValid()) {
-				PropertiesJSON propertiesJSON = taggedValue.getPropertiesJSON();
-				propertiesJSONList.add(propertiesJSON);	
-			} 
-		} //while
-		
-
-	} // setTaggedValue	
-	
-	
 /*	
 	private void setMetaAttributeAsRelationShip(ArrayList<MetaAttribute> metaAttributeObjectList) {
 		Generator.logger.fine("Start MetaAttributeAsRelationShip");
@@ -307,18 +251,13 @@ public class MetaClass  extends CommonAttributes  {
 			while(pColMetaAssociationEnd.hasNext()) {		
 				MegaObject pMetaAssociationEnd = pColMetaAssociationEnd.next();
 				MetaAssociationEndList metaAssociationEndList = new MetaAssociationEndList(megaRoot,oMetamodel,oMetaClass,pMetaAssociationEnd, overrideNameList,globalUniqueName);
-				
-				if (metaAssociationEndList.getAtLeastOneCustom()) {
-					this.setAtLeastOneCustom(true);
-				}
-				
-				
 				if (metaAssociationEndList.isValideMetaAssociationEnd()) {			
 					List<RelationshipsJSON> relationshipsJSONListtemp = metaAssociationEndList.getRelationshipsJSONList();
 					relationshipsJSONList.addAll(relationshipsJSONListtemp);
 				} // if valid
 			} // while
 
+		MetaModel.reportDuplicateName("MetaAssociation", relationshipsJSONList, ensureUniqueName);
 			
 	}
 
@@ -421,12 +360,6 @@ public class MetaClass  extends CommonAttributes  {
 		List<String> listMetaClass = new ArrayList<String>();
 		listMetaClass.add("~030000000240[Responsability Assignment]");
 		listMetaClass.add("~zs2udS(dEnKQ[ASsessment Signatory]");
-		
-		// variation
-		listMetaClass.add("~lJp58zHf4H50[Variation]");
-
-		
-		
 		return listMetaClass;		
 	}	
 	

@@ -7,12 +7,9 @@ import java.util.List;
 
 import com.mega.generator.Generator;
 
-
 public class RelationshipsJSON  extends CommonFields {
 
 //	private String name;
-	
-
 	private String reverseId;
 	private String globalUniqueName;
 	private ConstraintsRelationShip constraints = new ConstraintsRelationShip();			
@@ -50,9 +47,7 @@ public class RelationshipsJSON  extends CommonFields {
 	public String getName() {
 		return this.name;				
 	}
-*/	
-		
-	
+*/		
 	public void setGlobalUniqueName(String globalUniqueName) {
 		this.globalUniqueName = globalUniqueName;
 	}
@@ -153,13 +148,6 @@ public class RelationshipsJSON  extends CommonFields {
 				
 				
 				localName = pathToTargetJSON2.getMetaClassName() + "_"+ pathToTargetJSON2.getMaeName()+ "_"+ pathToTargetJSON1.getMetaClassName()+"_"+ pathToTargetJSON1.getMaeName();					
-				
-				//specfic namming convention for MetaAssociation with Variation
-				String oMAId = pathToTargetJSON1.getId();
-				if (oMAId.contentEquals("qXAXOUeI6b90") || oMAId.contentEquals("KWAXSxeI6vE0")) {					
-					localName = pathToTargetJSON2.getMetaClassName() + "_"+ pathToTargetJSON2.getMaeName();
-				}
-				
 				
 				keyID = pathToTarget.get(0).getMaeID() +"_"+ pathToTarget.get(0).getMetaClassID() +"_"+ pathToTarget.get(1).getMaeID() +"_"+ pathToTarget.get(1).getMetaClassID();
 				if (overrideNameList.containsKey(keyID)) {

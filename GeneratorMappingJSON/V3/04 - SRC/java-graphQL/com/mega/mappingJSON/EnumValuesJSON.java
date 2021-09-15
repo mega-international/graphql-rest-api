@@ -5,7 +5,6 @@ import java.util.HashMap;
 public class EnumValuesJSON extends CommonFieldsJSON {
 
 	private String internalValue;
-	private int order = 0;	
 
 	public EnumValuesJSON(HashMap<String, String> overrideNameList, String id) {
 		super(overrideNameList,id);
@@ -17,14 +16,6 @@ public class EnumValuesJSON extends CommonFieldsJSON {
 	
 	public String getInternalValue() {
 		return internalValue;
-	}
-	
-	public void setOrder(int order) {
-		this.order = order;
-	}
-	
-	public int getOrder() {
-		return order;
 	}
 	
 }

@@ -53,7 +53,7 @@ public class InterfacesHOPEX extends CommonAttributes {
 		while(oColMetaAttribute.hasNext()) {
 			MegaObject oMetaAttribute = oColMetaAttribute.next();
 			MetaAttribute metaAttribute = new MetaAttribute(megaRoot,oMetamodel,oMetaAttribute, overrideNameList);
-			if (metaAttribute.getIsValid()) {				
+			if (metaAttribute.getIsValideMetaAttribute()) {				
 				PropertiesJSON propertiesJSON = metaAttribute.getPropertiesJSON();
 				PropertiesJSONList.add(propertiesJSON);				
 			} // if valid			
@@ -85,7 +85,7 @@ public class InterfacesHOPEX extends CommonAttributes {
 		while(oColMetaAttribute.hasNext()) {
 			MegaObject oMetaAttribute = oColMetaAttribute.next();
 			MetaAttribute metaAttribute = new MetaAttribute(megaRoot,oMetamodel,oMetaAttribute, overrideNameList);
-			if (metaAttribute.getIsValid()) {				
+			if (metaAttribute.getIsValideMetaAttribute()) {				
 				PropertiesJSON propertiesJSON = metaAttribute.getPropertiesJSON();
 				PropertiesJSONList.add(propertiesJSON);				
 			} // if valid			
@@ -116,7 +116,7 @@ public class InterfacesHOPEX extends CommonAttributes {
 		while(oColMetaAttribute.hasNext()) {
 			MegaObject oMetaAttribute = oColMetaAttribute.next();
 			MetaAttribute metaAttribute = new MetaAttribute(megaRoot,oMetamodel,oMetaAttribute, overrideNameList);
-			if (metaAttribute.getIsValid()) {				
+			if (metaAttribute.getIsValideMetaAttribute()) {				
 				PropertiesJSON propertiesJSON = metaAttribute.getPropertiesJSON();
 				PropertiesJSONList.add(propertiesJSON);				
 			} // if valid			

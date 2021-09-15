@@ -1,9 +1,9 @@
 {
   "version" : {
-    "jsonVersion" : "V21.4.02",
+    "jsonVersion" : "V21.4.06",
     "platformVersion" : "HOPEX V3.00.05",
     "metamodelVersion" : "787.5587",
-    "latestGeneration" : "2021-04-02 18:16:23"
+    "latestGeneration" : "2021-04-06 12:10:58"
   },
   "metaclass" : [ {
     "id" : "GSGg9qzpOn(P",
@@ -581,6 +581,56 @@
         "multiplicity" : "1"
       } ]
     }, {
+      "id" : "4I1mIZCCLDd7_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_4I1mIZCCLDd7",
+      "name" : "ApplicationDataArea_VariantObject",
+      "reverseId" : "4I1mIZCCLDd7_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_4I1mIZCCLDd7",
+      "globalUniqueName" : "Relationship_ApplicationDataArea_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_ApplicationDataArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationDataArea",
+        "metaClassID" : "4I1mIZCCLDd7",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "4I1mIZCCLDd7_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_4I1mIZCCLDd7",
+      "name" : "ApplicationDataArea_VariedObject",
+      "reverseId" : "4I1mIZCCLDd7_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_4I1mIZCCLDd7",
+      "globalUniqueName" : "Relationship_ApplicationDataArea_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_ApplicationDataArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationDataArea",
+        "metaClassID" : "4I1mIZCCLDd7",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "Gs57AhIZFbWF_uDKIOKLkI5oK_(CKIDHLkIHhK_wH1mOgCCL1w7_4I1mIZCCLDd7",
       "name" : "ApplicationSystem_OwnerPhysicalSoftware_ApplicationLocalDataStore_ApplicationDataStore",
       "reverseId" : "4I1mIZCCLDd7_xH1mOgCCL5w7_(CKIDHLkIHhK_vDKIOKLkI9oK_Gs57AhIZFbWF",
@@ -878,6 +928,556 @@
     } ],
     "relationships" : [ ]
   }, {
+    "id" : "lJp58zHf4H50",
+    "name" : "Variation",
+    "description" : "A variation models how a concept can be varied to another one.The variant is a quite similar object to the varied but some properties or relationships can differ.",
+    "implementInterface" : "genericObject",
+    "constraints" : {
+      "queryNode" : false,
+      "nameSpace" : true,
+      "readOnly" : false
+    },
+    "properties" : [ {
+      "id" : "Z20000000D60",
+      "name" : "Name",
+      "description" : "Short Name of the object (posibility to get the long name with an argument)",
+      "constraints" : {
+        "type" : "String",
+        "mandatory" : true,
+        "maxLength" : "1024",
+        "readOnly" : false,
+        "translatable" : true,
+        "formattedText" : false,
+        "unique" : false
+      }
+    }, {
+      "id" : "ubdcAhPN6v50",
+      "name" : "VariationName",
+      "description" : "The name of the variation linking a varied object to its variant is build as so: Varied -> Variant",
+      "constraints" : {
+        "type" : "String",
+        "mandatory" : false,
+        "maxLength" : "159",
+        "readOnly" : false,
+        "translatable" : true,
+        "formattedText" : false,
+        "unique" : false
+      }
+    } ],
+    "relationships" : [ {
+      "id" : "4I1mIZCCLDd7_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "ApplicationDataArea_VariedObject",
+      "globalUniqueName" : "Relationship_ApplicationDataArea_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationDataArea",
+        "metaClassID" : "4I1mIZCCLDd7",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "IbJwFdE5iOZ0_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "Functionality_VariedObject",
+      "globalUniqueName" : "Relationship_Functionality_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "Functionality",
+        "metaClassID" : "IbJwFdE5iOZ0",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "LbpwhWFCLb74_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "RelationalDataArea_VariedObject",
+      "globalUniqueName" : "Relationship_RelationalDataArea_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "RelationalDataArea",
+        "metaClassID" : "LbpwhWFCLb74",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "uBbwXfEhwi80_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "SystemProcess_VariedObject",
+      "globalUniqueName" : "Relationship_SystemProcess_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "SystemProcess",
+        "metaClassID" : "uBbwXfEhwi80",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "vgLsVc(jOjAH_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "NoSQLDataArea_VariedObject",
+      "globalUniqueName" : "Relationship_NoSQLDataArea_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "NoSQLDataArea",
+        "metaClassID" : "vgLsVc(jOjAH",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "ieLsYg(jObHH_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "FileStructure_VariedObject",
+      "globalUniqueName" : "Relationship_FileStructure_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "FileStructure",
+        "metaClassID" : "ieLsYg(jObHH",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "Gs57AhIZFbWF_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "ApplicationSystem_VariedObject",
+      "globalUniqueName" : "Relationship_ApplicationSystem_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationSystem",
+        "metaClassID" : "Gs57AhIZFbWF",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "1u6sBqjKOr13_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "ApplicationEnvironment_VariedObject",
+      "globalUniqueName" : "Relationship_ApplicationEnvironment_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationEnvironment",
+        "metaClassID" : "1u6sBqjKOr13",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "FN8AHc2gITnL_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "SoftwareTechnology_VariedObject",
+      "globalUniqueName" : "Relationship_SoftwareTechnology_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "SoftwareTechnology",
+        "metaClassID" : "FN8AHc2gITnL",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "IcfsZhjW9T90_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "BusinessCapability_VariedObject",
+      "globalUniqueName" : "Relationship_BusinessCapability_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "BusinessCapability",
+        "metaClassID" : "IcfsZhjW9T90",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "UeBjBQxRP9Q1_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "MicroService_VariedObject",
+      "globalUniqueName" : "Relationship_MicroService_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "MicroService",
+        "metaClassID" : "UeBjBQxRP9Q1",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "spjP4MNyMTUZ_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "ApplicationSystemEnvironment_VariedObject",
+      "globalUniqueName" : "Relationship_ApplicationSystemEnvironment_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationSystemEnvironment",
+        "metaClassID" : "spjP4MNyMTUZ",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "MrUiM9B5iyM0_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "Application_VariedObject",
+      "globalUniqueName" : "Relationship_Application_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "Application",
+        "metaClassID" : "MrUiM9B5iyM0",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "QrUiM9B5iCN0_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "OrgUnit_VariedObject",
+      "globalUniqueName" : "Relationship_OrgUnit_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "OrgUnit",
+        "metaClassID" : "QrUiM9B5iCN0",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "TsUiT9B5iyQ0_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "ITService_VariedObject",
+      "globalUniqueName" : "Relationship_ITService_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ITService",
+        "metaClassID" : "TsUiT9B5iyQ0",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "goFW3hCWODcP_sXAXOUeI6j90_lJp58zHf4H50",
+      "name" : "ApplicationTechnicalArea_VariedObject",
+      "globalUniqueName" : "Relationship_ApplicationTechnicalArea_VariedObject_VariableObjectVariation_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationTechnicalArea",
+        "metaClassID" : "goFW3hCWODcP",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "4I1mIZCCLDd7_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "ApplicationDataArea_VariantObject",
+      "globalUniqueName" : "Relationship_ApplicationDataArea_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationDataArea",
+        "metaClassID" : "4I1mIZCCLDd7",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "IbJwFdE5iOZ0_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "Functionality_VariantObject",
+      "globalUniqueName" : "Relationship_Functionality_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "Functionality",
+        "metaClassID" : "IbJwFdE5iOZ0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "LbpwhWFCLb74_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "RelationalDataArea_VariantObject",
+      "globalUniqueName" : "Relationship_RelationalDataArea_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "RelationalDataArea",
+        "metaClassID" : "LbpwhWFCLb74",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "uBbwXfEhwi80_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "SystemProcess_VariantObject",
+      "globalUniqueName" : "Relationship_SystemProcess_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "SystemProcess",
+        "metaClassID" : "uBbwXfEhwi80",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "vgLsVc(jOjAH_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "NoSQLDataArea_VariantObject",
+      "globalUniqueName" : "Relationship_NoSQLDataArea_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "NoSQLDataArea",
+        "metaClassID" : "vgLsVc(jOjAH",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "ieLsYg(jObHH_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "FileStructure_VariantObject",
+      "globalUniqueName" : "Relationship_FileStructure_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "FileStructure",
+        "metaClassID" : "ieLsYg(jObHH",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "Gs57AhIZFbWF_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "ApplicationSystem_VariantObject",
+      "globalUniqueName" : "Relationship_ApplicationSystem_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationSystem",
+        "metaClassID" : "Gs57AhIZFbWF",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "1u6sBqjKOr13_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "ApplicationEnvironment_VariantObject",
+      "globalUniqueName" : "Relationship_ApplicationEnvironment_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationEnvironment",
+        "metaClassID" : "1u6sBqjKOr13",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "FN8AHc2gITnL_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "SoftwareTechnology_VariantObject",
+      "globalUniqueName" : "Relationship_SoftwareTechnology_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "SoftwareTechnology",
+        "metaClassID" : "FN8AHc2gITnL",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "IcfsZhjW9T90_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "BusinessCapability_VariantObject",
+      "globalUniqueName" : "Relationship_BusinessCapability_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "BusinessCapability",
+        "metaClassID" : "IcfsZhjW9T90",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "UeBjBQxRP9Q1_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "MicroService_VariantObject",
+      "globalUniqueName" : "Relationship_MicroService_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "MicroService",
+        "metaClassID" : "UeBjBQxRP9Q1",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "spjP4MNyMTUZ_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "ApplicationSystemEnvironment_VariantObject",
+      "globalUniqueName" : "Relationship_ApplicationSystemEnvironment_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationSystemEnvironment",
+        "metaClassID" : "spjP4MNyMTUZ",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "MrUiM9B5iyM0_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "Application_VariantObject",
+      "globalUniqueName" : "Relationship_Application_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "Application",
+        "metaClassID" : "MrUiM9B5iyM0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "QrUiM9B5iCN0_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "OrgUnit_VariantObject",
+      "globalUniqueName" : "Relationship_OrgUnit_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "OrgUnit",
+        "metaClassID" : "QrUiM9B5iCN0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "TsUiT9B5iyQ0_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "ITService_VariantObject",
+      "globalUniqueName" : "Relationship_ITService_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ITService",
+        "metaClassID" : "TsUiT9B5iyQ0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "goFW3hCWODcP_NWAXSxeI65F0_lJp58zHf4H50",
+      "name" : "ApplicationTechnicalArea_VariantObject",
+      "globalUniqueName" : "Relationship_ApplicationTechnicalArea_VariantObject_Variation2Variant_Variation",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationTechnicalArea",
+        "metaClassID" : "goFW3hCWODcP",
+        "multiplicity" : "0..1"
+      } ]
+    } ]
+  }, {
     "id" : "IbJwFdE5iOZ0",
     "name" : "Functionality",
     "description" : "A functionality is a service required by an org-unit in order to perform its work. This functionality is generally necessary within an activity in order to execute a specific operation. If it is a software functionality, it can be provided by an application.",
@@ -1144,6 +1744,56 @@
       } ]
     } ],
     "relationships" : [ {
+      "id" : "IbJwFdE5iOZ0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IbJwFdE5iOZ0",
+      "name" : "Functionality_VariantObject",
+      "reverseId" : "IbJwFdE5iOZ0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IbJwFdE5iOZ0",
+      "globalUniqueName" : "Relationship_Functionality_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_Functionality",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "Functionality",
+        "metaClassID" : "IbJwFdE5iOZ0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "IbJwFdE5iOZ0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IbJwFdE5iOZ0",
+      "name" : "Functionality_VariedObject",
+      "reverseId" : "IbJwFdE5iOZ0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IbJwFdE5iOZ0",
+      "globalUniqueName" : "Relationship_Functionality_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_Functionality",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "Functionality",
+        "metaClassID" : "IbJwFdE5iOZ0",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "Gs57AhIZFbWF_Hn1gORBbObfU_37lzQOh1FHv8_E6lzDSh1Ff69_IbJwFdE5iOZ0",
       "name" : "ApplicationSystem_FulfillingEnterpriseArtifact_FunctionalityFulfillment_FunctionalityComponentFulfillement",
       "reverseId" : "IbJwFdE5iOZ0_F6lzDSh1Fj69_37lzQOh1FHv8_In1gORBbOffU_Gs57AhIZFbWF",
@@ -1492,6 +2142,56 @@
         "metaClassName" : "ITService",
         "metaClassID" : "TsUiT9B5iyQ0",
         "multiplicity" : "1"
+      } ]
+    }, {
+      "id" : "LbpwhWFCLb74_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_LbpwhWFCLb74",
+      "name" : "RelationalDataArea_VariantObject",
+      "reverseId" : "LbpwhWFCLb74_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_LbpwhWFCLb74",
+      "globalUniqueName" : "Relationship_RelationalDataArea_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_RelationalDataArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "RelationalDataArea",
+        "metaClassID" : "LbpwhWFCLb74",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "LbpwhWFCLb74_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_LbpwhWFCLb74",
+      "name" : "RelationalDataArea_VariedObject",
+      "reverseId" : "LbpwhWFCLb74_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_LbpwhWFCLb74",
+      "globalUniqueName" : "Relationship_RelationalDataArea_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_RelationalDataArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "RelationalDataArea",
+        "metaClassID" : "LbpwhWFCLb74",
+        "multiplicity" : "*"
       } ]
     }, {
       "id" : "XV7JynuYOvH5_Db)yJS)8PHsT_LbpwhWFCLb74",
@@ -3024,6 +3724,56 @@
         "metaClassName" : "ITService",
         "metaClassID" : "TsUiT9B5iyQ0",
         "multiplicity" : "1"
+      } ]
+    }, {
+      "id" : "uBbwXfEhwi80_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_uBbwXfEhwi80",
+      "name" : "SystemProcess_VariantObject",
+      "reverseId" : "uBbwXfEhwi80_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_uBbwXfEhwi80",
+      "globalUniqueName" : "Relationship_SystemProcess_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_SystemProcess",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "SystemProcess",
+        "metaClassID" : "uBbwXfEhwi80",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "uBbwXfEhwi80_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_uBbwXfEhwi80",
+      "name" : "SystemProcess_VariedObject",
+      "reverseId" : "uBbwXfEhwi80_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_uBbwXfEhwi80",
+      "globalUniqueName" : "Relationship_SystemProcess_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_SystemProcess",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "SystemProcess",
+        "metaClassID" : "uBbwXfEhwi80",
+        "multiplicity" : "*"
       } ]
     }, {
       "id" : "1u6sBqjKOr13_GhFyvr)4QPSF_nfFyNg)4Qr4F_CgFyVl)4QvHF_uBbwXfEhwi80",
@@ -4593,6 +5343,56 @@
         "multiplicity" : "1"
       } ]
     }, {
+      "id" : "vgLsVc(jOjAH_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_vgLsVc(jOjAH",
+      "name" : "NoSQLDataArea_VariantObject",
+      "reverseId" : "vgLsVc(jOjAH_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_vgLsVc(jOjAH",
+      "globalUniqueName" : "Relationship_NoSQLDataArea_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_NoSQLDataArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "NoSQLDataArea",
+        "metaClassID" : "vgLsVc(jOjAH",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "vgLsVc(jOjAH_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_vgLsVc(jOjAH",
+      "name" : "NoSQLDataArea_VariedObject",
+      "reverseId" : "vgLsVc(jOjAH_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_vgLsVc(jOjAH",
+      "globalUniqueName" : "Relationship_NoSQLDataArea_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_NoSQLDataArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "NoSQLDataArea",
+        "metaClassID" : "vgLsVc(jOjAH",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "XV7JynuYOvH5_Db)yJS)8PHsT_vgLsVc(jOjAH",
       "name" : "TechnicalDataStore_ReferencingTechnicalDataStore",
       "reverseId" : "vgLsVc(jOjAH_Eb)yJS)8PLsT_XV7JynuYOvH5",
@@ -4808,6 +5608,56 @@
         "metaClassName" : "ITService",
         "metaClassID" : "TsUiT9B5iyQ0",
         "multiplicity" : "1"
+      } ]
+    }, {
+      "id" : "ieLsYg(jObHH_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_ieLsYg(jObHH",
+      "name" : "FileStructure_VariantObject",
+      "reverseId" : "ieLsYg(jObHH_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_ieLsYg(jObHH",
+      "globalUniqueName" : "Relationship_FileStructure_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_FileStructure",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "FileStructure",
+        "metaClassID" : "ieLsYg(jObHH",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "ieLsYg(jObHH_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_ieLsYg(jObHH",
+      "name" : "FileStructure_VariedObject",
+      "reverseId" : "ieLsYg(jObHH_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_ieLsYg(jObHH",
+      "globalUniqueName" : "Relationship_FileStructure_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_FileStructure",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "FileStructure",
+        "metaClassID" : "ieLsYg(jObHH",
+        "multiplicity" : "*"
       } ]
     }, {
       "id" : "XV7JynuYOvH5_Db)yJS)8PHsT_ieLsYg(jObHH",
@@ -12469,6 +13319,56 @@
         "multiplicity" : "*"
       } ]
     }, {
+      "id" : "Gs57AhIZFbWF_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_Gs57AhIZFbWF",
+      "name" : "ApplicationSystem_VariantObject",
+      "reverseId" : "Gs57AhIZFbWF_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_Gs57AhIZFbWF",
+      "globalUniqueName" : "Relationship_ApplicationSystem_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_ApplicationSystem",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationSystem",
+        "metaClassID" : "Gs57AhIZFbWF",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "Gs57AhIZFbWF_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_Gs57AhIZFbWF",
+      "name" : "ApplicationSystem_VariedObject",
+      "reverseId" : "Gs57AhIZFbWF_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_Gs57AhIZFbWF",
+      "globalUniqueName" : "Relationship_ApplicationSystem_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_ApplicationSystem",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationSystem",
+        "metaClassID" : "Gs57AhIZFbWF",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "zTRIOsq4PLm9_uHdfG4BRP9cT_j(JTDzePPbVP_Y)JTC)ePPvgP_Gs57AhIZFbWF",
       "name" : "ScenarioOfApplicationSystemEnvironmentFlows_OwnerApplicationSystemEnvironment_ApplicationSystemPartner_ApplicationSystemPartnerScenarioRole",
       "reverseId" : "Gs57AhIZFbWF_Z)JTC)ePPzgP_j(JTDzePPbVP_vHdfG4BRPDcT_zTRIOsq4PLm9",
@@ -15465,6 +16365,56 @@
         "maeID" : "gOvQO77zM5IT",
         "metaClassName" : "Interaction",
         "metaClassID" : "Lgyxo)(ivy00",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "1u6sBqjKOr13_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_1u6sBqjKOr13",
+      "name" : "ApplicationEnvironment_VariantObject",
+      "reverseId" : "1u6sBqjKOr13_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_1u6sBqjKOr13",
+      "globalUniqueName" : "Relationship_ApplicationEnvironment_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_ApplicationEnvironment",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationEnvironment",
+        "metaClassID" : "1u6sBqjKOr13",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "1u6sBqjKOr13_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_1u6sBqjKOr13",
+      "name" : "ApplicationEnvironment_VariedObject",
+      "reverseId" : "1u6sBqjKOr13_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_1u6sBqjKOr13",
+      "globalUniqueName" : "Relationship_ApplicationEnvironment_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_ApplicationEnvironment",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationEnvironment",
+        "metaClassID" : "1u6sBqjKOr13",
         "multiplicity" : "*"
       } ]
     }, {
@@ -20862,6 +21812,56 @@
         "metaClassID" : "goFW3hCWODcP",
         "multiplicity" : "*"
       } ]
+    }, {
+      "id" : "FN8AHc2gITnL_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_FN8AHc2gITnL",
+      "name" : "SoftwareTechnology_VariantObject",
+      "reverseId" : "FN8AHc2gITnL_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_FN8AHc2gITnL",
+      "globalUniqueName" : "Relationship_SoftwareTechnology_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_SoftwareTechnology",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "SoftwareTechnology",
+        "metaClassID" : "FN8AHc2gITnL",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "FN8AHc2gITnL_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_FN8AHc2gITnL",
+      "name" : "SoftwareTechnology_VariedObject",
+      "reverseId" : "FN8AHc2gITnL_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_FN8AHc2gITnL",
+      "globalUniqueName" : "Relationship_SoftwareTechnology_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_SoftwareTechnology",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "SoftwareTechnology",
+        "metaClassID" : "FN8AHc2gITnL",
+        "multiplicity" : "*"
+      } ]
     } ]
   }, {
     "id" : "rgupqKzIPT5M",
@@ -22406,6 +23406,56 @@
         "metaClassName" : "ITService",
         "metaClassID" : "TsUiT9B5iyQ0",
         "multiplicity" : "1"
+      } ]
+    }, {
+      "id" : "IcfsZhjW9T90_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IcfsZhjW9T90",
+      "name" : "BusinessCapability_VariantObject",
+      "reverseId" : "IcfsZhjW9T90_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IcfsZhjW9T90",
+      "globalUniqueName" : "Relationship_BusinessCapability_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_BusinessCapability",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "BusinessCapability",
+        "metaClassID" : "IcfsZhjW9T90",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "IcfsZhjW9T90_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IcfsZhjW9T90",
+      "name" : "BusinessCapability_VariedObject",
+      "reverseId" : "IcfsZhjW9T90_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IcfsZhjW9T90",
+      "globalUniqueName" : "Relationship_BusinessCapability_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_BusinessCapability",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "BusinessCapability",
+        "metaClassID" : "IcfsZhjW9T90",
+        "multiplicity" : "*"
       } ]
     } ]
   }, {
@@ -30410,6 +31460,56 @@
         "multiplicity" : "1"
       } ]
     }, {
+      "id" : "UeBjBQxRP9Q1_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_UeBjBQxRP9Q1",
+      "name" : "MicroService_VariantObject",
+      "reverseId" : "UeBjBQxRP9Q1_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_UeBjBQxRP9Q1",
+      "globalUniqueName" : "Relationship_MicroService_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_MicroService",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "MicroService",
+        "metaClassID" : "UeBjBQxRP9Q1",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "UeBjBQxRP9Q1_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_UeBjBQxRP9Q1",
+      "name" : "MicroService_VariedObject",
+      "reverseId" : "UeBjBQxRP9Q1_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_UeBjBQxRP9Q1",
+      "globalUniqueName" : "Relationship_MicroService_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_MicroService",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "MicroService",
+        "metaClassID" : "UeBjBQxRP9Q1",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "IcfsZhjW9T90_od9L6Ys9Bzf1_Cd9LMSs9BnE1_JdRdxwf6EX5P_UeBjBQxRP9Q1",
       "name" : "BusinessCapability",
       "reverseId" : "UeBjBQxRP9Q1_IdRdxwf6ET5P_Cd9LMSs9BnE1_nd9L6Ys9Bvf1_IcfsZhjW9T90",
@@ -36444,6 +37544,56 @@
         "multiplicity" : "*"
       } ]
     }, {
+      "id" : "spjP4MNyMTUZ_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_spjP4MNyMTUZ",
+      "name" : "ApplicationSystemEnvironment_VariantObject",
+      "reverseId" : "spjP4MNyMTUZ_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_spjP4MNyMTUZ",
+      "globalUniqueName" : "Relationship_ApplicationSystemEnvironment_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_ApplicationSystemEnvironment",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationSystemEnvironment",
+        "metaClassID" : "spjP4MNyMTUZ",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "spjP4MNyMTUZ_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_spjP4MNyMTUZ",
+      "name" : "ApplicationSystemEnvironment_VariedObject",
+      "reverseId" : "spjP4MNyMTUZ_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_spjP4MNyMTUZ",
+      "globalUniqueName" : "Relationship_ApplicationSystemEnvironment_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_ApplicationSystemEnvironment",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationSystemEnvironment",
+        "metaClassID" : "spjP4MNyMTUZ",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "IcfsZhjW9T90_od9L6Ys9Bzf1_Cd9LMSs9BnE1_JdRdxwf6EX5P_spjP4MNyMTUZ",
       "name" : "BusinessCapability",
       "reverseId" : "spjP4MNyMTUZ_IdRdxwf6ET5P_Cd9LMSs9BnE1_nd9L6Ys9Bvf1_IcfsZhjW9T90",
@@ -39975,6 +41125,56 @@
         "multiplicity" : "1"
       } ]
     }, {
+      "id" : "MrUiM9B5iyM0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_MrUiM9B5iyM0",
+      "name" : "Application_VariantObject",
+      "reverseId" : "MrUiM9B5iyM0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_MrUiM9B5iyM0",
+      "globalUniqueName" : "Relationship_Application_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_Application",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "Application",
+        "metaClassID" : "MrUiM9B5iyM0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "MrUiM9B5iyM0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_MrUiM9B5iyM0",
+      "name" : "Application_VariedObject",
+      "reverseId" : "MrUiM9B5iyM0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_MrUiM9B5iyM0",
+      "globalUniqueName" : "Relationship_Application_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_Application",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "Application",
+        "metaClassID" : "MrUiM9B5iyM0",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "zTRIOsq4PLm9_hJdfx4BRPfgT_OyJTS7fPP5zP_QyJTnBfPPnBQ_MrUiM9B5iyM0",
       "name" : "ScenarioOfApplicationSystemEnvironmentFlows_OwnerApplicationSystemEnvironment_ApplicationPartnerInApplicationSystemEnvironment_ApplicationPartnerInApplicationSystemEnvironment",
       "reverseId" : "MrUiM9B5iyM0_RyJTnBfPPrBQ_OyJTS7fPP5zP_iJdfx4BRPjgT_zTRIOsq4PLm9",
@@ -42379,6 +43579,56 @@
         "multiplicity" : "1"
       } ]
     }, {
+      "id" : "QrUiM9B5iCN0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_QrUiM9B5iCN0",
+      "name" : "OrgUnit_VariantObject",
+      "reverseId" : "QrUiM9B5iCN0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_QrUiM9B5iCN0",
+      "globalUniqueName" : "Relationship_OrgUnit_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_OrgUnit",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "OrgUnit",
+        "metaClassID" : "QrUiM9B5iCN0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "QrUiM9B5iCN0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_QrUiM9B5iCN0",
+      "name" : "OrgUnit_VariedObject",
+      "reverseId" : "QrUiM9B5iCN0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_QrUiM9B5iCN0",
+      "globalUniqueName" : "Relationship_OrgUnit_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_OrgUnit",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "OrgUnit",
+        "metaClassID" : "QrUiM9B5iCN0",
+        "multiplicity" : "*"
+      } ]
+    }, {
       "id" : "IcfsZhjW9T90_od9L6Ys9Bzf1_Cd9LMSs9BnE1_JdRdxwf6EX5P_QrUiM9B5iCN0",
       "name" : "BusinessCapability",
       "reverseId" : "QrUiM9B5iCN0_IdRdxwf6ET5P_Cd9LMSs9BnE1_nd9L6Ys9Bvf1_IcfsZhjW9T90",
@@ -44056,6 +45306,56 @@
         "metaClassName" : "ITService",
         "metaClassID" : "TsUiT9B5iyQ0",
         "multiplicity" : "1"
+      } ]
+    }, {
+      "id" : "TsUiT9B5iyQ0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_TsUiT9B5iyQ0",
+      "name" : "ITService_VariantObject",
+      "reverseId" : "TsUiT9B5iyQ0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_TsUiT9B5iyQ0",
+      "globalUniqueName" : "Relationship_ITService_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_ITService",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ITService",
+        "metaClassID" : "TsUiT9B5iyQ0",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "TsUiT9B5iyQ0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_TsUiT9B5iyQ0",
+      "name" : "ITService_VariedObject",
+      "reverseId" : "TsUiT9B5iyQ0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_TsUiT9B5iyQ0",
+      "globalUniqueName" : "Relationship_ITService_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_ITService",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ITService",
+        "metaClassID" : "TsUiT9B5iyQ0",
+        "multiplicity" : "*"
       } ]
     }, {
       "id" : "IcfsZhjW9T90_od9L6Ys9Bzf1_Cd9LMSs9BnE1_JdRdxwf6EX5P_TsUiT9B5iyQ0",
@@ -46206,6 +47506,56 @@
         "maeID" : "9DZR9Z74PvD8",
         "metaClassName" : "SoftwareTechnology",
         "metaClassID" : "FN8AHc2gITnL",
+        "multiplicity" : "*"
+      } ]
+    }, {
+      "id" : "goFW3hCWODcP_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_goFW3hCWODcP",
+      "name" : "ApplicationTechnicalArea_VariantObject",
+      "reverseId" : "goFW3hCWODcP_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_goFW3hCWODcP",
+      "globalUniqueName" : "Relationship_ApplicationTechnicalArea_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_ApplicationTechnicalArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedSideVariation",
+        "maeID" : "tXAXOUeI6n90",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantObject",
+        "maeID" : "NWAXSxeI65F0",
+        "metaClassName" : "ApplicationTechnicalArea",
+        "metaClassID" : "goFW3hCWODcP",
+        "multiplicity" : "0..1"
+      } ]
+    }, {
+      "id" : "goFW3hCWODcP_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_goFW3hCWODcP",
+      "name" : "ApplicationTechnicalArea_VariedObject",
+      "reverseId" : "goFW3hCWODcP_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_goFW3hCWODcP",
+      "globalUniqueName" : "Relationship_ApplicationTechnicalArea_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_ApplicationTechnicalArea",
+      "constraints" : {
+        "readOnly" : false
+      },
+      "pathToTarget" : [ {
+        "id" : "KWAXSxeI6vE0",
+        "name" : "Variation2Variant",
+        "maeName" : "VariantSideVariation",
+        "maeID" : "MWAXSxeI61F0",
+        "metaClassName" : "Variation",
+        "metaClassID" : "lJp58zHf4H50",
+        "multiplicity" : "*"
+      }, {
+        "id" : "qXAXOUeI6b90",
+        "name" : "VariableObjectVariation",
+        "maeName" : "VariedObject",
+        "maeID" : "sXAXOUeI6j90",
+        "metaClassName" : "ApplicationTechnicalArea",
+        "metaClassID" : "goFW3hCWODcP",
         "multiplicity" : "*"
       } ]
     }, {
