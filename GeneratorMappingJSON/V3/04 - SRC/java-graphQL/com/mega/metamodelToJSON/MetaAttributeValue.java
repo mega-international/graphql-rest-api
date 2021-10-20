@@ -2,6 +2,7 @@ package com.mega.metamodelToJSON;
 
 import java.util.HashMap;
 
+import com.mega.generator.Arguments;
 import com.mega.generator.Generator;
 import com.mega.mappingJSON.EnumValuesJSON;
 import com.mega.modeling.api.MegaObject;
@@ -23,9 +24,15 @@ public class MetaAttributeValue   extends CommonAttributes {
 		this.megaRoot = megaRoot;
 		this.oMetamodel=oMetamodel;
 		this.oMetaAttribute=oMetaAttribute;
-
+		this.isCustom = computeIsCustom(oMetaAttributeValue);			
+		if (getIsCustom()) {
+			setAtLeastOneCustom(true);
+		}
+		
+		
 		boolean isAvailable = (boolean) oMetaAttributeValue.callFunction("IsAvailable");
-
+		
+		
 		Generator.logger.finest("MetaAttributeValue = " + oMetaAttributeValue.getProp(StaticFields.shortName));
 		Generator.logger.finest("MetaAttributeValue isAvailable = " + isAvailable );
 		
@@ -34,6 +41,11 @@ public class MetaAttributeValue   extends CommonAttributes {
 			setProperties();
 		} else {
 			this.isValidMetaAttributeValue = false;			
+		}
+		
+		// we take only customization if getExtendOnly = true		
+		if (Arguments.getExtendOnly() && !getAtLeastOneCustom()) {
+			this.isValidMetaAttributeValue = false;
 		}
 		
 	}
@@ -60,6 +72,23 @@ public class MetaAttributeValue   extends CommonAttributes {
 		sDescription = sDescription.concat(UtilitiesMappingJSON.getCleanComment(oMetaAttributeValue.getProp(StaticFields.comment,"display").toString()));
 		String internalValue = oMetaAttributeValue.getProp(StaticFields.internaValue);
 		
+		String strOrder = oMetaAttributeValue.getProp(StaticFields.metaAttributeOrder);
+		
+		
+		Generator.logger.finest("MetaAttributeValue strOrder = " + strOrder + " - " + internalValue + " -" + technincalName );
+		
+		int order = 0;
+		
+		try {
+			order = Integer.parseInt(strOrder);
+
+		} catch(Exception e) {
+			//e.printStackTrace(); 		
+			// we do nothing 
+			order=0;
+		}
+
+		
 		technincalName = customCaseName(technincalName, internalValue);
 		
 		enumValuesJSON = new EnumValuesJSON(overrideNameList,absoluteIdentifier);	
@@ -67,7 +96,9 @@ public class MetaAttributeValue   extends CommonAttributes {
 		enumValuesJSON.setName(technincalName);
 		enumValuesJSON.setId(absoluteIdentifier);
 		enumValuesJSON.setDescription(sDescription);
-		enumValuesJSON.setInternalValue(internalValue);
+		enumValuesJSON.setInternalValue(internalValue);	
+		enumValuesJSON.setOrder(order);		
+		
 		
 		removeInvalid(absoluteIdentifier);
 	

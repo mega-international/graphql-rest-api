@@ -4,9 +4,9 @@ public class StaticFields {
 
 public static String absoluteIdentifier = "~310000000D00[Absolute Identifier]";
 public static String shortName = "~Z20000000D60[Short Name]";
-//public static String shortName = "~y3FcCavP(e20[Short Name <English>]";
+public static String shortNameEnglish = "~y3FcCavP(e20[Short Name <English>]";
 public static String comment ="~f10000000b20[Comment]";
-//public static String comment ="~4mDyR58x6WZC[Comment <English>]";
+public static String commentEnglish ="~4mDyR58x6WZC[Comment <English>]";
 public static String metaClass = "~x0000000Cy20[MetaClass]";
 public static String metaClassMetaClass ="~P20000000c10[MetaClass]";
 public static String metaAttribute ="~O20000000Y10[MetaAttribute]";
@@ -48,5 +48,10 @@ public static String maedescription = "~HIedE)fyADy0[Description]";
 public static String metaclassDiagram = "~KekPBSs3iS10[Diagram]";
 public static String genericObject ="~p20000000E30[Generic Object]";
 public static String genericObjectSystem ="~q20000000I30[Generic Object System]";
+public static String atIndex ="~v10000000b30[At Index]";
+public static String metaAssociationMacro ="~zKupM5jPx420[Macro]";
+public static String metaClassTaggedValue ="~i5rubNEDqO00[Tagged Value]";
+public static String metaAttributeOrder = "~410000000H00[Order]";
+public static String modifier = "~b10000000L20[Modifier]";
 
 }
