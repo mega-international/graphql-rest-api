@@ -218,18 +218,18 @@ namespace Hopex.Model.PivotSchema.Convertors
                 if (!(cd.GetPropertyDescription(property.Name, false) is PropertyDescription existing))
                 {
                     existing = new PropertyDescription(cd,
-                                                       property.Name,
-                                                       property.Id,
-                                                       property.Description,
-                                                       property.Constraints?.PropertyType,
-                                                       property.Constraints?.IsRequired,
-                                                       property.Constraints?.IsReadOnly,
-                                                       property.Constraints?.IsUnique,
-                                                       property.Constraints?.IsTranslatable,
-                                                       property.Constraints?.IsFormattedText,
-                                                       property.Constraints?.MaxLength,
-                                                       prefix + property.Name,
-                                                       scope)
+                        property.Name,
+                        property.Id,
+                        property.Description,
+                        property.Constraints?.PropertyType,
+                        property.Constraints?.IsRequired,
+                        property.Constraints?.IsReadOnly,
+                        property.Constraints?.IsUnique,
+                        property.Constraints?.IsTranslatable,
+                        property.Constraints?.IsFormattedText,
+                        property.Constraints?.MaxLength,
+                        prefix + property.Name,
+                        scope)
                     {
                         SetterFormat = property.SetterFormat ?? PropertyDescription.DefaultSetterFormat,
                         GetterFormat = property.GetterFormat ?? PropertyDescription.DefaultGetterFormat

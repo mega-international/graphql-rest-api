@@ -137,7 +137,7 @@ namespace Hopex.WebService.Tests.Mocks
             return this;
         }
 
-        public virtual IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null, int sortDirection2 = 1, string sortAttribute2 = null)
+        public virtual IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null, int sortDirection2 = 1, string sortAttribute2 = null, int sortDirection3 = 1, string sortAttribute3 = null)
         {
             MegaIdUtils.EnsureValidPropertyId(linkId, "MegaObject.GetCollection");
             if(!_links.TryGetValue(linkId, out var collection))

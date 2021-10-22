@@ -32,7 +32,7 @@ namespace Hopex.Model
 
         public dynamic GetMacro(string macroId)
         {
-            return RealEnvironment.NativeObject.GetMacro(macroId);
+            return RealEnvironment.GetMacro(macroId);
         }
     }
 
@@ -163,12 +163,14 @@ namespace Hopex.Model
 
         public dynamic CallFunction(MegaId methodId, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null)
         {
-            return _realItem.NativeObject.CallFunction(methodId.ToString(), arg1, arg2, arg3, arg4, arg5, arg6);
+            return _realItem.CallFunction(methodId.ToString(), arg1, arg2, arg3, arg4, arg5, arg6);
         }
 
         public bool ConditionEvaluate(MegaId methodId)
         {
-            return _realItem.NativeObject.ConditionEvaluate($"ApplyTest({methodId})");
+            MegaWrapperObject.IncCounter("MegaItem.CallFunction.ConditionEvaluate");
+            var res = _realItem.CallFunction("ConditionEvaluate", $"ApplyTest({methodId})");
+            return (bool)res;
         }
 
         public IMegaObject GetTypeObject()
@@ -189,9 +191,21 @@ namespace Hopex.Model
 
         public string MegaUnnamedField => RealObject.MegaUnnamedField;
 
-        public bool IsConfidential => RealObject.NativeObject.IsConfidential;
+        public bool IsConfidential
+        {
+            get
+            {
+                return RealObject.IsConfidential;
+            }
+        }
 
-        public bool IsAvailable => RealObject.NativeObject.CallFunction("IsAvailable");
+        public bool IsAvailable
+        {
+            get
+            {
+                return RealObject.IsAvailable();
+            }
+        }
 
         public MegaId Id => RealObject.Id;
         
@@ -206,7 +220,9 @@ namespace Hopex.Model
             return RealObject.IsSameId(objectId);
         }
 
-        public IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null, int sortDirection2 = 1, string sortAttribute2 = null)
+        public IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null,
+            int sortDirection2 = 1, string sortAttribute2 = null, int sortDirection3 = 1,
+            string sortAttribute3 = null)
         {
             return new RealMegaCollection(RealObject.GetCollection(linkId, sortDirection1, sortAttribute1, sortDirection2, sortAttribute2));
         }
@@ -223,7 +239,7 @@ namespace Hopex.Model
 
         public dynamic GetFormated(string propertyId, string format)
         {
-            return RealObject.NativeObject.GetFormated(propertyId, format);
+            return RealObject.GetFormatted(propertyId, format);
         }
 
         public IMegaAttribute GetAttribute(MegaId propertyId)
@@ -277,6 +293,7 @@ namespace Hopex.Model
 
         public dynamic Value()
         {
+            MegaWrapperObject.IncCounter("MegaAttribute.Value");
             return RealAttribute.NativeObject.Value();
         }
     }
@@ -338,12 +355,14 @@ namespace Hopex.Model
 
         public void RemoveChild(MegaId id)
         {
-            RealCollection.NativeObject.Item(id.Value).Remove();            
+            MegaWrapperObject.IncCounter("MegaCollection.Item.Remove");
+            RealCollection.Item(id).Remove();
         }
 
         public IMegaCollection GetType(string targetMetaClassId)
         {
-            return new RealMegaCollection(MegaWrapperObject.Cast<MegaCollection>(RealCollection.NativeObject.GetType(targetMetaClassId)));
+            MegaWrapperObject.IncCounter("MegaCollection.GetType");
+            return new RealMegaCollection(RealCollection.GetType(targetMetaClassId));
         }
     }
 

@@ -210,7 +210,7 @@ namespace Hopex.Model.DataModel
                 megaCollection = current.GetCollection(hop.RoleId); // Pas de sort sur les segments intermédiaires
             }
 
-            var items = MegaWrapperObject.Cast<MegaCollection>(megaCollection.NativeObject.GetType(hop.TargetSchemaId.ToString()));
+            var items = MegaWrapperObject.Cast<MegaCollection>(megaCollection.GetType(hop.TargetSchemaId));
 
             if (distinctItemsIds == null)
             {
@@ -276,8 +276,7 @@ namespace Hopex.Model.DataModel
                             _orderByClauses[1].Item2, _orderByClauses[1].Item1);
                         break;
                     default:
-                        megaCollection = current.NativeObject.GetCollection(
-                            roleId,
+                        megaCollection = current.GetCollection(roleId,
                             _orderByClauses[0].Item2, _orderByClauses[0].Item1,
                             _orderByClauses[1].Item2, _orderByClauses[1].Item1,
                             _orderByClauses[2].Item2, _orderByClauses[2].Item1);
@@ -312,20 +311,10 @@ namespace Hopex.Model.DataModel
                             _orderByClauses[1].Item2, _orderByClauses[1].Item1);
                         break;
                     default:
-                        if (current is RealMegaObject realMegaObject)
-                        {
-                            megaCollection = new RealMegaCollection(realMegaObject.RealObject.NativeObject.GetCollection(
-                                roleId,
-                                _orderByClauses[0].Item2, _orderByClauses[0].Item1,
-                                _orderByClauses[1].Item2, _orderByClauses[1].Item1,
-                                _orderByClauses[2].Item2, _orderByClauses[2].Item1));
-                        }
-                        else
-                        {
-                            megaCollection = current.GetCollection(roleId,
-                                _orderByClauses[0].Item2, _orderByClauses[0].Item1,
-                                _orderByClauses[1].Item2, _orderByClauses[1].Item1);    
-                        }
+                        megaCollection = current.GetCollection(roleId,
+                            _orderByClauses[0].Item2, _orderByClauses[0].Item1,
+                            _orderByClauses[1].Item2, _orderByClauses[1].Item1,
+                            _orderByClauses[2].Item2, _orderByClauses[2].Item1);
                         break;
                 }
             }

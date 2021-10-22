@@ -1,5 +1,4 @@
 using GraphQL;
-using GraphQL.Instrumentation;
 using GraphQL.Language.AST;
 using GraphQL.NewtonsoftJson;
 using Hopex.ApplicationServer.WebServices;
@@ -20,6 +19,9 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+#if DEBUG
+//using JetBrains.Profiler.Api;
+#endif
 
 namespace Hopex.Modules.GraphQL
 {
@@ -50,7 +52,9 @@ namespace Hopex.Modules.GraphQL
         {
             try
             {
-                //JetBrains.Profiler.Api.MemoryProfiler.GetSnapshot("macro_start");
+#if DEBUG
+                //MemoryProfiler.GetSnapshot("macro_start");
+#endif
 
                 Logger.LogInformation("GraphQL macro start");
 
@@ -179,9 +183,15 @@ namespace Hopex.Modules.GraphQL
             }
             finally
             {
-                //JetBrains.Profiler.Api.MemoryProfiler.GetSnapshot("macro_end");
+                PropertyCache.ResetCache();
+#if DEBUG
+                MegaWrapperObject.ClearCounters();
+                //MemoryProfiler.GetSnapshot("macro_end");
                 Debug.Print($"PropertyCache.HitCount = {PropertyCache.HitCount}");
                 Debug.Print($"PropertyCache.MissCount = {PropertyCache.MissCount}");
+                //var counterInfo = MegaWrapperObject.GetCounters();
+                //Debug.Print(counterInfo);
+#endif
             }
         }
 

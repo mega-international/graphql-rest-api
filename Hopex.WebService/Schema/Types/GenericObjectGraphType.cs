@@ -30,7 +30,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
 
             ResolveType = obj => ResolveConcreteType((IModelElement)obj);
 
-            ImplementInType(WildcardType);            
+            ImplementInType(WildcardType);
         }
 
         private IObjectGraphType ResolveConcreteType(IModelElement modelElement)
@@ -46,7 +46,7 @@ namespace Hopex.Modules.GraphQL.Schema.Types
 
         internal void ImplementInConcreteType(string metaclassId, ObjectGraphType<IModelElement> typeToEnrich, bool baseClass)
         {
-            if(baseClass)
+            if (baseClass)
             {
                 _concreteGraphTypes.Add(metaclassId, typeToEnrich);
             }

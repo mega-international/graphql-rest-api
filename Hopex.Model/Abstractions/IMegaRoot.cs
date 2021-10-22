@@ -52,7 +52,9 @@ namespace Hopex.Model.Abstractions
         IMegaObject GetPhysicalType();
         bool IsSameId(MegaId objectId);
         IMegaAttribute GetAttribute(MegaId propertyId);
-        IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null, int sortDirection2 = 1, string sortAttribute2 = null);
+        IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null,
+            int sortDirection2 = 1, string sortAttribute2 = null, int sortDirection3 = 1,
+            string sortAttribute3 = null);
         string GetPropertyValue(MegaId propertyId, string format = "ASCII");
         T GetPropertyValue<T>(MegaId propertyId, string format = "internal");
         dynamic GetFormated(string propertyId, string format);

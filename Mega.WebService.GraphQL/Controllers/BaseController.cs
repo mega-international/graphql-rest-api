@@ -28,7 +28,7 @@ namespace Mega.WebService.GraphQL.Controllers
 
         protected readonly IConfigurationManager _configurationManager;
         private readonly IHopexServiceFinder _hopexServiceFinder;
-        
+
         public BaseController()
         {
             _configurationManager = new RealConfigurationManager();
@@ -40,19 +40,19 @@ namespace Mega.WebService.GraphQL.Controllers
             _configurationManager = configurationManager;
             _hopexServiceFinder = hopexServiceFinder;
         }
-        
+
         protected virtual WebServiceResult CallMacro(string macroId, string data = "", string sessionMode = "MS", string accessMode = "RW", bool closeSession = false)
         {
             if (!TryGetHopexService(sessionMode, accessMode, closeSession, out var hopexService, out var error))
             {
-               return error;
+                return error;
             }
 
             // Call the macro
             var macroResult = "";
             try
             {
-                macroResult = hopexService.CallMacro(macroId, data, new GenerationContext {GenerationMode = "anywhere"});
+                macroResult = hopexService.CallMacro(macroId, data, new GenerationContext { GenerationMode = "anywhere" });
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace Mega.WebService.GraphQL.Controllers
             }
 
             // Close the Hopex session
-            if(closeSession)
+            if (closeSession)
             {
                 hopexService.CloseUpdateSession();
             }
@@ -184,12 +184,12 @@ namespace Mega.WebService.GraphQL.Controllers
                 return FormatResult(error);
 
             // Call the execution of the macro in async mode
-            var asyncMacroResult = hopexService.CallAsyncMacroExecute(macroId, data, new GenerationContext {GenerationMode = "anywhere"});
+            var asyncMacroResult = hopexService.CallAsyncMacroExecute(macroId, data, new GenerationContext { GenerationMode = "anywhere" });
 
             // If error occurs
-            if(asyncMacroResult.Status != "InProgress")
+            if (asyncMacroResult.Status != "InProgress")
             {
-                if(closeSession)
+                if (closeSession)
                 {
                     hopexService.CloseSession();
                 }
@@ -208,7 +208,7 @@ namespace Mega.WebService.GraphQL.Controllers
         protected virtual IHttpActionResult CallAsyncMacroGetResult(string hopexTask, bool closeSession = false)
         {
             // Get values from x-hopex-sessiontoken
-            if(!Request.Headers.TryGetValues("x-hopex-sessiontoken", out var hopexSessionHeader) || !HopexServiceHelper.TryGetHopexSessionInfo(hopexSessionHeader.FirstOrDefault(), out var hopexSessionInfo))
+            if (!Request.Headers.TryGetValues("x-hopex-sessiontoken", out var hopexSessionHeader) || !HopexServiceHelper.TryGetHopexSessionInfo(hopexSessionHeader.FirstOrDefault(), out var hopexSessionInfo))
             {
                 const string message = "Parameter \"x-hopex-sessiontoken\" must be set in the header of your request.";
                 Logger.Debug(message);
@@ -231,14 +231,14 @@ namespace Mega.WebService.GraphQL.Controllers
                 // Call the execution result of the macro in async mode
                 stopwatch.Restart();
                 Logger.Info("CallAsyncMacroGetResult");
-                var asyncMacroResult = hopexService.CallAsyncMacroGetResult(hopexTask, new GenerationContext {GenerationMode = "anywhere"});
+                var asyncMacroResult = hopexService.CallAsyncMacroGetResult(hopexTask, new GenerationContext { GenerationMode = "anywhere" });
                 Logger.Info("CallAsyncMacroGetResult ended: " + stopwatch.ElapsedMilliseconds + " ms");
                 wait -= stopwatch.Elapsed;
 
                 // Return status if action is not finished and wait time is over
-                if(asyncMacroResult.Status == "InProgress")
+                if (asyncMacroResult.Status == "InProgress")
                 {
-                    if(wait <= TimeSpan.Zero)
+                    if (wait <= TimeSpan.Zero)
                     {
                         if (closeSession)
                         {
@@ -251,7 +251,7 @@ namespace Mega.WebService.GraphQL.Controllers
                 // Else return result
                 else
                 {
-                    if(closeSession)
+                    if (closeSession)
                     {
                         hopexService.CloseUpdateSession();
                     }
@@ -271,7 +271,7 @@ namespace Mega.WebService.GraphQL.Controllers
                 Thread.Sleep(WaitStepMilliseconds);
                 wait = wait.Add(TimeSpan.FromMilliseconds(-WaitStepMilliseconds));
 
-            } while(true);
+            } while (true);
         }
 
         private TimeSpan ReadWaitHeader()
@@ -299,20 +299,20 @@ namespace Mega.WebService.GraphQL.Controllers
         {
             var mwasSettings = new MwasSettings
             {
-                CacheFileRootPath = ConfigurationManager.AppSettings ["CacheFileRootPath"],
-                MaxMegaSessionCount = ConfigurationManager.AppSettings ["MaxMegaSessionCount"],
-                OpenSessionTimeout = ConfigurationManager.AppSettings ["OpenSessionTimeout"],
-                StatMinPanelTime = ConfigurationManager.AppSettings ["StatMinPanelTime"],
-                MultiThreadLimit = ConfigurationManager.AppSettings ["MultiThreadLimit"],
-                MinConnectionDuration = ConfigurationManager.AppSettings ["MinConnectionDuration"],
-                MaxConnectionRetry = ConfigurationManager.AppSettings ["MaxConnectionRetry"],
-                CacheSerialize = ConfigurationManager.AppSettings ["CacheSerialize"],
-                CacheFileDiscard = ConfigurationManager.AppSettings ["CacheFileDiscard"],
-                CheckState = ConfigurationManager.AppSettings ["CheckState"],
-                LazyLog = ConfigurationManager.AppSettings ["LazyLog"],
-                DisableCache = ConfigurationManager.AppSettings ["DisableCache"],
-                AllowAnonymousConnection = ConfigurationManager.AppSettings ["AllowAnonymousConnection"],
-                LogRequest = ConfigurationManager.AppSettings ["LogRequest"]
+                CacheFileRootPath = ConfigurationManager.AppSettings["CacheFileRootPath"],
+                MaxMegaSessionCount = ConfigurationManager.AppSettings["MaxMegaSessionCount"],
+                OpenSessionTimeout = ConfigurationManager.AppSettings["OpenSessionTimeout"],
+                StatMinPanelTime = ConfigurationManager.AppSettings["StatMinPanelTime"],
+                MultiThreadLimit = ConfigurationManager.AppSettings["MultiThreadLimit"],
+                MinConnectionDuration = ConfigurationManager.AppSettings["MinConnectionDuration"],
+                MaxConnectionRetry = ConfigurationManager.AppSettings["MaxConnectionRetry"],
+                CacheSerialize = ConfigurationManager.AppSettings["CacheSerialize"],
+                CacheFileDiscard = ConfigurationManager.AppSettings["CacheFileDiscard"],
+                CheckState = ConfigurationManager.AppSettings["CheckState"],
+                LazyLog = ConfigurationManager.AppSettings["LazyLog"],
+                DisableCache = ConfigurationManager.AppSettings["DisableCache"],
+                AllowAnonymousConnection = ConfigurationManager.AppSettings["AllowAnonymousConnection"],
+                LogRequest = ConfigurationManager.AppSettings["LogRequest"]
             };
             return mwasSettings;
         }
@@ -392,7 +392,7 @@ namespace Mega.WebService.GraphQL.Controllers
             {
                 AddMissingHeaderFromWebConfig("x-hopex-environment-id", "EnvironmentId");
                 AddMissingHeaderFromWebConfig("x-hopex-repository-id", "RepositoryId");
-                AddMissingHeaderFromWebConfig("x-hopex-profile-id", "ProfileId");                
+                AddMissingHeaderFromWebConfig("x-hopex-profile-id", "ProfileId");
             }
         }
 

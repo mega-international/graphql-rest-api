@@ -199,12 +199,14 @@ namespace Hopex.Model.DataModel
                         {
                             format = "ANSI";
                         }
-                        result = MegaObject.NativeObject.GetFormated(propertyId, format);
+                        var resultAsString = MegaObject.GetFormatted(propertyId, format);
+                        result = (T)Convert.ChangeType(resultAsString, typeof(T));
                         break;
                     }
                     if (property.IsFormattedText)
                     {
-                        result = MegaObject.NativeObject.GetFormated(propertyId, "HTML");
+                        var resultAsString = MegaObject.GetFormatted(propertyId, "HTML");
+                        result = (T)Convert.ChangeType(resultAsString, typeof(T));
                         break;
                     }
                     result = IMegaObject.GetPropertyValue<T>(propertyId, propertyGetterFormat);
@@ -308,35 +310,35 @@ namespace Hopex.Model.DataModel
                     {
                         if (MegaObject.Root.CurrentEnvironment.Toolkit.IsSameId(availableCurrency.Id, currencyId))
                         {
-                            var currencyValue = MegaObject.NativeObject.GetAttribute(property.Id).Value;
+                            var currencyValue = MegaObject.GetAttribute(property.Id).GetValue().ToString();
                             result = currency.GetAmount(currencyValue);
                             DateTime dateRate;
                             if(arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null && DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
                             {
-                                result = currency.NativeObject.GetInternalAmount(result, currencyId, currencyId, dateRate);
+                                result = currency.GetInternalAmount((double)result, currencyId, currencyId, dateRate);
                             }
                         }
                         else
                         {
                             var availableCurrencyId = availableCurrency.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier);
-                            var currencyValue = MegaObject.NativeObject.GetAttribute(property.Id).Translate(availableCurrencyId).Value;
+                            var currencyValue = MegaObject.GetAttribute(property.Id).Translate(availableCurrencyId).GetValue().ToString();
                             result = currency.GetAmount(currencyValue);
                             DateTime dateRate;
                             if(arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null && DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
                             {
-                                result = currency.NativeObject.GetInternalAmount(result, currencyId, availableCurrencyId, dateRate);
+                                result = currency.GetInternalAmount((double)result, currencyId, availableCurrencyId, dateRate);
                             }
                         }
                     }
                 }
                 if (arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null)
                 {
-                    var currencyValue = MegaObject.NativeObject.GetAttribute("~bKxT)KisHnbR[Amount]").Value;
+                    var currencyValue = MegaObject.GetAttribute("~bKxT)KisHnbR[Amount]").GetValue().ToString();
                     result = currency.GetAmount(currencyValue);
                     DateTime dateRate;
                     if(DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
                     {
-                        result = currency.NativeObject.GetInternalAmount(result, currencyId, currencyId, dateRate);
+                        result = currency.GetInternalAmount((double)result, currencyId, currencyId, dateRate);
                     }
                 }
             }
@@ -361,7 +363,8 @@ namespace Hopex.Model.DataModel
             if (property.PropertyType == PropertyType.Id)
             {
                 var id  = MegaId.Create(Utils.NormalizeHopexId(value.ToString()).Substring(0, 13));
-                IMegaObject.NativeObject.SetProp(property.Id, id.Value);
+                IMegaObject.SetPropertyValue(property.Id, id.Value);
+                MegaWrapperObject.IncCounter("MegaObject.SetProp");
             }
             else if (value is DateTime)
             {
