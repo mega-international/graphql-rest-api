@@ -33,6 +33,11 @@
             <ComponentGroupRef Id="WebServiceFiles" />
             <ComponentGroupRef Id="WebServiceBinFiles" />
             <ComponentGroupRef Id="WebServiceContentFiles" />
+            <ComponentGroupRef Id="WebServiceContentLibEs6PromiseFiles" />
+            <ComponentGroupRef Id="WebServiceContentLibFetchFiles" />
+            <ComponentGroupRef Id="WebServiceContentLibGraphqlVoyagerDistFiles" />
+            <ComponentGroupRef Id="WebServiceContentLibReactUmdFiles" />
+            <ComponentGroupRef Id="WebServiceContentLibReactDomUmdFiles" />
             <ComponentGroupRef Id="WebServiceViewsFiles" />
             <ComponentGroupRef Id="WebServiceViewsHomeFiles" />
             <ComponentGroupRef Id="HOPEXGraphQLIssConfiguration" />
@@ -144,6 +149,24 @@
                         <Directory Id="BinFolder" Name="bin">
                         </Directory>
                         <Directory Id="ContentFolder" Name="Content">
+                            <Directory Id="WebServiceContentLibFolder" Name="lib">
+                                <Directory Id="WebServiceContentLibEs6PromiseFolder" Name="es6-promise">
+                                </Directory>
+                                <Directory Id="WebServiceContentLibFetchFolder" Name="fetch">
+                                </Directory>
+                                <Directory Id="WebServiceContentLibGraphqlVoyagerFolder" Name="graphql-voyager">
+                                    <Directory Id="WebServiceContentLibGraphqlVoyagerDistFolder" Name="dist">
+                                    </Directory>
+                                </Directory>
+                                <Directory Id="WebServiceContentLibReactFolder" Name="react">
+                                    <Directory Id="WebServiceContentLibReactUmdFolder" Name="umd">
+                                    </Directory>
+                                </Directory>
+                                <Directory Id="WebServiceContentLibReactDomFolder" Name="react-dom">
+                                    <Directory Id="WebServiceContentLibReactDomUmdFolder" Name="umd">
+                                    </Directory>
+                                </Directory>
+                            </Directory>
                         </Directory>
                         <Directory Id="ViewsFolder" Name="Views">
                             <Directory Id="ViewsHomeFolder" Name="Home">

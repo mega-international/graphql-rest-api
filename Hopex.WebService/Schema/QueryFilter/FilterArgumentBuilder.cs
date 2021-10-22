@@ -92,7 +92,9 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             {
                 var targetId = rel.Path.Last().TargetSchemaId;
                 var targetName = _schemaBuilder.HopexSchema.Classes.Where(x => x.Id == targetId).Select(x =>x.Name).FirstOrDefault();
-                var targetFilter = GetOrCreateFilterObject(targetName);
+                var defaultTargetFilter = new InputObjectGraphType<object> { Name = $"{targetName}Filter" };
+                defaultTargetFilter.AddField(new FieldType { Name = $"defaultField_{Guid.NewGuid().ToString().Replace("-", "")}", Type = typeof(StringGraphType) });
+                var targetFilter = GetOrCreateFilterObject(targetName, defaultTargetFilter );
                 filter.AddField(new FieldType
                 {
                     Name = rel.Name + "_some",
@@ -129,7 +131,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             return arguments;
         }
 
-        private FilterItem GetOrCreateFilterObject(string className)
+        private FilterItem GetOrCreateFilterObject(string className, InputObjectGraphType<object> defaultFilter = null)
         {
             var filterName = className + "Filter";
             var orderByName = className + "OrderBy";
@@ -137,7 +139,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
             {
                 filter = new FilterItem
                 {
-                    Filter = new InputObjectGraphType<object> { Name = filterName },
+                    Filter = defaultFilter ?? new InputObjectGraphType<object> { Name = filterName },
                     OrderBy = new HopexEnumerationGraphType {Name = orderByName },
                     IsInitialized = false
                 };

@@ -20,6 +20,22 @@ namespace Mega.WebService.GraphQL.Controllers
     public class GraphQlController : BaseController
     {
         [HttpPost]
+        [Route("test")]
+        public IHttpActionResult TestExecute([FromBody] InputArguments args)
+        {
+            var headers = new Dictionary<string, string []>
+            {
+                {
+                    "EnvironmentId", new[] {Request.Headers.GetValues("x-hopex-environment-id").FirstOrDefault()}
+                }
+            };
+            var data = new CallMacroArguments<object>(headers, "/api/test", args);
+            var macroResult = CallMacro(GraphQlMacro, data.ToString());
+            var response = JsonConvert.DeserializeObject<GraphQlResponse>(macroResult.Content);
+            return Ok(JsonConvert.DeserializeObject(response.Result));
+        }
+
+        [HttpPost]
         [Route("{schemaName}")]
         public IHttpActionResult Execute(string schemaName, [FromBody] InputArguments args)
         {

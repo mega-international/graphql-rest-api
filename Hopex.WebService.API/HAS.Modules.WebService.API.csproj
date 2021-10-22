@@ -16,10 +16,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Hopex.ApplicationServer.SiteModule" Version="15.0.0.147" />
+      <PackageReference Include="Hopex.ApplicationServer.SiteModule" Version="15.0.0.160" />
       <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.13" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.11" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.19" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.19" />
     </ItemGroup>
 
     <ItemGroup>

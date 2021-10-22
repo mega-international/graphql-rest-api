@@ -238,7 +238,14 @@ namespace Hopex.Model
 
         public void SetPropertyValue(MegaId propertyId, object value, string format = "internal")
         {
-            RealObject.SetPropertyValue(propertyId, value, format);
+            if (value is long)
+            {
+                RealObject.SetPropertyValue(propertyId, Convert.ToInt32(value), format);
+            }
+            else
+            {
+                RealObject.SetPropertyValue(propertyId, value, format);
+            }
         }
 
         public void Delete(string options = "")

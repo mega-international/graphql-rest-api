@@ -5,7 +5,7 @@ namespace Hopex.Model.Abstractions.MetaModel
         string Id { get; }
         string Name { get; }
         string Description { get; }
-        string InternalValue { get; }
+        object InternalValue { get; }
         int Order { get; }
     }
 }

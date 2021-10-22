@@ -50,6 +50,8 @@ namespace Hopex.Modules.GraphQL
         {
             try
             {
+                //JetBrains.Profiler.Api.MemoryProfiler.GetSnapshot("macro_start");
+
                 Logger.LogInformation("GraphQL macro start");
 
                 PropertyCache.ResetCache();
@@ -177,6 +179,7 @@ namespace Hopex.Modules.GraphQL
             }
             finally
             {
+                //JetBrains.Profiler.Api.MemoryProfiler.GetSnapshot("macro_end");
                 Debug.Print($"PropertyCache.HitCount = {PropertyCache.HitCount}");
                 Debug.Print($"PropertyCache.MissCount = {PropertyCache.MissCount}");
             }

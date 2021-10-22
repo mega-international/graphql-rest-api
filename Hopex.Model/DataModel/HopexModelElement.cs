@@ -144,7 +144,7 @@ namespace Hopex.Model.DataModel
             {
                 return cachedResult;
             }
-            
+
             T result;
             switch (property.PropertyType)
             {
@@ -212,25 +212,25 @@ namespace Hopex.Model.DataModel
                 case PropertyType.Enum:
                     var enumValue = MegaObject.GetPropertyValue<T>(property.Id);
                     var enumValueString = enumValue.ToString();
-                    string enumResult;
+                    object enumResult;
                     if (Enum.TryParse(propertyGetterFormat, out EnumFormatEnum enumFormat))
                     {
                         switch (enumFormat)
                         {
                             case EnumFormatEnum.SCHEMA_ID:
-                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Name).FirstOrDefault();
+                                enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.Name).FirstOrDefault();
                                 break;
                             case EnumFormatEnum.ID:
-                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Id).FirstOrDefault();
+                                enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.Id).FirstOrDefault();
                                 break;
                             case EnumFormatEnum.INTERNAL_VALUE:
-                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.InternalValue).FirstOrDefault();
+                                enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.InternalValue).FirstOrDefault();
                                 break;
                             case EnumFormatEnum.LABEL:
                                 enumResult = MegaObject.GetPropertyValue(property.Id, "Display");
                                 break;
                             case EnumFormatEnum.ORDER:
-                                enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Order + " - " + MegaObject.GetPropertyValue(property.Id, "Display")).FirstOrDefault();
+                                enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.Order + " - " + MegaObject.GetPropertyValue(property.Id, "Display")).FirstOrDefault();
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -238,7 +238,7 @@ namespace Hopex.Model.DataModel
                     }
                     else
                     {
-                        enumResult = property.EnumValues.Where(x => x.InternalValue == enumValueString).Select(x => x.Name).FirstOrDefault();
+                        enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.Name).FirstOrDefault();
                     }
                     result = (T)Convert.ChangeType(enumResult, typeof(T));
                     break;
@@ -431,14 +431,14 @@ namespace Hopex.Model.DataModel
 
         public CrudResult GetPropertyCrud(IPropertyDescription property)
         {
-            if (PropertyCache.TryGetValue<CrudResult>(out var cachedResult, IMegaObject.Id, property.Id, cacheType:"CRUD"))
+            if (PropertyCache.TryGetValue<CrudResult>(out var cachedResult, IMegaObject.Id, property.Id, cacheType: "CRUD"))
             {
                 return cachedResult;
             }
 
             var result = CrudComputer.GetPropertyCrud(IMegaObject, property);
 
-            if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, cacheType:"CRUD"))
+            if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, cacheType: "CRUD"))
             {
                 Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
             }

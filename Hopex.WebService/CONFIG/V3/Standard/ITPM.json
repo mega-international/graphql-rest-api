@@ -1,9 +1,9 @@
 {
 	"version": {
-		"jsonVersion": "V21.1.27",
+		"jsonVersion": "V21.9.29",
 		"platformVersion": "HOPEX V3.00.05",
 		"metamodelVersion": "787.5587",
-		"latestGeneration": "2021-01-27 14:00:38"
+		"latestGeneration": "2021-09-29 20:17:35"
 	},
 	"metaclass": [
 		{
@@ -997,14 +997,14 @@
 							"id": "eCfXkZOSGDOL",
 							"name": "Active",
 							"description": "Active - Active",
-							"internalValue": "1",
+							"internalValue": 1,
 							"order": 9999
 						},
 						{
 							"id": "IEfXUaOSGnRL",
 							"name": "Inactive",
 							"description": "Inactive - Inactive",
-							"internalValue": "0",
+							"internalValue": 0,
 							"order": 9999
 						}
 					]
@@ -2975,7 +2975,7 @@
 						{
 							"id": "Hj1HaHLAPTJW",
 							"name": "ComputingDeviceAssemblyDiagram_CDAD",
-							"description": "Computing Device Assembly Diagram - IT Infrastructure – Computing Device Assembly Diagram",
+							"description": "Computing Device Assembly Diagram - IT Infrastructure â€“ Computing Device Assembly Diagram",
 							"internalValue": "CDAD",
 							"order": 9999
 						},
@@ -2996,7 +2996,7 @@
 						{
 							"id": "ul1HOOLAPTYW",
 							"name": "ITTechnicalDeviceDiagram_ITDD",
-							"description": "IT Technical Device diagram - IT Infrastructure – IT Technical Device Assembly Diagram",
+							"description": "IT Technical Device diagram - IT Infrastructure â€“ IT Technical Device Assembly Diagram",
 							"internalValue": "ITDD",
 							"order": 9999
 						},
@@ -3535,6 +3535,64 @@
 					]
 				},
 				{
+					"id": "4I1mIZCCLDd7_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_4I1mIZCCLDd7",
+					"name": "ApplicationDataArea_VariantObject",
+					"reverseId": "4I1mIZCCLDd7_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_4I1mIZCCLDd7",
+					"globalUniqueName": "Relationship_ApplicationDataArea_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_ApplicationDataArea",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "ApplicationDataArea",
+							"metaClassID": "4I1mIZCCLDd7",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "4I1mIZCCLDd7_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_4I1mIZCCLDd7",
+					"name": "ApplicationDataArea_VariedObject",
+					"reverseId": "4I1mIZCCLDd7_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_4I1mIZCCLDd7",
+					"globalUniqueName": "Relationship_ApplicationDataArea_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_ApplicationDataArea",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "ApplicationDataArea",
+							"metaClassID": "4I1mIZCCLDd7",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
 					"id": "MrUiM9B5iyM0_uDKIOKLkI5oK_(CKIDHLkIHhK_wH1mOgCCL1w7_4I1mIZCCLDd7",
 					"name": "Application",
 					"reverseId": "4I1mIZCCLDd7_xH1mOgCCL5w7_(CKIDHLkIHhK_vDKIOKLkI9oK_MrUiM9B5iyM0",
@@ -3718,6 +3776,64 @@
 							"maeID": "GBOwduWJGTsA",
 							"metaClassName": "BusinessDocumentVersion",
 							"metaClassID": "AbEujCE8GfyD",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "(dHkVbBr(800_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_(dHkVbBr(800",
+					"name": "EntityDM_VariantObject",
+					"reverseId": "(dHkVbBr(800_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_(dHkVbBr(800",
+					"globalUniqueName": "Relationship_EntityDM_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_EntityDM",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "EntityDM",
+							"metaClassID": "(dHkVbBr(800",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "(dHkVbBr(800_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_(dHkVbBr(800",
+					"name": "EntityDM_VariedObject",
+					"reverseId": "(dHkVbBr(800_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_(dHkVbBr(800",
+					"globalUniqueName": "Relationship_EntityDM_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_EntityDM",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "EntityDM",
+							"metaClassID": "(dHkVbBr(800",
 							"multiplicity": "*"
 						}
 					]
@@ -5337,6 +5453,581 @@
 			]
 		},
 		{
+			"id": "lJp58zHf4H50",
+			"name": "Variation",
+			"description": "A variation models how a concept can be varied to another one.The variant is a quite similar object to the varied but some properties or relationships can differ.",
+			"implementInterface": "genericObject",
+			"constraints": {
+				"queryNode": false,
+				"nameSpace": true,
+				"readOnly": false
+			},
+			"properties": [
+				{
+					"id": "Z20000000D60",
+					"name": "Name",
+					"description": "Short Name of the object (posibility to get the long name with an argument)",
+					"constraints": {
+						"type": "String",
+						"mandatory": true,
+						"maxLength": "1024",
+						"readOnly": false,
+						"translatable": true,
+						"formattedText": false,
+						"unique": false
+					}
+				},
+				{
+					"id": "ubdcAhPN6v50",
+					"name": "VariationName",
+					"description": "The name of the variation linking a varied object to its variant is build as so: Varied -> Variant",
+					"constraints": {
+						"type": "String",
+						"mandatory": false,
+						"maxLength": "159",
+						"readOnly": false,
+						"translatable": true,
+						"formattedText": false,
+						"unique": false
+					}
+				}
+			],
+			"relationships": [
+				{
+					"id": "4I1mIZCCLDd7_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "ApplicationDataArea_VariedObject",
+					"globalUniqueName": "Relationship_ApplicationDataArea_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "ApplicationDataArea",
+							"metaClassID": "4I1mIZCCLDd7",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "(dHkVbBr(800_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "EntityDM_VariedObject",
+					"globalUniqueName": "Relationship_EntityDM_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "EntityDM",
+							"metaClassID": "(dHkVbBr(800",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "IbJwFdE5iOZ0_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "Functionality_VariedObject",
+					"globalUniqueName": "Relationship_Functionality_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Functionality",
+							"metaClassID": "IbJwFdE5iOZ0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "QBbwXfEhwq60_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "Content_VariedObject",
+					"globalUniqueName": "Relationship_Content_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Content",
+							"metaClassID": "QBbwXfEhwq60",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "OfLsvq1kOPNI_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "SoftwareTechnologyStack_VariedObject",
+					"globalUniqueName": "Relationship_SoftwareTechnologyStack_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "SoftwareTechnologyStack",
+							"metaClassID": "OfLsvq1kOPNI",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "CZ6EgcpaOXlP_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "TechnicalFunctionality_VariedObject",
+					"globalUniqueName": "Relationship_TechnicalFunctionality_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "TechnicalFunctionality",
+							"metaClassID": "CZ6EgcpaOXlP",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "LAeuIKAfGbKF_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "DataView_VariedObject",
+					"globalUniqueName": "Relationship_DataView_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "DataView",
+							"metaClassID": "LAeuIKAfGbKF",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "FN8AHc2gITnL_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "SoftwareTechnology_VariedObject",
+					"globalUniqueName": "Relationship_SoftwareTechnology_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "SoftwareTechnology",
+							"metaClassID": "FN8AHc2gITnL",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "IcfsZhjW9T90_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "BusinessCapability_VariedObject",
+					"globalUniqueName": "Relationship_BusinessCapability_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "BusinessCapability",
+							"metaClassID": "IcfsZhjW9T90",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "dXRV098DpGG1_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "Class_VariedObject",
+					"globalUniqueName": "Relationship_Class_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Class",
+							"metaClassID": "dXRV098DpGG1",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "MrUiM9B5iyM0_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "Application_VariedObject",
+					"globalUniqueName": "Relationship_Application_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Application",
+							"metaClassID": "MrUiM9B5iyM0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "QrUiM9B5iCN0_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "OrgUnit_VariedObject",
+					"globalUniqueName": "Relationship_OrgUnit_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "OrgUnit",
+							"metaClassID": "QrUiM9B5iCN0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "5tUiX9B5iCT0_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "Site_VariedObject",
+					"globalUniqueName": "Relationship_Site_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Site",
+							"metaClassID": "5tUiX9B5iCT0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "pj)grmQ9pG90_sXAXOUeI6j90_lJp58zHf4H50",
+					"name": "BusinessProcess_VariedObject",
+					"globalUniqueName": "Relationship_BusinessProcess_VariedObject_VariableObjectVariation_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "BusinessProcess",
+							"metaClassID": "pj)grmQ9pG90",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "4I1mIZCCLDd7_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "ApplicationDataArea_VariantObject",
+					"globalUniqueName": "Relationship_ApplicationDataArea_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "ApplicationDataArea",
+							"metaClassID": "4I1mIZCCLDd7",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "(dHkVbBr(800_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "EntityDM_VariantObject",
+					"globalUniqueName": "Relationship_EntityDM_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "EntityDM",
+							"metaClassID": "(dHkVbBr(800",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "IbJwFdE5iOZ0_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "Functionality_VariantObject",
+					"globalUniqueName": "Relationship_Functionality_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Functionality",
+							"metaClassID": "IbJwFdE5iOZ0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "QBbwXfEhwq60_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "Content_VariantObject",
+					"globalUniqueName": "Relationship_Content_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Content",
+							"metaClassID": "QBbwXfEhwq60",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "OfLsvq1kOPNI_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "SoftwareTechnologyStack_VariantObject",
+					"globalUniqueName": "Relationship_SoftwareTechnologyStack_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "SoftwareTechnologyStack",
+							"metaClassID": "OfLsvq1kOPNI",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "CZ6EgcpaOXlP_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "TechnicalFunctionality_VariantObject",
+					"globalUniqueName": "Relationship_TechnicalFunctionality_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "TechnicalFunctionality",
+							"metaClassID": "CZ6EgcpaOXlP",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "LAeuIKAfGbKF_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "DataView_VariantObject",
+					"globalUniqueName": "Relationship_DataView_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "DataView",
+							"metaClassID": "LAeuIKAfGbKF",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "FN8AHc2gITnL_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "SoftwareTechnology_VariantObject",
+					"globalUniqueName": "Relationship_SoftwareTechnology_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "SoftwareTechnology",
+							"metaClassID": "FN8AHc2gITnL",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "IcfsZhjW9T90_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "BusinessCapability_VariantObject",
+					"globalUniqueName": "Relationship_BusinessCapability_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "BusinessCapability",
+							"metaClassID": "IcfsZhjW9T90",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "dXRV098DpGG1_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "Class_VariantObject",
+					"globalUniqueName": "Relationship_Class_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Class",
+							"metaClassID": "dXRV098DpGG1",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "MrUiM9B5iyM0_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "Application_VariantObject",
+					"globalUniqueName": "Relationship_Application_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Application",
+							"metaClassID": "MrUiM9B5iyM0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "QrUiM9B5iCN0_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "OrgUnit_VariantObject",
+					"globalUniqueName": "Relationship_OrgUnit_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "OrgUnit",
+							"metaClassID": "QrUiM9B5iCN0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "5tUiX9B5iCT0_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "Site_VariantObject",
+					"globalUniqueName": "Relationship_Site_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Site",
+							"metaClassID": "5tUiX9B5iCT0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "pj)grmQ9pG90_NWAXSxeI65F0_lJp58zHf4H50",
+					"name": "BusinessProcess_VariantObject",
+					"globalUniqueName": "Relationship_BusinessProcess_VariantObject_Variation2Variant_Variation",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "BusinessProcess",
+							"metaClassID": "pj)grmQ9pG90",
+							"multiplicity": "0..1"
+						}
+					]
+				}
+			]
+		},
+		{
 			"id": "IbJwFdE5iOZ0",
 			"name": "Functionality",
 			"description": "A functionality is a service required by an org-unit in order to perform its work. This functionality is generally necessary within an activity in order to execute a specific operation. If it is a software functionality, it can be provided by an application.",
@@ -5691,6 +6382,64 @@
 							"maeID": "GBOwduWJGTsA",
 							"metaClassName": "BusinessDocumentVersion",
 							"metaClassID": "AbEujCE8GfyD",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "IbJwFdE5iOZ0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IbJwFdE5iOZ0",
+					"name": "Functionality_VariantObject",
+					"reverseId": "IbJwFdE5iOZ0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IbJwFdE5iOZ0",
+					"globalUniqueName": "Relationship_Functionality_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_Functionality",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Functionality",
+							"metaClassID": "IbJwFdE5iOZ0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "IbJwFdE5iOZ0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IbJwFdE5iOZ0",
+					"name": "Functionality_VariedObject",
+					"reverseId": "IbJwFdE5iOZ0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IbJwFdE5iOZ0",
+					"globalUniqueName": "Relationship_Functionality_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_Functionality",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Functionality",
+							"metaClassID": "IbJwFdE5iOZ0",
 							"multiplicity": "*"
 						}
 					]
@@ -6954,6 +7703,64 @@
 					]
 				},
 				{
+					"id": "QBbwXfEhwq60_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_QBbwXfEhwq60",
+					"name": "Content_VariantObject",
+					"reverseId": "QBbwXfEhwq60_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_QBbwXfEhwq60",
+					"globalUniqueName": "Relationship_Content_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_Content",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Content",
+							"metaClassID": "QBbwXfEhwq60",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "QBbwXfEhwq60_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_QBbwXfEhwq60",
+					"name": "Content_VariedObject",
+					"reverseId": "QBbwXfEhwq60_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_QBbwXfEhwq60",
+					"globalUniqueName": "Relationship_Content_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_Content",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Content",
+							"metaClassID": "QBbwXfEhwq60",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
 					"id": "8xkukQk8OD(1_2wkulfk8OPT2_QBbwXfEhwq60",
 					"name": "ApplicationFlow",
 					"reverseId": "QBbwXfEhwq60_3wkulfk8OTT2_8xkukQk8OD(1",
@@ -7511,6 +8318,64 @@
 							"maeID": "st6GC8KE9b70",
 							"metaClassName": "Risk",
 							"metaClassID": "W5faeGPxySL0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "OfLsvq1kOPNI_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_OfLsvq1kOPNI",
+					"name": "SoftwareTechnologyStack_VariantObject",
+					"reverseId": "OfLsvq1kOPNI_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_OfLsvq1kOPNI",
+					"globalUniqueName": "Relationship_SoftwareTechnologyStack_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_SoftwareTechnologyStack",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "SoftwareTechnologyStack",
+							"metaClassID": "OfLsvq1kOPNI",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "OfLsvq1kOPNI_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_OfLsvq1kOPNI",
+					"name": "SoftwareTechnologyStack_VariedObject",
+					"reverseId": "OfLsvq1kOPNI_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_OfLsvq1kOPNI",
+					"globalUniqueName": "Relationship_SoftwareTechnologyStack_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_SoftwareTechnologyStack",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "SoftwareTechnologyStack",
+							"metaClassID": "OfLsvq1kOPNI",
 							"multiplicity": "*"
 						}
 					]
@@ -8194,6 +9059,64 @@
 							"multiplicity": "1"
 						}
 					]
+				},
+				{
+					"id": "CZ6EgcpaOXlP_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_CZ6EgcpaOXlP",
+					"name": "TechnicalFunctionality_VariantObject",
+					"reverseId": "CZ6EgcpaOXlP_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_CZ6EgcpaOXlP",
+					"globalUniqueName": "Relationship_TechnicalFunctionality_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_TechnicalFunctionality",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "TechnicalFunctionality",
+							"metaClassID": "CZ6EgcpaOXlP",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "CZ6EgcpaOXlP_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_CZ6EgcpaOXlP",
+					"name": "TechnicalFunctionality_VariedObject",
+					"reverseId": "CZ6EgcpaOXlP_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_CZ6EgcpaOXlP",
+					"globalUniqueName": "Relationship_TechnicalFunctionality_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_TechnicalFunctionality",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "TechnicalFunctionality",
+							"metaClassID": "CZ6EgcpaOXlP",
+							"multiplicity": "*"
+						}
+					]
 				}
 			]
 		},
@@ -8778,6 +9701,64 @@
 							"maeID": "GBOwduWJGTsA",
 							"metaClassName": "BusinessDocumentVersion",
 							"metaClassID": "AbEujCE8GfyD",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "LAeuIKAfGbKF_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_LAeuIKAfGbKF",
+					"name": "DataView_VariantObject",
+					"reverseId": "LAeuIKAfGbKF_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_LAeuIKAfGbKF",
+					"globalUniqueName": "Relationship_DataView_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_DataView",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "DataView",
+							"metaClassID": "LAeuIKAfGbKF",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "LAeuIKAfGbKF_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_LAeuIKAfGbKF",
+					"name": "DataView_VariedObject",
+					"reverseId": "LAeuIKAfGbKF_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_LAeuIKAfGbKF",
+					"globalUniqueName": "Relationship_DataView_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_DataView",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "DataView",
+							"metaClassID": "LAeuIKAfGbKF",
 							"multiplicity": "*"
 						}
 					]
@@ -10186,6 +11167,64 @@
 							"maeID": "st6GC8KE9b70",
 							"metaClassName": "Risk",
 							"metaClassID": "W5faeGPxySL0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "FN8AHc2gITnL_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_FN8AHc2gITnL",
+					"name": "SoftwareTechnology_VariantObject",
+					"reverseId": "FN8AHc2gITnL_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_FN8AHc2gITnL",
+					"globalUniqueName": "Relationship_SoftwareTechnology_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_SoftwareTechnology",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "SoftwareTechnology",
+							"metaClassID": "FN8AHc2gITnL",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "FN8AHc2gITnL_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_FN8AHc2gITnL",
+					"name": "SoftwareTechnology_VariedObject",
+					"reverseId": "FN8AHc2gITnL_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_FN8AHc2gITnL",
+					"globalUniqueName": "Relationship_SoftwareTechnology_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_SoftwareTechnology",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "SoftwareTechnology",
+							"metaClassID": "FN8AHc2gITnL",
 							"multiplicity": "*"
 						}
 					]
@@ -11778,6 +12817,64 @@
 							"metaClassName": "OrgUnit",
 							"metaClassID": "QrUiM9B5iCN0",
 							"multiplicity": "1"
+						}
+					]
+				},
+				{
+					"id": "IcfsZhjW9T90_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IcfsZhjW9T90",
+					"name": "BusinessCapability_VariantObject",
+					"reverseId": "IcfsZhjW9T90_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IcfsZhjW9T90",
+					"globalUniqueName": "Relationship_BusinessCapability_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_BusinessCapability",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "BusinessCapability",
+							"metaClassID": "IcfsZhjW9T90",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "IcfsZhjW9T90_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_IcfsZhjW9T90",
+					"name": "BusinessCapability_VariedObject",
+					"reverseId": "IcfsZhjW9T90_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_IcfsZhjW9T90",
+					"globalUniqueName": "Relationship_BusinessCapability_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_BusinessCapability",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "BusinessCapability",
+							"metaClassID": "IcfsZhjW9T90",
+							"multiplicity": "*"
 						}
 					]
 				}
@@ -14617,6 +15714,64 @@
 					]
 				},
 				{
+					"id": "dXRV098DpGG1_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_dXRV098DpGG1",
+					"name": "Class_VariantObject",
+					"reverseId": "dXRV098DpGG1_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_dXRV098DpGG1",
+					"globalUniqueName": "Relationship_Class_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_Class",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Class",
+							"metaClassID": "dXRV098DpGG1",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "dXRV098DpGG1_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_dXRV098DpGG1",
+					"name": "Class_VariedObject",
+					"reverseId": "dXRV098DpGG1_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_dXRV098DpGG1",
+					"globalUniqueName": "Relationship_Class_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_Class",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Class",
+							"metaClassID": "dXRV098DpGG1",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
 					"id": "4I1mIZCCLDd7_Tq3HBL2jKPZx_Cs3HpJ2jKzVx_7bpwjrECLjJ2_dXRV098DpGG1",
 					"name": "ApplicationDataArea",
 					"reverseId": "dXRV098DpGG1_8bpwjrECLnJ2_Cs3HpJ2jKzVx_Uq3HBL2jKTZx_4I1mIZCCLDd7",
@@ -16221,7 +17376,7 @@
 						{
 							"id": "Hj1HaHLAPTJW",
 							"name": "ComputingDeviceAssemblyDiagram_CDAD",
-							"description": "Computing Device Assembly Diagram - IT Infrastructure – Computing Device Assembly Diagram",
+							"description": "Computing Device Assembly Diagram - IT Infrastructure â€“ Computing Device Assembly Diagram",
 							"internalValue": "CDAD",
 							"order": 9999
 						},
@@ -16242,7 +17397,7 @@
 						{
 							"id": "ul1HOOLAPTYW",
 							"name": "ITTechnicalDeviceDiagram_ITDD",
-							"description": "IT Technical Device diagram - IT Infrastructure – IT Technical Device Assembly Diagram",
+							"description": "IT Technical Device diagram - IT Infrastructure â€“ IT Technical Device Assembly Diagram",
 							"internalValue": "ITDD",
 							"order": 9999
 						},
@@ -19160,6 +20315,64 @@
 					]
 				},
 				{
+					"id": "MrUiM9B5iyM0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_MrUiM9B5iyM0",
+					"name": "Application_VariantObject",
+					"reverseId": "MrUiM9B5iyM0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_MrUiM9B5iyM0",
+					"globalUniqueName": "Relationship_Application_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_Application",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Application",
+							"metaClassID": "MrUiM9B5iyM0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "MrUiM9B5iyM0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_MrUiM9B5iyM0",
+					"name": "Application_VariedObject",
+					"reverseId": "MrUiM9B5iyM0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_MrUiM9B5iyM0",
+					"globalUniqueName": "Relationship_Application_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_Application",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Application",
+							"metaClassID": "MrUiM9B5iyM0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
 					"id": "sdoXzrueF1WI_6XLcIdveFzQI_MrUiM9B5iyM0",
 					"name": "CostLine",
 					"reverseId": "MrUiM9B5iyM0_5XLcIdveFvQI_sdoXzrueF1WI",
@@ -20282,6 +21495,64 @@
 					]
 				},
 				{
+					"id": "QrUiM9B5iCN0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_QrUiM9B5iCN0",
+					"name": "OrgUnit_VariantObject",
+					"reverseId": "QrUiM9B5iCN0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_QrUiM9B5iCN0",
+					"globalUniqueName": "Relationship_OrgUnit_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_OrgUnit",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "OrgUnit",
+							"metaClassID": "QrUiM9B5iCN0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "QrUiM9B5iCN0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_QrUiM9B5iCN0",
+					"name": "OrgUnit_VariedObject",
+					"reverseId": "QrUiM9B5iCN0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_QrUiM9B5iCN0",
+					"globalUniqueName": "Relationship_OrgUnit_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_OrgUnit",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "OrgUnit",
+							"metaClassID": "QrUiM9B5iCN0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
 					"id": "IcfsZhjW9T90_od9L6Ys9Bzf1_Cd9LMSs9BnE1_JdRdxwf6EX5P_QrUiM9B5iCN0",
 					"name": "BusinessCapability",
 					"reverseId": "QrUiM9B5iCN0_IdRdxwf6ET5P_Cd9LMSs9BnE1_nd9L6Ys9Bvf1_IcfsZhjW9T90",
@@ -20591,6 +21862,64 @@
 							"maeID": "ibcS1FNZFnIL",
 							"metaClassName": "ServerDeployed",
 							"metaClassID": "dXqsNtTBHnW1",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "5tUiX9B5iCT0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_5tUiX9B5iCT0",
+					"name": "Site_VariantObject",
+					"reverseId": "5tUiX9B5iCT0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_5tUiX9B5iCT0",
+					"globalUniqueName": "Relationship_Site_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_Site",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "Site",
+							"metaClassID": "5tUiX9B5iCT0",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "5tUiX9B5iCT0_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_5tUiX9B5iCT0",
+					"name": "Site_VariedObject",
+					"reverseId": "5tUiX9B5iCT0_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_5tUiX9B5iCT0",
+					"globalUniqueName": "Relationship_Site_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_Site",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "Site",
+							"metaClassID": "5tUiX9B5iCT0",
 							"multiplicity": "*"
 						}
 					]
@@ -21641,6 +22970,64 @@
 							"maeID": "st6GC8KE9b70",
 							"metaClassName": "Risk",
 							"metaClassID": "W5faeGPxySL0",
+							"multiplicity": "*"
+						}
+					]
+				},
+				{
+					"id": "pj)grmQ9pG90_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_pj)grmQ9pG90",
+					"name": "BusinessProcess_VariantObject",
+					"reverseId": "pj)grmQ9pG90_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_pj)grmQ9pG90",
+					"globalUniqueName": "Relationship_BusinessProcess_VariantObject_Variation2Variant_Variation_VariedSideVariation_VariableObjectVariation_BusinessProcess",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedSideVariation",
+							"maeID": "tXAXOUeI6n90",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantObject",
+							"maeID": "NWAXSxeI65F0",
+							"metaClassName": "BusinessProcess",
+							"metaClassID": "pj)grmQ9pG90",
+							"multiplicity": "0..1"
+						}
+					]
+				},
+				{
+					"id": "pj)grmQ9pG90_sXAXOUeI6j90_lJp58zHf4H50_MWAXSxeI61F0_pj)grmQ9pG90",
+					"name": "BusinessProcess_VariedObject",
+					"reverseId": "pj)grmQ9pG90_NWAXSxeI65F0_lJp58zHf4H50_tXAXOUeI6n90_pj)grmQ9pG90",
+					"globalUniqueName": "Relationship_BusinessProcess_VariedObject_VariableObjectVariation_Variation_VariantSideVariation_Variation2Variant_BusinessProcess",
+					"constraints": {
+						"readOnly": false
+					},
+					"pathToTarget": [
+						{
+							"id": "KWAXSxeI6vE0",
+							"name": "Variation2Variant",
+							"maeName": "VariantSideVariation",
+							"maeID": "MWAXSxeI61F0",
+							"metaClassName": "Variation",
+							"metaClassID": "lJp58zHf4H50",
+							"multiplicity": "*"
+						},
+						{
+							"id": "qXAXOUeI6b90",
+							"name": "VariableObjectVariation",
+							"maeName": "VariedObject",
+							"maeID": "sXAXOUeI6j90",
+							"metaClassName": "BusinessProcess",
+							"metaClassID": "pj)grmQ9pG90",
 							"multiplicity": "*"
 						}
 					]

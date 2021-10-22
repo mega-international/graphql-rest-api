@@ -17,23 +17,28 @@
         <Copyright>Copyright $(Company), All rights reserved.</Copyright>
         <InformationalVersion>$(FileVersion)</InformationalVersion>
         <Version>$(FileVersion)</Version>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <!-- Fin MEGA -->
-    
+
     <ItemGroup>
-        <PackageReference Include="GraphQL" Version="4.5.0" />
+        <PackageReference Include="GraphQL" Version="4.6.1" />
         <PackageReference Include="GraphQL-Parser" Version="7.2.0" />
-        <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="5.0.82" />
+        <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="15.0.0.160" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.7" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.12" />
         <PackageReference Include="System.Runtime" Version="4.3.1" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <Reference Include="Mega.Macro.Wrapper">
+        <Reference Include="Mega.Macro.Wrapper" Condition="'$(Configuration)'=='Debug'">
+            <HintPath>..\..\..\ExeDebug\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
+        </Reference>
+        <Reference Include="Mega.Macro.Wrapper" Condition="'$(Configuration)'=='Release'">
             <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
         </Reference>
     </ItemGroup>
-    
+
 </Project>

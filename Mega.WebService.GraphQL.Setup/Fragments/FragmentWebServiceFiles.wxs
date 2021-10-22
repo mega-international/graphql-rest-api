@@ -504,6 +504,35 @@
             </Component>
         </ComponentGroup>
 
+        <ComponentGroup Id="WebServiceContentLibEs6PromiseFiles" Directory="WebServiceContentLibEs6PromiseFolder">
+            <Component Id="Content_es6.promise.auto.min.js" Guid="{8D4245BF-D0A6-41CE-941A-F64C8492DCBE}">
+                <File Id="Content_es6.promise.auto.min.js" Name="es6-promise.auto.min.js" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\lib\es6-promise\es6-promise.auto.min.js" />
+            </Component>
+        </ComponentGroup>
+        <ComponentGroup Id="WebServiceContentLibFetchFiles" Directory="WebServiceContentLibFetchFolder">
+            <Component Id="Content_fetch.min.js" Guid="{430F6325-6690-4FEC-8F5E-62D6EFF88C84}">
+                <File Id="Content_fetch.min.js" Name="fetch.min.js" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\lib\fetch\fetch.min.js" />
+            </Component>
+        </ComponentGroup>
+        <ComponentGroup Id="WebServiceContentLibGraphqlVoyagerDistFiles" Directory="WebServiceContentLibGraphqlVoyagerDistFolder">
+            <Component Id="Content_voyager.css" Guid="{59D93FB5-FF42-4B6F-A616-18AA0723AD60}">
+                <File Id="Content_voyager.css" Name="voyager.css" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\lib\graphql-voyager\dist\voyager.css" />
+            </Component>
+            <Component Id="Content_voyager.min.js" Guid="{93D6BA43-3C7F-45AA-A73E-A8030D14DC84}">
+                <File Id="Content_voyager.min.js" Name="voyager.min.js" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\lib\graphql-voyager\dist\voyager.min.js" />
+            </Component>
+        </ComponentGroup>
+        <ComponentGroup Id="WebServiceContentLibReactUmdFiles" Directory="WebServiceContentLibReactUmdFolder">
+            <Component Id="Content_react.production.min.js" Guid="{315DFC9B-9D24-46FE-A5DB-9588F5434CFB}">
+                <File Id="Content_react.production.min.js" Name="react.production.min.js" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\lib\react\umd\react.production.min.js" />
+            </Component>
+        </ComponentGroup>
+        <ComponentGroup Id="WebServiceContentLibReactDomUmdFiles" Directory="WebServiceContentLibReactDomUmdFolder">
+            <Component Id="Content_react.dom.production.min.js" Guid="{9C42841B-35E5-4CB3-AEA5-0ABD5F98EA5E}">
+                <File Id="Content_react.dom.production.min.js" Name="react-dom.production.min.js" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\lib\react-dom\umd\react-dom.production.min.js" />
+            </Component>
+        </ComponentGroup>
+
         <ComponentGroup Id="WebServiceContentFiles" Directory="ContentFolder">
             <Component Id="Content_graphiql.css" Guid="{6E19F040-B8F6-4B3A-A925-F6BAECD38E6C}">
                 <File Id="Content_graphiql.css" Name="graphiql.css" Source="$(var.Mega.WebService.GraphQL.ProjectDir)Content\graphiql.css" />

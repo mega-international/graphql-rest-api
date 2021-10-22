@@ -163,7 +163,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                     }
                 }
                 existing.TargetClass = targetClass;
-                if(rel.Path.Length > 2)
+                if (rel.Path.Length > 2)
                 {
                     throw new Exception($"Relation {rel.Name} path should be less or equal to 2: current is {rel.Path.Length}");
                 }
@@ -188,7 +188,7 @@ namespace Hopex.Model.PivotSchema.Convertors
                     return newPath;
                 }));
 
-                if(pathClasses.Count() > 0 || pathProperties.Count() > 0)
+                if (pathClasses.Count() > 0 || pathProperties.Count() > 0)
                 {
                     var extendedClassName = rel.TargetClassName;
                     var extendedClass = new ClassDescription(targetClass.MetaModel,
@@ -199,9 +199,9 @@ namespace Hopex.Model.PivotSchema.Convertors
                                                     targetClass);
                     existing.TargetClass = extendedClass;
                     ReadProperties(pathProperties, extendedClass, PropertyScope.TargetClass);
-                    for(var index = 0; index < pathClasses.Count; ++index)
+                    for (var index = 0; index < pathClasses.Count; ++index)
                     {
-                        ReadProperties(pathClasses[index].Properties, extendedClass, PropertyScope.TargetClass, $"link{index+1}");
+                        ReadProperties(pathClasses[index].Properties, extendedClass, PropertyScope.TargetClass, $"link{index + 1}");
                     }
                 }
             }
@@ -209,6 +209,10 @@ namespace Hopex.Model.PivotSchema.Convertors
 
         private static void ReadProperties(IEnumerable<PivotPropertyDescription> properties, IClassDescription cd, PropertyScope scope = PropertyScope.Class, string prefix = "")
         {
+            if (properties == null)
+            {
+                return;
+            }
             foreach (PivotPropertyDescription property in properties)
             {
                 if (!(cd.GetPropertyDescription(property.Name, false) is PropertyDescription existing))

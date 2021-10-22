@@ -100,22 +100,22 @@ namespace Hopex.Modules.GraphQL.Schema
             Schema.Mutation = CreateMutationSchema(Schema, HopexSchema);
             //Logger.LogInformation("  SchemaBuilder.CreateMutationSchema terminated");
 
-            Schema.Directives.Register(new DirectiveGraphType("capitalize", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("deburr", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("pascalCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("camelCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("kebabCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("snakeCase", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("toLower", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("lowerFirst", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("toUpper", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("upperFirst", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("trim", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("trimStart", new List<DirectiveLocation> {DirectiveLocation.Field}));
-            Schema.Directives.Register(new DirectiveGraphType("trimEnd", new List<DirectiveLocation> {DirectiveLocation.Field}));
+            Schema.Directives.Register(new DirectiveGraphType("capitalize", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("deburr", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("pascalCase", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("camelCase", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("kebabCase", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("snakeCase", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("toLower", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("lowerFirst", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("toUpper", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("upperFirst", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("trim", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("trimStart", new List<DirectiveLocation> { DirectiveLocation.Field }));
+            Schema.Directives.Register(new DirectiveGraphType("trimEnd", new List<DirectiveLocation> { DirectiveLocation.Field }));
 
             Schema.Directives.Register(
-                new DirectiveGraphType("phone", new List<DirectiveLocation> {DirectiveLocation.Field})
+                new DirectiveGraphType("phone", new List<DirectiveLocation> { DirectiveLocation.Field })
                 {
                     Arguments = new QueryArguments
                     {
@@ -123,23 +123,23 @@ namespace Hopex.Modules.GraphQL.Schema
                     }
                 });
             Schema.Directives.Register(
-                new DirectiveGraphType("number", new List<DirectiveLocation> {DirectiveLocation.Field})
+                new DirectiveGraphType("number", new List<DirectiveLocation> { DirectiveLocation.Field })
                 {
                     Arguments = new QueryArguments
                     {
                         new QueryArgument(typeof(StringGraphType)) {Name = "format"}
                     }
                 });
-            Schema.Directives.Register(new DirectiveGraphType("currency", new List<DirectiveLocation> {DirectiveLocation.Field})
-                {
-                    Arguments = new QueryArguments
+            Schema.Directives.Register(new DirectiveGraphType("currency", new List<DirectiveLocation> { DirectiveLocation.Field })
+            {
+                Arguments = new QueryArguments
                     {
                         new QueryArgument(typeof(StringGraphType)) { Name = "format" },
                         new QueryArgument(typeof(StringGraphType)) { Name = "currency" }
                     }
-                });
+            });
             Schema.Directives.Register(
-                new DirectiveGraphType("date", new List<DirectiveLocation> {DirectiveLocation.Field})
+                new DirectiveGraphType("date", new List<DirectiveLocation> { DirectiveLocation.Field })
                 {
                     Arguments = new QueryArguments
                     {
@@ -148,7 +148,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 });
             //Schema.Directives.Register(new DirectiveGraphType("isReadOnly", new List<DirectiveLocation> {DirectiveLocation.Field}));
             //Schema.Directives.Register(new DirectiveGraphType("isReadWrite", new List<DirectiveLocation> {DirectiveLocation.Field}));
-        
+
             return Schema;
         }
 
@@ -316,7 +316,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 string format = null;
                 if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
                 {
-                    format = ctx.Arguments["format"].ToString();
+                    format = ctx.Arguments["format"].Value?.ToString();
                 }
 
                 object result = null;
@@ -344,7 +344,7 @@ namespace Hopex.Modules.GraphQL.Schema
                         }
                     }
                 }
-                if(shouldBeSkipped)
+                if (shouldBeSkipped)
                 {
                     return null;
                 }
@@ -364,21 +364,28 @@ namespace Hopex.Modules.GraphQL.Schema
                 {
                     return null;
                 }
-                
-                if (prop.PropertyType == PropertyType.Date && ctx.Arguments != null && ctx.Arguments.TryGetValue("timeOffset", out var timeOffsetValue) && timeOffsetValue.Value is string timeOffset)
+
+                if (prop.PropertyType == PropertyType.Date)
                 {
-                    try
+                    if (ctx.Arguments != null && ctx.Arguments.TryGetValue("timeOffset", out var timeOffsetValue) && timeOffsetValue.Value is string timeOffset)
                     {
-                        var date = DateTime.Parse(result.ToString());
-                        var timeSpan = TimeSpan.Parse(timeOffset.TrimStart('+'));
-                        date = TimeZoneInfo.ConvertTime(date, TimeZoneInfo.Utc, TimeZoneInfo.CreateCustomTimeZone("MyTimeZone", timeSpan, "MyTimeZone", "MyTimeZone"));
-                        result = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
+                        try
+                        {
+                            var date = DateTime.Parse(result.ToString());
+                            var timeSpan = TimeSpan.Parse(timeOffset.TrimStart('+'));
+                            date = TimeZoneInfo.ConvertTime(date, TimeZoneInfo.Utc, TimeZoneInfo.CreateCustomTimeZone("MyTimeZone", timeSpan, "MyTimeZone", "MyTimeZone"));
+                            result = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new ExecutionError(
+                                $"Time Offset must be a valid value between -14:00 and +14:00 (value: {timeOffset} is not accepted).",
+                                e);
+                        }
                     }
-                    catch (Exception e)
+                    if (!string.IsNullOrEmpty(format) && DateTime.TryParse(result.ToString(), out var dateToFormat))
                     {
-                        throw new ExecutionError(
-                            $"Time Offset must be a valid value between -14:00 and +14:00 (value: {timeOffset} is not accepted).",
-                            e);
+                        return dateToFormat.ToString(format, CultureInfo.InvariantCulture);
                     }
                 }
 
@@ -458,14 +465,14 @@ namespace Hopex.Modules.GraphQL.Schema
                                 .Replace(" ", "");
                             if (long.TryParse(val, out var phoneNumber))
                             {
-                                var format = directive.Arguments.ValueFor("format")?.Value.ToString();
+                                var format = directive.Arguments?.ValueFor("format")?.Value?.ToString();
                                 return string.Format(format ?? string.Empty, phoneNumber);
                             }
                             return $"Unable to format {value} as phone number";
                         }
                     case "number" when value is int || value is long || value is double || value is float || value is decimal:
                         {
-                            var format = directive.Arguments.ValueFor("format")?.Value.ToString();
+                            var format = directive.Arguments?.ValueFor("format")?.Value?.ToString();
                             format = format ?? string.Empty;
 
                             switch (value)
@@ -485,10 +492,10 @@ namespace Hopex.Modules.GraphQL.Schema
                         }
                     case "currency" when value is int || value is long || value is double || value is float || value is decimal:
                         {
-                            var format = directive.Arguments.ValueFor("format")?.Value.ToString();
+                            var format = directive.Arguments?.ValueFor("format")?.Value?.ToString();
                             format = format ?? string.Empty;
 
-                            var currency = directive.Arguments.ValueFor("currency")?.Value.ToString();
+                            var currency = directive.Arguments?.ValueFor("currency")?.Value?.ToString();
                             switch (value)
                             {
                                 case int i:
@@ -506,20 +513,20 @@ namespace Hopex.Modules.GraphQL.Schema
                         }
                     case "date" when value is DateTime || value is DateTimeOffset || value is TimeSpan || propertyType == PropertyType.Date:
                         {
-                            var format = directive.Arguments.ValueFor("format")?.Value.ToString();
+                            var format = directive.Arguments?.ValueFor("format")?.Value?.ToString();
                             format = format == null ? string.Empty : format.Replace(":", "\\:");
 
                             switch (value)
                             {
                                 case DateTime dateTime:
-                                    return dateTime.ToString(format);
+                                    return dateTime.ToString(format, CultureInfo.InvariantCulture);
                                 case DateTimeOffset dateTimeOffset:
-                                    return dateTimeOffset.ToString(format);
+                                    return dateTimeOffset.ToString(format, CultureInfo.InvariantCulture);
                                 case TimeSpan timeSpan:
-                                    return timeSpan.ToString(format);
+                                    return timeSpan.ToString(format, CultureInfo.InvariantCulture);
                                 default:
                                     var date = DateTime.Parse(value.ToString());
-                                    return date.ToString(format);
+                                    return date.ToString(format, CultureInfo.InvariantCulture);
                             }
                         }
                 }
@@ -935,7 +942,7 @@ namespace Hopex.Modules.GraphQL.Schema
                         switch (prop.PropertyType)
                         {
                             case PropertyType.Date:
-                                field.Arguments.Add(new QueryArgument(typeof(StringGraphType)) {Name = "format"});
+                                field.Arguments.Add(new QueryArgument(typeof(StringGraphType)) { Name = "format" });
                                 field.Arguments.Add(new QueryArgument(typeof(StringGraphType))
                                 {
                                     Name = "timeOffset",
@@ -943,11 +950,11 @@ namespace Hopex.Modules.GraphQL.Schema
                                 });
                                 break;
                             case PropertyType.Currency:
-                                field.Arguments.Add(new QueryArgument(CurrenciesType) {Name = "currency"});
-                                field.Arguments.Add(new QueryArgument(typeof(CustomDateGraphType)) {Name = "dateRate"});
+                                field.Arguments.Add(new QueryArgument(CurrenciesType) { Name = "currency" });
+                                field.Arguments.Add(new QueryArgument(typeof(CustomDateGraphType)) { Name = "dateRate" });
                                 break;
                             case PropertyType.Enum:
-                                field.Arguments.Add(new QueryArgument(typeof(EnumFormat)) {Name = "format"});
+                                field.Arguments.Add(new QueryArgument(typeof(EnumFormat)) { Name = "format" });
                                 break;
                         }
                     }
@@ -1443,7 +1450,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 var result = ctx.Source.GetValue<object>(prop, ctx.Arguments, format);
                 if (result is DateTime date && !string.IsNullOrEmpty(format))
                 {
-                    return date.ToString(format);
+                    return date.ToString(format, CultureInfo.InvariantCulture);
                 }
 
                 return result;
@@ -1460,7 +1467,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     var result = ctx.Source.GetValue<object>(prop, ctx.Arguments, format);
                     if (result is DateTime date && !string.IsNullOrEmpty(format))
                     {
-                        return date.ToString(format);
+                        return date.ToString(format, CultureInfo.InvariantCulture);
                     }
 
                     return result;

@@ -18,7 +18,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Mega.Macro.Wrapper">
+        <Reference Include="Mega.Macro.Wrapper" Condition="'$(Configuration)'=='Debug'">
+            <HintPath>..\..\..\ExeDebug\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
+        </Reference>
+        <Reference Include="Mega.Macro.Wrapper" Condition="'$(Configuration)'=='Release'">
             <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
         </Reference>
     </ItemGroup>

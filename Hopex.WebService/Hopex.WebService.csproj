@@ -19,7 +19,7 @@
         <Version>$(FileVersion)</Version>
     </PropertyGroup>
     <!-- Fin MEGA -->
-    
+
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
@@ -29,7 +29,7 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
@@ -38,82 +38,86 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <PackageReference Include="GraphQL" Version="4.5.0" />
-      <PackageReference Include="GraphQL-Parser" Version="7.2.0" />
-      <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.0.0" />
-      <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="5.0.82" />
-      <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-      <PackageReference Include="System.Buffers" Version="4.5.1" />
-      <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
+        <PackageReference Include="GraphQL" Version="4.6.1" />
+        <PackageReference Include="GraphQL-Parser" Version="7.2.0" />
+        <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.1" />
+        <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="15.0.0.160" />
+        <!--<PackageReference Include="JetBrains.Profiler.Api" Version="1.1.8" />-->
+        <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="System.Buffers" Version="4.5.1" />
+        <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj" />
-      <ProjectReference Include="..\Hopex.Model\Hopex.Model.csproj" />
+        <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj" />
+        <ProjectReference Include="..\Hopex.Model\Hopex.Model.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Mega.Macro.Wrapper">
-        <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Runtime.Caching" />
+        <Reference Include="Mega.Macro.Wrapper" Condition="'$(Configuration)'=='Debug'">
+            <HintPath>..\..\..\ExeDebug\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
+        </Reference>
+        <Reference Include="Mega.Macro.Wrapper" Condition="'$(Configuration)'=='Release'">
+            <HintPath>..\..\..\ExeRelease\Assemblies\Mega.Macro.Wrapper.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.Caching" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="CONFIG\compatibility_list.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Custom\Readme.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\ITARC.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\Assessment.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\Audit.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\BPA.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\Data.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\DataPrivacy.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\ITARC.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="CONFIG\compatibility_list.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Custom\Readme.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\ITARC.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\Assessment.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\Audit.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\BPA.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\Data.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\DataPrivacy.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\ITARC.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Update="CONFIG\V3\Standard\ITPM.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\MetaModel.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\Reporting.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\Risk.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="CONFIG\V3\Standard\Workflow.JSON">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="has-manifest.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="icon.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="LICENSE">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\MetaModel.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\Reporting.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\Risk.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="CONFIG\V3\Standard\Workflow.JSON">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="has-manifest.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="LICENSE">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
