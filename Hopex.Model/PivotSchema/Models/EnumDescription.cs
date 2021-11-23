@@ -12,7 +12,7 @@ namespace Hopex.Model.PivotSchema.Models
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("internalValue")]
-        public object InternalValue { get; set; }
+        public string InternalValue { get; set; }
         [JsonProperty("order")]
         public int Order { get; set; }
     }

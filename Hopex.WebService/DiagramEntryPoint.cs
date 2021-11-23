@@ -3,6 +3,7 @@ using Hopex.Common.JsonMessages;
 using Hopex.Model.Abstractions;
 using Mega.Macro.API.Enums;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -28,16 +29,26 @@ namespace Hopex.Modules.GraphQL
 
         protected override Task<HopexResponse> ExecuteOnObject(IMegaRoot root, string diagramId, string method, DiagramExportArguments args)
         {
-            var diagram = root.GetObjectFromId(diagramId);
-            var drawing = root.GetDrawingFactory().CreateFromDiagram(diagram, "RO");
-            if (drawing == null)
+            try
             {
-                var result = new ErrorMacroResponse(HttpStatusCode.InternalServerError, "Diagram cannot be opened. Check you have sufficient rights or contact your administrator.");
+                var diagram = root.GetObjectFromId(diagramId);
+                var drawing = root.GetDrawingFactory().CreateFromDiagram(diagram, "RO");
+                if (drawing == null)
+                {
+                    var result = new ErrorMacroResponse(HttpStatusCode.InternalServerError, "Diagram cannot be opened. Check you have sufficient rights or contact your administrator.");
+                    return Task.FromResult(HopexResponse.Json(JsonConvert.SerializeObject(result)));
+                }
+
+                var response = BuildImageResponse(args, drawing);
+                return Task.FromResult(response);
+            }
+            catch(Exception ex)
+            {
+                var errorMessage = $"Diagram {diagramId} does not exist or is confidential";
+                Logger.LogError(ex, errorMessage);
+                var result = new ErrorMacroResponse(HttpStatusCode.BadRequest, errorMessage);
                 return Task.FromResult(HopexResponse.Json(JsonConvert.SerializeObject(result)));
             }
-
-            var response = BuildImageResponse(args, drawing);
-            return Task.FromResult(response);
         }
 
         private HopexResponse BuildImageResponse(DiagramExportArguments args, IMegaDrawing drawing)

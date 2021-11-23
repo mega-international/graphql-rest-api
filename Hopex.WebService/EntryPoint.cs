@@ -14,14 +14,10 @@ using Mega.Macro.API;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-#if DEBUG
-//using JetBrains.Profiler.Api;
-#endif
 
 namespace Hopex.Modules.GraphQL
 {
@@ -52,13 +48,9 @@ namespace Hopex.Modules.GraphQL
         {
             try
             {
-#if DEBUG
-                //MemoryProfiler.GetSnapshot("macro_start");
-#endif
-
                 Logger.LogInformation("GraphQL macro start");
 
-                PropertyCache.ResetCache();
+                //PropertyCache.ResetCache();
 
                 var megaRoot = GetMegaRoot();
                 var environmentId = Utils.GetEnvironmentId(HopexContext);
@@ -183,15 +175,7 @@ namespace Hopex.Modules.GraphQL
             }
             finally
             {
-                PropertyCache.ResetCache();
-#if DEBUG
-                MegaWrapperObject.ClearCounters();
-                //MemoryProfiler.GetSnapshot("macro_end");
-                Debug.Print($"PropertyCache.HitCount = {PropertyCache.HitCount}");
-                Debug.Print($"PropertyCache.MissCount = {PropertyCache.MissCount}");
-                //var counterInfo = MegaWrapperObject.GetCounters();
-                //Debug.Print(counterInfo);
-#endif
+                //PropertyCache.ResetCache();
             }
         }
 

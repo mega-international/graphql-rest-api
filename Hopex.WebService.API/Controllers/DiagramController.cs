@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace HAS.Modules.WebService.API.Controllers
 {
-    [Route("api/diagram")]
+    [Route("api")]
     [Authorize(AuthenticationSchemes = "PublicApiKeyScheme, BasicAuthScheme, Bearer, Cookies")]
     public class DiagramController : BaseController
     {
@@ -28,7 +28,7 @@ namespace HAS.Modules.WebService.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{diagramId}/image")]
+        [HttpGet("diagram/{diagramId}/image")]
         public async Task<IActionResult> GetImage(string diagramId)
         {
             try
@@ -40,8 +40,7 @@ namespace HAS.Modules.WebService.API.Controllers
                     return actionResult;
                 }
                 var macroResponse = await _hopex.CallWebService<string>(path, userData);
-                var macroResult = JsonConvert.DeserializeObject<FileDownloadMacroResponse>(macroResponse);
-                var fileResult = File(new MemoryStream(Convert.FromBase64String(macroResult.Content)), macroResult.ContentType, macroResult.FileName);
+                var fileResult = ProcessMacroResultToFile(macroResponse);
                 _logger.Log(LogLevel.Trace, $"{GetType().Name}.GetImage(diagramId: {diagramId}) leave.");
                 return fileResult;
             }

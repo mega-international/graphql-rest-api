@@ -55,8 +55,9 @@ namespace Hopex.Modules.GraphQL
             var schemaManager = await _schemaManagerProvider.GetInstanceAsync(HopexContext, schemaRef.Version, Logger);
 
             var languages = _languagesProvider.GetLanguages(Logger, megaRoot);
+            var currencies = _languagesProvider.GetCurrencies(Logger, megaRoot);
 
-            var (graphQlSchema, _) = await schemaManager.GetSchemaAsync(megaRoot, schemaRef, languages);
+            var (graphQlSchema, _) = await schemaManager.GetSchemaAsync(megaRoot, schemaRef, languages, currencies);
 
             var printer = new SchemaPrinter(graphQlSchema);
             var response = new SchemaMacroResponse

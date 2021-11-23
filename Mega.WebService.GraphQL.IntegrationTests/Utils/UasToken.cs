@@ -1,4 +1,7 @@
+using Mega.WebService.GraphQL.IntegrationTests.Applications;
+using Mega.WebService.GraphQL.IntegrationTests.Applications.Hopex;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
@@ -15,6 +18,22 @@ namespace Mega.WebService.GraphQL.IntegrationTests.Utils
         public readonly long Delay;
 
         private readonly Stopwatch stopwatch = new Stopwatch();
+
+        public struct UasContext
+        {
+            public string Login;
+            public string Password;
+            public string EnvironmentId;
+            public Uri TokenUri;
+
+            public UasContext(string login, string password, string environmentId, Uri tokenUri)
+            {
+                Login = login;
+                Password = password;
+                EnvironmentId = environmentId;
+                TokenUri = tokenUri;
+            }
+        }
 
         public UasToken(string accessToken, long delay)
         {
@@ -39,7 +58,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests.Utils
             return (Delay * 900 <= stopwatch.ElapsedMilliseconds);
         }
 
-        public static async Task<UasToken> CreateAsync(GlobalFixture ctx)
+        public static async Task<UasToken> CreateAsync(SessionDatas ctx)
         {
             var fields = new Dictionary<string, string>();
             string strResponse;
@@ -53,7 +72,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests.Utils
             var httpRequestMessage = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = ctx.TokenUri,
+                RequestUri = new Uri($"{ctx.Scheme}://{ctx.Host}/UAS/connect/token"),
                 Content = new FormUrlEncodedContent(fields)
             };
             var response = await _client.SendAsync(httpRequestMessage);

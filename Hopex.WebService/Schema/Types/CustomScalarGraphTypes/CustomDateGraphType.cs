@@ -13,6 +13,10 @@ namespace Hopex.Modules.GraphQL.Schema.Types.CustomScalarGraphTypes
 
         public override object ParseValue(object value)
         {
+            if (value == null)
+            {
+                return null;
+            }
             if(value is DateTime dateTime)
             {
                 value = dateTime.Date;

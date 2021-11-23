@@ -220,9 +220,7 @@ namespace Hopex.Model
             return RealObject.IsSameId(objectId);
         }
 
-        public IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null,
-            int sortDirection2 = 1, string sortAttribute2 = null, int sortDirection3 = 1,
-            string sortAttribute3 = null)
+        public IMegaCollection GetCollection(MegaId linkId, int sortDirection1 = 1, string sortAttribute1 = null, int sortDirection2 = 1, string sortAttribute2 = null, int sortDirection3 = 1, string sortAttribute3 = null)
         {
             return new RealMegaCollection(RealObject.GetCollection(linkId, sortDirection1, sortAttribute1, sortDirection2, sortAttribute2));
         }
@@ -295,6 +293,11 @@ namespace Hopex.Model
         {
             MegaWrapperObject.IncCounter("MegaAttribute.Value");
             return RealAttribute.NativeObject.Value();
+        }
+
+        public string GetFormatted(OutputFormat format, string options = null, object parser = null)
+        {
+            return RealAttribute.GetFormatted(format, options, parser);
         }
     }
 

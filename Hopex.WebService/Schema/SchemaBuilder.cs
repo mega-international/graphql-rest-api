@@ -185,7 +185,16 @@ namespace Hopex.Modules.GraphQL.Schema
             query.Field<DiagnosticType>("_APIdiagnostic", resolve: context => new DiagnosticType());
 
             //Logger.LogInformation("    SchemaBuilder.IsFullTextSearchActivated start");
-            if (megaRoot.ConditionEvaluate("~PuC7Fh2WKv1H[Is Full Text Search Activated]"))
+            var isFullTextSearchActivated = false;
+            try
+            {
+                isFullTextSearchActivated = megaRoot.ConditionEvaluate("~PuC7Fh2WKv1H[Is Full Text Search Activated]");
+            }
+            catch
+            {
+                // ignored
+            }
+            if (isFullTextSearchActivated)
             {
                 AddSearchAllField(query, hopexSchema, genericObjectInterface);
             }
@@ -378,14 +387,12 @@ namespace Hopex.Modules.GraphQL.Schema
                         }
                         catch (Exception e)
                         {
-                            throw new ExecutionError(
-                                $"Time Offset must be a valid value between -14:00 and +14:00 (value: {timeOffset} is not accepted).",
-                                e);
+                            throw new ExecutionError($"Time Offset must be a valid value between -14:00 and +14:00 (value: {timeOffset} is not accepted).", e);
                         }
                     }
-                    if (!string.IsNullOrEmpty(format) && DateTime.TryParse(result.ToString(), out var dateToFormat))
+                    if (DateTime.TryParse(result.ToString(), out var dateToFormat))
                     {
-                        return dateToFormat.ToString(format, CultureInfo.InvariantCulture);
+                        result = dateToFormat.ToString(!string.IsNullOrEmpty(format) ? format : "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
                     }
                 }
 
@@ -690,8 +697,8 @@ namespace Hopex.Modules.GraphQL.Schema
                 }),
                 context =>
                 {
-                    var currentContext = context.GetArgument<Dictionary<string, ArgumentValue>>("currentContext");
-                    if (!(currentContext?["language"].Value is IMegaObject language))
+                    var currentContext = context.GetArgument<Dictionary<string, object>>("currentContext");
+                    if (!(currentContext?["language"] is IMegaObject language))
                     {
                         return null;
                     }
@@ -789,7 +796,7 @@ namespace Hopex.Modules.GraphQL.Schema
                         var idType = IdTypeEnum.INTERNAL;
                         if (ctx.HasArgument("idType"))
                         {
-                            Enum.TryParse(ctx.GetArgument<string>("idType"), out idType);
+                            idType = ctx.GetArgument<IdTypeEnum>("idType");
                         }
                         var result = await ctx.Source.CreateElementAsync(
                             entity,
@@ -1013,7 +1020,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 var compiler = new FilterCompiler(root, entity, relationship, isRoot ? null : sourceElement);
                 erql = $"SELECT {entity.Id}[{entity.GetBaseName()}]";
                 erql += " WHERE " + compiler.CreateHopexQuery(filter, language);
-                //Logger.LogInformation($"{erql}");
+                Logger.LogInformation($"{erql}");
                 if (root is ISupportsDiagnostics diags)
                 {
                     diags.AddGeneratedERQL(erql);

@@ -20,7 +20,7 @@ namespace Mega.WebService.GraphQL.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Path { get; set; }
+        //public string Path { get; set; }
         public List<HopexBase> Repositories { get; set; }
 
         public HopexEnvironmentWithRepositories()

@@ -997,14 +997,14 @@
 							"id": "eCfXkZOSGDOL",
 							"name": "Active",
 							"description": "Active - Active",
-							"internalValue": 1,
+							"internalValue": "1",
 							"order": 9999
 						},
 						{
 							"id": "IEfXUaOSGnRL",
 							"name": "Inactive",
 							"description": "Inactive - Inactive",
-							"internalValue": 0,
+							"internalValue": "0",
 							"order": 9999
 						}
 					]

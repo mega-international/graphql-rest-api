@@ -44,7 +44,7 @@ namespace Mega.WebService.GraphQL.Controllers
                         {
                             Id = environment.Id,
                             Name = environmentName,
-                            Path = environment.Name
+                            //Path = environment.Name
                         };
 
                         var repositoriesHopexResult = adminBridge.GetRepositories(environment.Id);

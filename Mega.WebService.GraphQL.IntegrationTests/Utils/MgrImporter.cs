@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Mega.WebService.GraphQL.IntegrationTests.Applications.Interfaces;
 using MegaMapp;
 using System.Collections.Generic;
 using System.IO;
@@ -8,12 +9,12 @@ using Xunit.Abstractions;
 
 namespace Mega.WebService.GraphQL.IntegrationTests.Utils
 {
-    public class MgrImporter
+    internal class MgrImporter
     {
         static string _rejectFile = Path.GetTempFileName();
-        private MegaDatabase _megaDatabase;       
+        private IRepository _megaDatabase;       
 
-        public MgrImporter(MegaDatabase megaDatabase)
+        public MgrImporter(IRepository megaDatabase)
         {
             _megaDatabase = megaDatabase;
         }

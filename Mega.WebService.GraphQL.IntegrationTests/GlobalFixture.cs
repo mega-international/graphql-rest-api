@@ -1,11 +1,14 @@
 using GraphQL.Client.Http;
+using Mega.WebService.GraphQL.IntegrationTests.Applications;
+using Mega.WebService.GraphQL.IntegrationTests.Applications.HAS;
+using Mega.WebService.GraphQL.IntegrationTests.Applications.Hopex;
+using Mega.WebService.GraphQL.IntegrationTests.Applications.Interfaces;
 using Mega.WebService.GraphQL.IntegrationTests.Utils;
-using MegaMapp;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,50 +18,70 @@ using Xunit;
 
 namespace Mega.WebService.GraphQL.IntegrationTests
 {
+    internal enum RequesterType
+    {
+        Token = 0,
+        ApiKey = 1
+    }
+
     public class GlobalFixture : IDisposable
     {
-        private string _sqlConnectionString = "User=sa,Type=SQLSERVER,SERVER=(local)\\SQL2017;UID=sa;PWD=mega";
+        private string _sqlConnectionString = $"User={ConfigurationManager.AppSettings["DBUser"]},Type={ConfigurationManager.AppSettings["DBType"]},SERVER={ConfigurationManager.AppSettings["DBServer"]};UID={ConfigurationManager.AppSettings["DBUser"]};PWD={ConfigurationManager.AppSettings["DBPassword"]}";
 
-        private readonly string _scheme = "http";
-        private readonly string _host = "localhost";
-        private const string _tokenPath = "UAS/connect/token";
+        private readonly RequesterType _requesterType = (RequesterType)Enum.Parse(typeof(RequesterType), ConfigurationManager.AppSettings["RequesterType"]);
+        private readonly string _scheme = "https";
+        private readonly string _host = ConfigurationManager.AppSettings["Host"];
+        private readonly string _apiKeyAdmin = ConfigurationManager.AppSettings["ApiKeyAdmin"];
         private const string _apiPath = "HOPEXGraphQL/api/";
         private const string CACHED_CONFIG_FILE = "cachedConfig.json";
 
-        public Uri TokenUri => new Uri($"{_scheme}://{_host}/{_tokenPath}");
-        private Uri _apiUri => new Uri($"{_scheme}://{_host}/{_apiPath}");
-
-        public string Login => "scr";
-        private string _personSystem => "CRONIER Sébastien";
-        public string Password => "Hopex";
-
-        private string _preferredEnvironmentPartialName = "EnvTestsLab";
-        private string _repositoryName = "GraphQLIntegrationTests";
-        public string ProfileId => "757wuc(SGjpJ"; // Hopex Customizer
-
+        private Uri ApiUri => new Uri($"{_scheme}://{_host}/{_apiPath}");
+        private string LoginId => "8fCpjryUN96H";
+        private string LoginName => "scr";
+        private string PersonId => "XgCp3syUNLAH";
+        private string PersonName => "CRONIER Sébastien";
+        private string Password => "Hopex";
+        private string RepositoryName => "GraphQLIntegrationTests";
+        public string ProfileId { get; private set; } = "757wuc(SGjpJ"; // Hopex Customizer
         public string RepositoryId { get; private set; }
         public string EnvironmentId { get; private set; }
-        public string ContextHeader => $"{{\"EnvironmentId\":\"{EnvironmentId}\",\"RepositoryId\":\"{RepositoryId}\",\"ProfileId\":\"{ProfileId}\"}}";
+        public string ApiKey { get; private set; }
 
         public HttpClient Client { get; private set; }
         
-        private UasToken _uasToken = UasToken.NO_TOKEN;
-        private Dictionary<string, GraphQLHttpClient> _graphQLClientDictionary = new Dictionary<string, GraphQLHttpClient>();
+        private readonly Dictionary<string, GraphQLHttpClient> _graphQLClientDictionary = new Dictionary<string, GraphQLHttpClient>();
+
+        private IApplication _application;
+        private SessionDatas _sessionDatas;
+        private readonly ServerInfos _serverInfos;
+        private readonly UserInfos _userInfos;
 
         public GlobalFixture()
         {
+            _userInfos = new UserInfos
+            {
+                LoginId = LoginId,
+                LoginName = LoginName,
+                PersonId = PersonId,
+                PersonName = PersonName,
+                Password = Password
+            };
             var useHttps = Environment.GetEnvironmentVariable("HopexUseHttps");
             if (!string.IsNullOrEmpty(useHttps))
             {
                 _scheme = "https";
                 _host = GetFullyQualifiedDomainName();
             }
+            _serverInfos = new ServerInfos(_scheme, _host, _apiKeyAdmin);
+
+            CreateApplication();
 
             if (IsRunWithoutInitialization())
             {
                 var settings = JsonConvert.DeserializeObject<CachedSettings>(File.ReadAllText(CACHED_CONFIG_FILE));
                 EnvironmentId = settings.EnvironmentId;
                 RepositoryId = settings.RepositoryId;
+                ApiKey = settings.ApiKey;
             }
             else
             {
@@ -68,48 +91,67 @@ namespace Mega.WebService.GraphQL.IntegrationTests
                 var settings = new CachedSettings
                 {
                     EnvironmentId = EnvironmentId,
-                    RepositoryId = RepositoryId                    
+                    RepositoryId = RepositoryId,
+                    ApiKey = ApiKey
                 };
                 File.WriteAllText(CACHED_CONFIG_FILE, JsonConvert.SerializeObject(settings));
             }
 
-            Console.WriteLine($"Using UAS {TokenUri}");
-            Console.WriteLine($"Using GraphQL {_apiUri}");
+            Console.WriteLine($"Using GraphQL {ApiUri}");
 
             Client = new HttpClient()
             {
-                BaseAddress = _apiUri
+                BaseAddress = ApiUri
             };
         }
 
-        private MegaDatabase FindMegaDatabase()
+        private void CreateApplication()
+        {
+            switch(_requesterType)
+            {
+                case RequesterType.ApiKey:
+                {
+                    _application = new ApplicationHAS(_serverInfos);
+                    break;
+                }
+                case RequesterType.Token:
+                {
+                    _application = new ApplicationHopex(_serverInfos);
+                    break;
+                }
+                default:
+                {
+                   throw new NotSupportedException($"Cannot instanciate application with request type: {_requesterType}");
+                }
+            }
+        }
+
+        private IRepository FindMegaDatabase()
         {
             var sqlConnectionStringFromEnv = Environment.GetEnvironmentVariable("HopexSqlConnectionString");
             if (!string.IsNullOrEmpty(sqlConnectionStringFromEnv))
                 _sqlConnectionString = sqlConnectionStringFromEnv;
             Console.WriteLine("Using connection string " + _sqlConnectionString);
 
-            var megaApplication = new MegaApplication();
-            var environments = megaApplication.Environments().Cast<MegaEnvironment>();
-            var environmentTestsLab = environments.Where(e => e.Path.Contains(_preferredEnvironmentPartialName));
-            var environment = environmentTestsLab.FirstOrDefault() ?? environments.First();
+            var environment = _application.GetEnvironment();
+            environment.SetCurrentAdmin(PersonName, Password);
 
-            environment.CurrentAdministrator = _personSystem;
-            environment.CurrentPassword = Password;
-
-            EnvironmentId = environment.GetProp("EnvHexaIdAbs");
+            EnvironmentId = environment.Id;
             Console.WriteLine($"Found environment {EnvironmentId} {environment.Path}");
 
-            var databases = environment.Databases();
-            var megaDatabase = databases.Cast<MegaDatabase>().FirstOrDefault(db => db.Name.Equals(_repositoryName, StringComparison.InvariantCultureIgnoreCase));
-            if (megaDatabase == null)
+            var repository = environment.GetRepositoryByName(RepositoryName);
+            if(repository == null)
             {
-                Console.WriteLine("Creating Database " + _repositoryName);
-                megaDatabase = databases.Create(_repositoryName, $@"{environment.Path}\Db\{_repositoryName}", _sqlConnectionString);
+                Console.WriteLine("Creating Database " + RepositoryName);
+                repository = environment.CreateRepository(RepositoryName, _sqlConnectionString);
             }
-            RepositoryId = megaDatabase.GetProp("EnvHexaIdAbs");
+
+            RepositoryId = repository.Id;
             Console.WriteLine("Found Database " + RepositoryId);
-            return megaDatabase;
+
+            _sessionDatas = repository.CreateSessionDatas(_userInfos, ProfileId);
+            ApiKey = _sessionDatas.ApiKey;
+            return repository;
         }
 
         private static string GetFullyQualifiedDomainName()
@@ -123,10 +165,8 @@ namespace Mega.WebService.GraphQL.IntegrationTests
 
         public async Task FillHeadersAsync(HttpRequestHeaders headers)
         {
-            if (_uasToken.Expired())
-                _uasToken = await UasToken.CreateAsync(this);
-            headers.Authorization = AuthenticationHeaderValue.Parse($"Bearer {_uasToken.AccessToken}");
-            headers.Add("X-Hopex-Context", ContextHeader);
+            IHeaderBuilder builder = _application.InstanciateBuilder();
+            await builder.FillHeadersAsync(_sessionDatas, headers);
         }
 
         public async Task<GraphQLHttpClient> GetGraphQLClientAsync(string schema)
@@ -135,7 +175,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
             {
                 var client = new GraphQLHttpClient(new GraphQLHttpClientOptions()
                 {
-                    EndPoint = new Uri(_apiUri, schema)
+                    EndPoint = new Uri(ApiUri, schema)
                 });
                 await FillHeadersAsync(client.HttpClient.DefaultRequestHeaders);
                 _graphQLClientDictionary.Add(schema, client);
@@ -153,6 +193,7 @@ namespace Mega.WebService.GraphQL.IntegrationTests
         {            
             public string EnvironmentId { get; set; }
             public string RepositoryId { get; set; }
+            public string ApiKey { get; set; }
         }
 
         #region IDisposable Support

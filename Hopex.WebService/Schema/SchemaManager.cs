@@ -21,7 +21,7 @@ namespace Hopex.Modules.GraphQL.Schema
 
         private static readonly SemaphoreSlim _loadSemaphore = new SemaphoreSlim(1, 1);
 
-        public async Task<(global::GraphQL.Types.Schema, IHopexMetaModel)> GetSchemaAsync(IMegaRoot megaRoot, SchemaReference schemaRef,  Dictionary<string, IMegaObject> languages = null, List<string> currencies = null)
+        public async Task<(global::GraphQL.Types.Schema, IHopexMetaModel)> GetSchemaAsync(IMegaRoot megaRoot, SchemaReference schemaRef,  Dictionary<string, IMegaObject> languages, List<string> currencies)
         {
             var path = schemaRef.UniqueId;
             if (_schemas.TryGetValue(path, out var builder))

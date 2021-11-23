@@ -5,6 +5,7 @@ using Mega.Macro.API;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Hopex.Modules.GraphQL
@@ -26,9 +27,11 @@ namespace Hopex.Modules.GraphQL
 
         protected async override Task<HopexResponse> ExecuteOnObject(IMegaRoot root, string documentId, string method, AttachmentArguments args)
         {
-            switch (method.ToLower())
+            try
             {
-                case "uploadfile":
+                switch (method.ToLower())
+                {
+                    case "uploadfile":
                     {
                         Logger.LogInformation($"Uploading file {documentId}");
                         bool success = SaveBusinessDocument(root, documentId, args);
@@ -37,13 +40,21 @@ namespace Hopex.Modules.GraphQL
                         PublishStayInSession(root);
                         return await Task.FromResult(response);
                     }
-                case "downloadfile":
+                    case "downloadfile":
                     {
                         Logger.LogInformation($"Downloading file {documentId}");
                         return await Task.FromResult(GetBusinessDocumentContent(root, documentId));
                     }
-                default:
-                    return await Task.FromResult(HopexResponse.Error(400, JsonConvert.SerializeObject($"Unknown method: {method}")));
+                    default:
+                        return await Task.FromResult(HopexResponse.Error(400, JsonConvert.SerializeObject($"Unknown method: {method}")));
+                }
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"Document {documentId} does not exist or is confidential";
+                Logger.LogError(ex, errorMessage);
+                var result = new ErrorMacroResponse(HttpStatusCode.BadRequest, errorMessage);
+                return await Task.FromResult(HopexResponse.Json(JsonConvert.SerializeObject(result)));
             }
         }
 
@@ -78,7 +89,7 @@ namespace Hopex.Modules.GraphQL
 
         private void PublishStayInSession(IMegaRoot root)
         {
-            var publishResult = root.CallFunctionString("~lcE6jbH9G5cK[PublishStayInSessionWizard Command Launcher]", "{\"instruction\":\"PUBLISHINSESSION\"}");
+            var publishResult = root.CallFunctionString("~lcE6jbH9G5cK[PublishStayInSessionWizard Command Launcher]", "{\"instruction\":\"PUBLISHINSESSION\",\"ifPossible\":true}");
             if (!publishResult.ToString().Contains("SESSION_PUBLISH"))
             {
                 Logger.LogError(new Exception("Session wasn't published"));

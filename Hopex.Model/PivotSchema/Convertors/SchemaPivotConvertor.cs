@@ -253,7 +253,15 @@ namespace Hopex.Model.PivotSchema.Convertors
                 {
                     foreach (PivotEnumDescription e in property.EnumValues)
                     {
-                        EnumDescription @enum = new EnumDescription(e.Name, e.Id, e.Description, e.InternalValue, e.Order);
+                        EnumDescription @enum;
+                        if(property.Constraints.PropertyType == "Int" && int.TryParse(e.InternalValue, out var internalValueInt))
+                        {
+                            @enum = new EnumDescription(e.Name, e.Id, e.Description, internalValueInt, e.Order);
+                        }
+                        else
+                        {
+                            @enum = new EnumDescription(e.Name, e.Id, e.Description, e.InternalValue, e.Order);
+                        }
                         existing.AddEnumValue(@enum);
                     }
                 }

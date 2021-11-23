@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Execution;
+using Mega.Macro.API.Enums;
 
 
 namespace Hopex.Model.DataModel
@@ -140,10 +141,10 @@ namespace Hopex.Model.DataModel
 
             var propertyGetterFormat = format ?? property.GetterFormat ?? PropertyDescription.DefaultGetterFormat;
 
-            if (PropertyCache.TryGetValue<T>(out var cachedResult, IMegaObject.Id, property.Id, arguments, format))
-            {
-                return cachedResult;
-            }
+            //if (PropertyCache.TryGetValue<T>(out var cachedResult, IMegaObject.Id, property.Id, arguments, format))
+            //{
+            //    return cachedResult;
+            //}
 
             T result;
             switch (property.PropertyType)
@@ -177,35 +178,25 @@ namespace Hopex.Model.DataModel
                             }
                         }
                     }
-                    if (arguments != null && arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject language)
+                    var languageId = GetLanguage(arguments);
+                    if(languageId != null)
                     {
                         var attribute = IMegaObject.GetAttribute(propertyId);
-                        var translatedAttribute = attribute.Translate(language.Id);
-                        //propertyId = translatedAttribute.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier).ToString();
+                        var translatedAttribute = attribute.Translate(languageId);
+                        format = GetFormat(property, format);
+                        if (format != null)
+                        {
+                            var resultAsString = translatedAttribute.GetFormatted(GetOutputFormat(format));
+                            result = (T)Convert.ChangeType(resultAsString, typeof(T));
+                            break;
+                        }
                         result = (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
                         break;
                     }
-                    if (Language != null)
-                    {
-                        var attribute = IMegaObject.GetAttribute(propertyId);
-                        var translatedAttribute = attribute.Translate(Language.Id);
-                        //propertyId = translatedAttribute.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier).ToString();
-                        result = (T)Convert.ChangeType(translatedAttribute.Value(), typeof(T));
-                        break;
-                    }
+                    format = GetFormat(property, format);
                     if (format != null)
                     {
-                        if (format == "RAW")
-                        {
-                            format = "ANSI";
-                        }
                         var resultAsString = MegaObject.GetFormatted(propertyId, format);
-                        result = (T)Convert.ChangeType(resultAsString, typeof(T));
-                        break;
-                    }
-                    if (property.IsFormattedText)
-                    {
-                        var resultAsString = MegaObject.GetFormatted(propertyId, "HTML");
                         result = (T)Convert.ChangeType(resultAsString, typeof(T));
                         break;
                     }
@@ -287,11 +278,48 @@ namespace Hopex.Model.DataModel
                     result = IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
                     break;
             }
-            if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, arguments, format))
-            {
-                Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
-            }
+            //if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, arguments, format))
+            //{
+            //    Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
+            //}
             return result;
+        }
+
+        private MegaId GetLanguage(IDictionary<string, ArgumentValue> arguments)
+        {
+            if (arguments != null && arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject language)
+            {
+                return language.Id;
+            }
+            return Language?.Id;
+        }
+
+        private static string GetFormat(IPropertyDescription property, string format)
+        {
+            if (format == null && property.IsFormattedText)
+            {
+                format = "HTML";
+            }
+            if (format is "RAW")
+            {
+                format = "ANSI";
+            }
+            return format;
+        }
+
+        private static OutputFormat GetOutputFormat(string format)
+        {
+            switch (format)
+            {
+                case "HTML":
+                    return OutputFormat.Html;
+                case "RTF":
+                    return OutputFormat.Rtf;
+                case "RAW":
+                    return OutputFormat.Field;
+                default:
+                    return OutputFormat.Ansi;
+            }
         }
 
         private T FormatCurrency<T>(IPropertyDescription property, IDictionary<string, ArgumentValue> arguments, string propertyGetterFormat)
@@ -434,17 +462,17 @@ namespace Hopex.Model.DataModel
 
         public CrudResult GetPropertyCrud(IPropertyDescription property)
         {
-            if (PropertyCache.TryGetValue<CrudResult>(out var cachedResult, IMegaObject.Id, property.Id, cacheType: "CRUD"))
-            {
-                return cachedResult;
-            }
+            //if (PropertyCache.TryGetValue<CrudResult>(out var cachedResult, IMegaObject.Id, property.Id, cacheType: "CRUD"))
+            //{
+            //    return cachedResult;
+            //}
 
             var result = CrudComputer.GetPropertyCrud(IMegaObject, property);
 
-            if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, cacheType: "CRUD"))
-            {
-                Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
-            }
+            //if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, cacheType: "CRUD"))
+            //{
+            //    Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
+            //}
 
             return result;
         }

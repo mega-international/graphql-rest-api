@@ -1,6 +1,7 @@
 using Hopex.Model.Abstractions;
 using Mega.Macro.API;
 using System.Collections.Generic;
+using Mega.Macro.API.Enums;
 
 namespace Hopex.WebService.Tests.Mocks
 {
@@ -29,6 +30,11 @@ namespace Hopex.WebService.Tests.Mocks
         public dynamic Value()
         {
             return _defaultValue;
+        }
+
+        public string GetFormatted(OutputFormat format, string options = null, object parser = null)
+        {
+            return _defaultValue.ToString();
         }
     }
 }

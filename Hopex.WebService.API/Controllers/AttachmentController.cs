@@ -113,8 +113,7 @@ namespace HAS.Modules.WebService.API.Controllers
                 _logger.Log(LogLevel.Trace, $"{GetType().Name}.DownloadFile(documentId: {documentId}) enter.");
                 var path = $"/api/attachment/{documentId}/downloadfile";
                 var macroResponse = await _hopex.CallWebService<string>(path);
-                var macroResult = JsonConvert.DeserializeObject<FileDownloadMacroResponse>(macroResponse);
-                var fileResult = File(new MemoryStream(Convert.FromBase64String(macroResult.Content)), macroResult.ContentType, macroResult.FileName);
+                var fileResult = ProcessMacroResultToFile(macroResponse);
                 _logger.Log(LogLevel.Trace, $"{GetType().Name}.DownloadFile(documentId: {documentId}) leave.");
                 return fileResult;
             }
@@ -202,7 +201,7 @@ namespace HAS.Modules.WebService.API.Controllers
             };
             var userData = JsonConvert.SerializeObject(attachmentArguments);
             var macroResponse = await _hopex.CallWebService<string>(path, userData);
-            var contentResult = new ContentResult { Content = macroResponse, ContentType = "application/json", StatusCode = 200 };
+            var contentResult = ProcessMacroResult(macroResponse);
             _logger.Log(LogLevel.Trace, $"{GetType().Name}.CreateBusinessDocument(documentId: {documentId}, updateMode: {updateMode}) leave.");
             return contentResult;
         }

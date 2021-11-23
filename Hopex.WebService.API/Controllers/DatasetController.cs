@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace HAS.Modules.WebService.API.Controllers
 {
-    [Route("api/dataset")]
+    [Route("api")]
     [Authorize(AuthenticationSchemes = "PublicApiKeyScheme, BasicAuthScheme, Bearer, Cookies")]
     public class DatasetController : BaseController
     {
@@ -30,7 +30,7 @@ namespace HAS.Modules.WebService.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{datasetId}/content")]
+        [HttpGet("dataset/{datasetId}/content")]
         public async Task<IActionResult> GetContent(string datasetId)
         {
             try
@@ -39,7 +39,7 @@ namespace HAS.Modules.WebService.API.Controllers
                 var path = $"/api/dataset/{datasetId}/content";
                 var userData = CreateDatasetArguments();
                 var macroResponse = await _hopex.CallWebService<string>(path, userData);
-                var contentResult = new ContentResult { Content = IncludeHeaders(macroResponse), ContentType = "application/json", StatusCode = 200 };
+                var contentResult = ProcessMacroResult(macroResponse);
                 _logger.Log(LogLevel.Trace, $"{GetType().Name}.GetContent(datasetId: {datasetId}) leave.");
                 return contentResult;
             }
@@ -124,13 +124,23 @@ namespace HAS.Modules.WebService.API.Controllers
                 case HttpStatusCode.OK:
                     {
                         var getJobResult = await response.Content.ReadAsStringAsync();
-                        return Ok(IncludeHeaders(getJobResult));
+                        return ProcessMacroResult(getJobResult);
                     }
                 default:
                     {
                         return StatusCode((int)HttpStatusCode.PartialContent);
                     }
             }
+        }
+        
+        protected override IActionResult ProcessMacroResult(string macroResponse)
+        {
+            var errorMacroResponse = JsonConvert.DeserializeObject<ErrorMacroResponse>(macroResponse);
+            if (errorMacroResponse?.Error != null)
+            {
+                return new ContentResult { Content = errorMacroResponse.Error, ContentType = "application/json", StatusCode = (int)errorMacroResponse.HttpStatusCode };
+            }
+            return new ContentResult { Content = IncludeHeaders(macroResponse), ContentType = "application/json", StatusCode = 200 };
         }
 
         private string IncludeHeaders(string macroResponse)

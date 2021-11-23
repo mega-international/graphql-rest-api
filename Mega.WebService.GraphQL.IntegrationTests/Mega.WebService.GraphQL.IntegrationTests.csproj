@@ -113,6 +113,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppIdCard_should.cs" />
+    <Compile Include="Applications\HAS\ApplicationHAS.cs" />
+    <Compile Include="Applications\HAS\EnvironmentHAS.cs" />
+    <Compile Include="Applications\HAS\RepositoryHAS.cs" />
+    <Compile Include="Applications\Hopex\ApplicationHopex.cs" />
+    <Compile Include="Applications\Hopex\EnvironmentHopex.cs" />
+    <Compile Include="Applications\Hopex\RepositoryHopex.cs" />
+    <Compile Include="Applications\Interfaces\IApplication.cs" />
+    <Compile Include="Applications\Interfaces\IEnvironment.cs" />
+    <Compile Include="Applications\Interfaces\IRepository.cs" />
+    <Compile Include="Applications\ServerInfos.cs" />
+    <Compile Include="Applications\UserInfos.cs" />
+    <Compile Include="Applications\SessionDatas.cs" />
     <Compile Include="Assertions\GraphQLAssertions.cs" />
     <Compile Include="Assertions\HttpContentAssertions.cs" />
     <Compile Include="Assertions\HttpResponseAssertions.cs" />
@@ -136,6 +148,9 @@
     <Compile Include="MetamodelQueries_should.cs" />
     <Compile Include="PathAttributes_should.cs" />
     <Compile Include="QuestionnaireBuilder_should.cs" />
+    <Compile Include="Applications\HAS\HeaderBuilderApiKey.cs" />
+    <Compile Include="Applications\Hopex\HeaderBuilderToken.cs" />
+    <Compile Include="Applications\Interfaces\IHeaderBuilder.cs" />
     <Compile Include="Utils\BaseFixture.cs" />
     <Compile Include="Utils\ImportMgrAttribute.cs" />
     <Compile Include="Utils\InterceptingTestFramework.cs" />
@@ -147,6 +162,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="App.Local.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

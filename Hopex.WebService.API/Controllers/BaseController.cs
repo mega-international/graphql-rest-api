@@ -37,7 +37,7 @@ namespace HAS.Modules.WebService.API.Controllers
             }
         }
 
-        protected async Task<IActionResult> ConvertWebServiceResponseToFileStream(HttpResponseMessage response)
+        protected virtual async Task<IActionResult> ConvertWebServiceResponseToFileStream(HttpResponseMessage response)
         {
             switch (response.StatusCode)
             {
@@ -51,9 +51,8 @@ namespace HAS.Modules.WebService.API.Controllers
                 }
                 case HttpStatusCode.OK:
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var fileResponse = JsonConvert.DeserializeObject<FileDownloadMacroResponse>(content);
-                    var fileResult = File(new MemoryStream(Convert.FromBase64String(fileResponse.Content)), fileResponse.ContentType, fileResponse.FileName);
+                    var macroResponse = await response.Content.ReadAsStringAsync();
+                    var fileResult = ProcessMacroResultToFile(macroResponse);
                     return fileResult;
                 }
                 default:
@@ -61,6 +60,31 @@ namespace HAS.Modules.WebService.API.Controllers
                     return StatusCode((int) HttpStatusCode.PartialContent);
                 }
             }
+        }
+
+        protected virtual IActionResult ProcessMacroResult(string macroResponse)
+        {
+            var errorMacroResponse = JsonConvert.DeserializeObject<ErrorMacroResponse>(macroResponse);
+            if (errorMacroResponse?.Error != null)
+            {
+                return new ContentResult { Content = errorMacroResponse.Error, ContentType = "application/json", StatusCode = (int)errorMacroResponse.HttpStatusCode };
+            }
+            return new ContentResult { Content = macroResponse, ContentType = "application/json", StatusCode = 200 };
+        }
+
+        protected virtual IActionResult ProcessMacroResultToFile(string macroResponse)
+        {
+            var errorMacroResponse = JsonConvert.DeserializeObject<ErrorMacroResponse>(macroResponse);
+            if (errorMacroResponse?.Error != null)
+            {
+                return new ContentResult { Content = errorMacroResponse.Error, ContentType = "application/json", StatusCode = (int)errorMacroResponse.HttpStatusCode };
+            }
+            var macroResult = JsonConvert.DeserializeObject<FileDownloadMacroResponse>(macroResponse);
+            if (macroResult?.Content != null)
+            {
+                return File(new MemoryStream(Convert.FromBase64String(macroResult.Content)), macroResult.ContentType, macroResult.FileName);
+            }
+            return new ContentResult { StatusCode = 500 };
         }
     }
 }
