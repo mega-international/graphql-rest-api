@@ -202,7 +202,7 @@ namespace Hopex.Model.Abstractions.DataModel
             for(var pathIndex = 0; pathIndex < link.Path.Length; ++pathIndex)
             {
                 var currentPath = link.Path[pathIndex];
-                var currentPathTargetClass = GetTargetSchema(source, currentPath);
+                var currentPathTargetClass = pathIndex == link.Path.Length - 1 ? link.TargetClass : GetTargetSchema(source, currentPath);
                 var setters = CreateSetters(currentPathTargetClass, propertiesToSet, pathIndex, link.Path.Length-1, out propertiesToSet);
                 var collection = currentElement.IMegaObject.GetCollection(currentPath.RoleId);
                 var newElement = await model.CreateElementFromParentAsync(currentPathTargetClass, id, idType, useInstanceCreator, setters, collection);
@@ -221,14 +221,15 @@ namespace Hopex.Model.Abstractions.DataModel
                 throw new ExecutionError("List of items to update and array of paths must have same length");
             }
             IDictionary<string, object> propertiesToSet = new Dictionary<string, object>(properties);
-            for (var index = 0; index < link.Path.Length; ++index)
+            for(var pathIndex = 0;pathIndex < link.Path.Length;++pathIndex)
             {
-                var currentPath = link.Path[index];
-                var currentItem = itemsToUpdate.ElementAt(index);
-                var currentPathTargetClass = GetTargetSchema(source, currentPath);
-                var setters = CreateSetters(currentPathTargetClass, propertiesToSet, index, link.Path.Length - 1, out propertiesToSet);
-                var updatedElement = await model.UpdateElementAsync(currentPathTargetClass, currentItem.MegaUnnamedField, IdTypeEnum.INTERNAL, setters);
-                if (updatedElement.Errors?.Any() ?? false) //Get all errors from new item to report them if any occurs
+                var currentPath = link.Path [pathIndex];
+                var currentMegaObject = itemsToUpdate.ElementAt(pathIndex);
+                var currentPathTargetClass = pathIndex == link.Path.Length - 1 ? link.TargetClass : GetTargetSchema(source, currentPath);
+                var currentModelElement = new HopexModelElement(source.DomainModel, currentPathTargetClass, currentMegaObject);
+                var setters = CreateSetters(currentPathTargetClass, propertiesToSet, pathIndex, link.Path.Length - 1, out propertiesToSet);
+                var updatedElement = await model.UpdateElementAsync(currentModelElement, setters);
+                if(updatedElement.Errors?.Any() ?? false) //Get all errors from new item to report them if any occurs
                 {
                     source.AddErrors(updatedElement);
                 }

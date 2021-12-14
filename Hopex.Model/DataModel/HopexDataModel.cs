@@ -335,28 +335,27 @@ namespace Hopex.Model.DataModel
 
         public async Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters)
         {
-            if (schema is null)
+            if(schema is null)
             {
                 throw new ArgumentNullException(nameof(schema));
             }
-
             var element = await GetElementByIdAsync(schema, id, idType);
-            if (element == null)
+            if(element == null)
             {
                 throw new ExecutionError($"Element {schema.Name} not found with id {id}");
             }
+            return await UpdateElementAsync(element, setters);
+        }
 
+        public async Task<IModelElement> UpdateElementAsync(IModelElement element, IEnumerable<ISetter> setters)
+        {
             var elementPermissions = element.GetCrud();
             if (! elementPermissions.IsUpdatable)
             {
                 throw new ExecutionError($"You are not allowed to perform this action on this object ({element.MegaObject.MegaField})");
             }
-
-            return await ProcessMutation("update", element.IMegaObject.MegaField, async() =>
-            {
-                await (element as HopexModelElement).UpdateElement(setters);
-                return element;
-            });
+            await (element as HopexModelElement).UpdateElement(setters);
+            return element;
         }
 
         public async Task<IModelElement> CreateUpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters, bool useInstanceCreator)

@@ -30,7 +30,7 @@ namespace Hopex.WebService.Tests
                 .Returns(SERVER_FILE_PATH);
 
             spyRoot
-                .Setup(root => root.CallFunctionString(IsId("~lcE6jbH9G5cK[PublishStayInSessionWizard Command Launcher]"), "{\"instruction\":\"PUBLISHINSESSION\"}", null, null, null, null, null))
+                .Setup(root => root.CallFunctionString(IsId("~lcE6jbH9G5cK[PublishStayInSessionWizard Command Launcher]"), "{\"instruction\":\"PUBLISHINSESSION\",\"ifPossible\":true}", null, null, null, null, null))
                 .Returns("SESSION_PUBLISH")
                 .Verifiable();
         }

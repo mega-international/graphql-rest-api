@@ -139,13 +139,15 @@ namespace Hopex.Model.PivotSchema.Convertors
             foreach (PivotRelationshipDescription rel in clazz.Relationships)
             {
                 string roleId = rel.Path[0].RoleId;
-                if (!(cd.GetRelationshipDescription(rel.Name, false) is RelationshipDescription existing))
+                //Si la relation n'a pas été traitée, on la créé et l'ajoute
+                if(!(cd.GetRelationshipDescription(rel.Name, false) is RelationshipDescription existing))
                 {
                     existing = new RelationshipDescription(rel.Id, rel.ReverseId, cd, rel.Name, roleId, rel.Description, rel.Constraints?.IsReadOnly);
                     cd.AddRelationship(existing);
                 }
                 else
                 {
+                    //sinon, on la modifie vite fait
                     existing.Description = rel.Description ?? existing.Description;
                     existing.IsReadOnly = rel.Constraints?.IsReadOnly ?? existing.IsReadOnly;
                 }
@@ -153,7 +155,8 @@ namespace Hopex.Model.PivotSchema.Convertors
                 // TODO BUG dans json Implements est tjs null
                 rel.Implements = "relationship"; // A virer qd le json est bon
                 // END bug
-                if (rel.Implements != null)
+                //On ajoute les attributs de lien (linkXXX) au premier lien uniquement (première target classe du path)
+                if(rel.Implements != null)
                 {
                     if (_interfaces.TryGetValue(rel.Implements, out var intf)
                         && intf.Properties != null

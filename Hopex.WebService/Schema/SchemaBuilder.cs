@@ -392,7 +392,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     }
                     if (DateTime.TryParse(result.ToString(), out var dateToFormat))
                     {
-                        result = dateToFormat.ToString(!string.IsNullOrEmpty(format) ? format : "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
+                        result = dateToFormat.ToString(!string.IsNullOrEmpty(format) ? format : "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                     }
                 }
 

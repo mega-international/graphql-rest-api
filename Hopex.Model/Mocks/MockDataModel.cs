@@ -184,8 +184,13 @@ namespace Hopex.Model.Mocks
         {
             var elem = await GetElementByIdAsync(schema, id, IdTypeEnum.INTERNAL);
             if (elem == null) throw new Exception("Not found");
-            await UpdateAsync(elem, setters);
-            return elem;
+            return await UpdateElementAsync(elem, setters);
+        }
+
+        public async Task<IModelElement> UpdateElementAsync(IModelElement element, IEnumerable<ISetter> setters)
+        {
+            await UpdateAsync(element, setters);
+            return element;
         }
 
         public void Dispose()

@@ -156,5 +156,33 @@ namespace Hopex.WebService.Tests
             var resp = await ExecuteQueryAsync(root, query, "BPA");
             resp.Should().ContainsGraphQLCountGreaterThan("errors", 0);
         }
+
+        [Fact]
+        public async void Mutation_on_path_property_from_linked_item_context_should_work()
+        {
+            var root = new MockMegaRoot.Builder()
+                .WithObject(new MockMegaObject("~mnopqrstuvwx", MetaClassLibrary.Application)
+                .WithRelation(new MockMegaCollection(MetaAssociationEndLibrary.Application_BusinessProcess)
+                    .WithChildren(new MockMegaObject("~abcdefghijkm", MetaClassLibrary.BusinessProcess))))
+                .Build();
+
+            var query = @"mutation
+                {
+                    updateApplication(id: ""~mnopqrstuvwx""
+                        application:{
+                            businessProcess: {
+                                action: ADD
+                                list: [{id: ""abcdefghijkm"" costContributionKeyBusinessProcess: 66}]
+                            }
+                        }
+                    )
+                    {
+                        id businessProcess { costContributionKeyBusinessProcess }
+                    }
+                }";
+            var resp = await ExecuteQueryAsync(root, query);
+            resp.Should().HaveNoGraphQLError();
+            resp.Should().MatchGraphQL("data.updateApplication.businessProcess[0].costContributionKeyBusinessProcess", "66");
+        }
     }
 }

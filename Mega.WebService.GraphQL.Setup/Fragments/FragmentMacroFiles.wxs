@@ -134,7 +134,7 @@
             <Component Id="Macro.System.ComponentModel.Annotations.dll" Guid="{BFB879BA-0266-4AA0-A915-E7864B6B1E12}">
                 <File Id="Macro.System.ComponentModel.Annotations.dll" Name="System.ComponentModel.Annotations.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.ComponentModel.Annotations.dll" />
             </Component>
-            <Component Id="Macro.System.Configuration.ConfigurationManager.dll" Guid="">
+            <Component Id="Macro.System.Configuration.ConfigurationManager.dll" Guid="{EE0CA671-FFB1-48D8-80F5-42456AA9BEC2}">
                 <File Id="Macro.System.Configuration.ConfigurationManager.dll" Name="System.Configuration.ConfigurationManager.dll" Source="..\..\..\Exe$(var.Hopex.WebService.Configuration)\HOPEXGraphQL\Macro\System.Configuration.ConfigurationManager.dll" />
             </Component>
             <Component Id="Macro.System.Linq.Dynamic.Core.dll" Guid="{CF289E2C-EA7C-4EA3-A107-7ACAB4138E6D}">

@@ -136,7 +136,7 @@
             <Component Id="Mega.Bridge.dll" Guid="{5ED7242C-8BFA-4EE4-8BBF-ED2B43B92163}">
                 <File Id="Mega.Bridge.dll" Name="Mega.Bridge.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Mega.Bridge.dll" />
             </Component>
-            <Component Id="Mega.UAS.Client.dll" Guid="">
+            <Component Id="Mega.UAS.Client.dll" Guid="{1093F4B0-B793-4420-8E23-E0A85FE76011}">
                 <File Id="Mega.UAS.Client.dll" Name="Mega.UAS.Client.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Mega.UAS.Client.dll" />
             </Component>
             <Component Id="Mega.WebService.GraphQL.dll" Guid="{C5533388-8112-4433-AA80-25756D17AFDF}">
