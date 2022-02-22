@@ -1,23 +1,19 @@
 using Hopex.Model.Abstractions.DataModel;
-using Hopex.Model.Abstractions.MetaModel;
 using System.Collections.Generic;
 
 namespace Hopex.Model.MetaModel
 {
-    internal class CustomRelationshipDescription : IFieldDescription
+    internal class CustomRelationshipDescription : RelationshipDescription
     {
-        private readonly IClassDescription _classDescription = null;
-        public CustomRelationshipDescription(IClassDescription classDescription)
+        public CustomRelationshipDescription(string relationId) : base(relationId, null, null, $"{relationId}[customRelationship]", relationId, "", null)
         {
-            _classDescription = classDescription;
+            var linkDescritpion = new PathDescription(relationId, relationId, relationId, new ClassDescription(null, "unknow target", null, null, false), null, null);
+            SetPath(new PathDescription [] { linkDescritpion });
         }
 
-        public IEnumerable<ISetter> CreateSetters(object value)
+        public override IEnumerable<ISetter> CreateSetters(object value)
         {
-            foreach (var customRelationSetter in CustomRelationshipSetter.CreateSetters(value))
-            {
-                yield return customRelationSetter;
-            }
+            return CustomRelationshipSetter.CreateSetters(value);
         }
     }
 }

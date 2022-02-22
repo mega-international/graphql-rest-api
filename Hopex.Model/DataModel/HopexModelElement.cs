@@ -1,4 +1,5 @@
 using GraphQL;
+using GraphQL.Execution;
 using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
@@ -7,7 +8,6 @@ using Mega.Macro.API;
 using Mega.Macro.API.Library;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Execution;
@@ -16,56 +16,64 @@ using Mega.Macro.API.Enums;
 
 namespace Hopex.Model.DataModel
 {
-    internal class HopexModelElement : IModelElement
+    internal class HopexModelContext : IModelContext
+    {
+        public IModelElement TargetLinkAttributes { get; }
+        public IEnumerable<IPropertyDescription> LinkAttributes { get; }
+        public HopexModelContext(IModelElement targetLinkAttributes, IEnumerable<IPropertyDescription> linkAttributes)
+        {
+            TargetLinkAttributes = targetLinkAttributes;
+            LinkAttributes = linkAttributes;
+        }
+    }
+
+    internal class HopexModelElement : HasCollection, IModelElement
     {
         public MegaObject MegaObject { get; }
         public IHopexDataModel DomainModel { get; private set; }
         
         public IMegaObject IMegaObject { get; }
-        private IMegaRoot _iRoot;
-        public IMegaObject Parent { get; private set; }
+
+        private HopexModelElement _parent;
+        public IModelElement Parent => _parent;
+
+        //Context
+        public HopexModelContext Context { get; internal set; }
+        IModelContext IModelElement.Context => Context;
+        //End context
 
         private readonly List<Exception> _errors = new List<Exception>();
         public IEnumerable<Exception> Errors { get => _errors; }
 
         public IMegaObject Language { get; set; }
+        public MegaId Id { get; }
+        public IClassDescription ClassDescription { get; }
+        private Dictionary<string, IModelElement> TemporaryMegaObjects => DomainModel.TemporaryMegaObjects;
 
-        public IModelElement PathElement { get; set; }
 
-        private HopexModelElement(IHopexDataModel domainModel,
+        public HopexModelElement(IHopexDataModel domainModel,
             IClassDescription schema,
-            IMegaRoot iMegaRoot,
             IMegaObject iMegaObject,
-            MegaObject megaObject,
-            MegaId id,
-            IMegaObject parent)
+            MegaId id = null,
+            IModelElement parent = null) : base(iMegaObject.Root)
         {
             DomainModel = domainModel;
             ClassDescription = schema;
             IMegaObject = iMegaObject;
-            MegaObject = megaObject;
-            _iRoot = iMegaRoot;
+            MegaObject = iMegaObject is RealMegaObject realObject ? realObject.RealObject : null;
             Id = InitializeId(IMegaObject, id);
-            Parent = parent;
+            _parent = parent is HopexModelElement hopexParent ? hopexParent : null;
         }
 
-        public HopexModelElement(IHopexDataModel domainModel, IClassDescription schema, MegaObject megaObject, MegaId id = null) :
-            this(domainModel,
-                schema,
-                RealMegaRootFactory.FromNativeRoot(megaObject.Root),
-                new RealMegaObject(megaObject),
-                megaObject,
-                id,
-                null) {}
+        public void CreateContext(IModelElement targetLinkAttributes, IEnumerable<IPropertyDescription> linkAttributes)
+        {
+            Context = new HopexModelContext(targetLinkAttributes, linkAttributes);
+        }
 
-        public HopexModelElement(IHopexDataModel domainModel, IClassDescription schema, IMegaObject iMegaObject, MegaId id = null, IMegaObject parent = null) :
-            this(domainModel,
-                schema,
-                iMegaObject.Root,
-                iMegaObject,
-                iMegaObject is RealMegaObject ? ((RealMegaObject)iMegaObject).RealObject : null,
-                id,
-                parent) {}
+        public void SpreadContextFromParent()
+        {
+            Context = _parent.Context;
+        }
 
         private MegaId InitializeId(IMegaObject iMegaObject, MegaId id)
         {
@@ -81,26 +89,21 @@ namespace Hopex.Model.DataModel
             return Utils.SanitizeId(id);
         }
 
-        public MegaId Id { get; }
-        public IClassDescription ClassDescription { get; }
-        public IHopexMetaModel MetaModel => ClassDescription.MetaModel;
-
 
         public IModelCollection GetGenericCollection(string collectionMegaId)
         {
-            return new GenericModelCollection(collectionMegaId, IMegaObject, DomainModel);
+            return new GenericModelCollection(collectionMegaId, this, DomainModel);
         }
 
-        public Task<IModelCollection> GetCollectionAsync(string name, string relationshipName, GetCollectionArguments getCollectionArguments)
+        public override Task<IModelCollection> GetCollectionAsync(string name, string relationshipName, GetCollectionArguments getCollectionArguments)
         {
             var relationshipDescription = ClassDescription.GetRelationshipDescription(relationshipName ?? name);
-            var collection = HopexModelCollection.Create(DomainModel, relationshipDescription, _iRoot, IMegaObject, getCollectionArguments);
+            var collection = HopexModelCollection.Create(DomainModel, relationshipDescription, _iRoot, this, getCollectionArguments);
             return Task.FromResult(collection);
         }        
 
         public object GetGenericValue(string propertyMegaId, IDictionary<string, ArgumentValue> arguments)
         {
-            var normalizedId = Utils.NormalizeHopexId(propertyMegaId);
             string format;
             if (arguments.TryGetValue("format", out var formatArgument) && formatArgument.Value != null)
             {
@@ -110,7 +113,7 @@ namespace Hopex.Model.DataModel
             {
                 format = "ASCII";
             }
-            var propertyDescription = new PropertyDescription(ClassDescription, propertyMegaId, normalizedId, "", "string", null, null, null)
+            var propertyDescription = new CustomPropertyDescription(propertyMegaId)
             {
                 GetterFormat = format
             };
@@ -118,39 +121,38 @@ namespace Hopex.Model.DataModel
             return value;
         }
 
-        public T GetValue<T>(string propertyName, IDictionary<string, ArgumentValue> arguments = null, string format = null)
+        public bool IsReadOnly(IPropertyDescription property)
         {
-            var property = ClassDescription.GetPropertyDescription(propertyName);
-            return GetValue<T>(property, arguments, format);
+            var targetElement = GetTargetForProperty(property);
+            var crud = targetElement.GetPropertyCrud(property);
+            return crud.IsReadable && !crud.IsUpdatable && !crud.IsCreatable && !crud.IsDeletable;
         }
 
-        public void SetValue<T>(string propertyName, T value, string format = null)
+        public bool IsReadWrite(IPropertyDescription property)
         {
-            var property = ClassDescription.GetPropertyDescription(propertyName);
-            SetValue<T>(property, value, format);
+            var targetElement = GetTargetForProperty(property);
+            var crud = targetElement.GetPropertyCrud(property);
+            return crud.IsUpdatable;
         }
 
         public T GetValue<T>(IPropertyDescription property, IDictionary<string, ArgumentValue> arguments = null, string format = null)
         {
             CheckRelationship(property);
-            var permissions = GetPropertyCrud(property);
+            var targetElement = GetTargetForProperty(property);
+            var targetMegaObject = targetElement.IMegaObject;
+            var permissions = targetElement.GetPropertyCrud(property);
             if (!permissions.IsReadable)
             {
                 throw new ExecutionError($"You are not allowed to read the property ({property.Name}) on {ClassDescription.Name}: {MegaObject.MegaField}");
             }
 
             var propertyGetterFormat = format ?? property.GetterFormat ?? PropertyDescription.DefaultGetterFormat;
-
-            //if (PropertyCache.TryGetValue<T>(out var cachedResult, IMegaObject.Id, property.Id, arguments, format))
-            //{
-            //    return cachedResult;
-            //}
-
+            
             T result;
             switch (property.PropertyType)
             {
                 case PropertyType.Id:
-                    result = IMegaObject.GetPropertyValue<T>(property.Id, "External");
+                    result = targetMegaObject.GetPropertyValue<T>(property.Id, "External");
                     if (string.IsNullOrEmpty(result.ToString()))
                     {
                         result = (T)Convert.ChangeType(null, typeof(T));
@@ -161,8 +163,7 @@ namespace Hopex.Model.DataModel
                     var propertyId = property.Id;
                     if (arguments != null && arguments.ContainsKey("nameSpace") && arguments["nameSpace"].Value != null)
                     {
-                        NameSpaceFormatEnum nameSpaceFormatEnum;
-                        if(Enum.TryParse(arguments["nameSpace"].Value.ToString(), out nameSpaceFormatEnum))
+                        if(Enum.TryParse(arguments["nameSpace"].Value.ToString(), out NameSpaceFormatEnum nameSpaceFormatEnum))
                         {
                             switch (nameSpaceFormatEnum)
                             {
@@ -181,7 +182,7 @@ namespace Hopex.Model.DataModel
                     var languageId = GetLanguage(arguments);
                     if(languageId != null)
                     {
-                        var attribute = IMegaObject.GetAttribute(propertyId);
+                        var attribute = targetMegaObject.GetAttribute(propertyId);
                         var translatedAttribute = attribute.Translate(languageId);
                         format = GetFormat(property, format);
                         if (format != null)
@@ -196,14 +197,14 @@ namespace Hopex.Model.DataModel
                     format = GetFormat(property, format);
                     if (format != null)
                     {
-                        var resultAsString = MegaObject.GetFormatted(propertyId, format);
+                        var resultAsString = targetMegaObject.GetFormated(propertyId, format);
                         result = (T)Convert.ChangeType(resultAsString, typeof(T));
                         break;
                     }
-                    result = IMegaObject.GetPropertyValue<T>(propertyId, propertyGetterFormat);
+                    result = targetMegaObject.GetPropertyValue<T>(propertyId, propertyGetterFormat);
                     break;
                 case PropertyType.Enum:
-                    var enumValue = MegaObject.GetPropertyValue<T>(property.Id);
+                    var enumValue = targetMegaObject.GetPropertyValue<T>(property.Id);
                     var enumValueString = enumValue.ToString();
                     object enumResult;
                     if (Enum.TryParse(propertyGetterFormat, out EnumFormatEnum enumFormat))
@@ -220,10 +221,10 @@ namespace Hopex.Model.DataModel
                                 enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.InternalValue).FirstOrDefault();
                                 break;
                             case EnumFormatEnum.LABEL:
-                                enumResult = MegaObject.GetPropertyValue(property.Id, "Display");
+                                enumResult = targetMegaObject.GetPropertyValue(property.Id, "Display");
                                 break;
                             case EnumFormatEnum.ORDER:
-                                enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.Order + " - " + MegaObject.GetPropertyValue(property.Id, "Display")).FirstOrDefault();
+                                enumResult = property.EnumValues.Where(x => x.InternalValue.ToString() == enumValueString).Select(x => x.Order + " - " + targetMegaObject.GetPropertyValue(property.Id, "Display")).FirstOrDefault();
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -236,13 +237,13 @@ namespace Hopex.Model.DataModel
                     result = (T)Convert.ChangeType(enumResult, typeof(T));
                     break;
                 case PropertyType.Date:
-                    var dateResult = IMegaObject.GetPropertyValue<T>(property.Id, "");
+                    var dateResult = targetMegaObject.GetPropertyValue<T>(property.Id, "");
                     if (dateResult.ToString() == "")
                     {
                         result = (T)Convert.ChangeType(null, typeof(T));
                         break;
                     }
-                    if (propertyGetterFormat != "ASCII" && IMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
+                    if (propertyGetterFormat != "ASCII" && targetMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
                         result = (T)Convert.ChangeType(null, typeof(T));
                         break;
@@ -252,13 +253,13 @@ namespace Hopex.Model.DataModel
                 case PropertyType.Int:
                 case PropertyType.Long:
                 case PropertyType.Double:
-                    var numericResult = IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+                    var numericResult = targetMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
                     if (numericResult.ToString() == "")
                     {
                         result = (T)Convert.ChangeType(null, typeof(T));
                         break;
                     }
-                    if (propertyGetterFormat != "ASCII" && IMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
+                    if (propertyGetterFormat != "ASCII" && targetMegaObject.GetPropertyValue<T>(property.Id, "ASCII").ToString() == "")
                     {
                         result = (T)Convert.ChangeType(null, typeof(T));
                         break;
@@ -275,7 +276,7 @@ namespace Hopex.Model.DataModel
                     result = amountResult;
                     break;
                 default:
-                    result = IMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
+                    result = targetMegaObject.GetPropertyValue<T>(property.Id, propertyGetterFormat);
                     break;
             }
             //if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, arguments, format))
@@ -351,8 +352,7 @@ namespace Hopex.Model.DataModel
                             var availableCurrencyId = availableCurrency.GetPropertyValue(MetaAttributeLibrary.AbsoluteIdentifier);
                             var currencyValue = MegaObject.GetAttribute(property.Id).Translate(availableCurrencyId).GetValue().ToString();
                             result = currency.GetAmount(currencyValue);
-                            DateTime dateRate;
-                            if(arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null && DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
+                            if(arguments.ContainsKey("dateRate") && arguments["dateRate"].Value != null && DateTime.TryParse(arguments["dateRate"].Value.ToString(), out DateTime dateRate))
                             {
                                 result = currency.GetInternalAmount((double)result, currencyId, availableCurrencyId, dateRate);
                             }
@@ -363,8 +363,7 @@ namespace Hopex.Model.DataModel
                 {
                     var currencyValue = MegaObject.GetAttribute("~bKxT)KisHnbR[Amount]").GetValue().ToString();
                     result = currency.GetAmount(currencyValue);
-                    DateTime dateRate;
-                    if(DateTime.TryParse(arguments["dateRate"].Value.ToString(), out dateRate))
+                    if(DateTime.TryParse(arguments["dateRate"].Value.ToString(), out DateTime dateRate))
                     {
                         result = currency.GetInternalAmount((double)result, currencyId, currencyId, dateRate);
                     }
@@ -383,7 +382,11 @@ namespace Hopex.Model.DataModel
 
         public void SetValue<T>(IPropertyDescription property, T value, string format = null)
         {
-            var permissions = GetPropertyCrud(property);
+            var targetElement = GetTargetForProperty(property);
+            var targetMegaObject = targetElement.IMegaObject;
+            var permissions = targetElement.GetPropertyCrud(property);
+            
+
             if (!permissions.IsUpdatable)
             {
                 throw new ExecutionError($"You are not allowed to perform this action on this property ({property.Name})");
@@ -391,13 +394,13 @@ namespace Hopex.Model.DataModel
             if (property.PropertyType == PropertyType.Id)
             {
                 var id  = MegaId.Create(Utils.NormalizeHopexId(value.ToString()).Substring(0, 13));
-                IMegaObject.SetPropertyValue(property.Id, id.Value);
+                targetMegaObject.SetPropertyValue(property.Id, id.Value);
                 MegaWrapperObject.IncCounter("MegaObject.SetProp");
             }
             else if (value is DateTime)
             {
                 var dateTimeValue = (DateTime)Convert.ChangeType(value, typeof(DateTime));
-                IMegaObject.SetPropertyValue(property.Id, dateTimeValue.ToString("yyyy/MM/dd HH:mm:ss"));
+                targetMegaObject.SetPropertyValue(property.Id, dateTimeValue.ToString("yyyy/MM/dd HH:mm:ss"));
             }
             else
             {
@@ -406,40 +409,40 @@ namespace Hopex.Model.DataModel
                     format = "HTML";
                 }
 
-                IMegaObject.SetPropertyValue(property.Id, (object)value ?? "", format ?? property.SetterFormat ?? PropertyDescription.DefaultSetterFormat);
+                targetMegaObject.SetPropertyValue(property.Id, (object)value ?? "", format ?? property.SetterFormat ?? PropertyDescription.DefaultSetterFormat);
 
                 if(value != null && property.Id == MetaAttributeLibrary.ShortName.Substring(0, 13))
                 {
-                    var updatedName = IMegaObject.GetPropertyValue(MetaAttributeLibrary.Name);
+                    var updatedName = targetMegaObject.GetPropertyValue(MetaAttributeLibrary.ShortName);
                     if (updatedName != null && updatedName != value.ToString())
                     {
-                        throw new ExecutionError($@"An object {{{IMegaObject.MegaUnnamedField.Substring(0, 13)}}} named {{{value}}} already exists, name as been automatically updated to {{{updatedName}}}.");
+                        if (string.Equals(updatedName, value.ToString().Trim(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new ExecutionError($@"Your object {{{targetMegaObject.MegaUnnamedField.Substring(0, 13)}}} named {{{value}}} has been automatically renamed to {{{updatedName}}}.");
+                        }
+                        throw new ExecutionError($@"Trying to set name {{{value}}} on object {{{targetMegaObject.MegaUnnamedField.Substring(0, 13)}}}, name as been automatically updated to {{{updatedName}}}.");
                     }
                 }
             }
         }
 
-        internal async Task UpdateElement(IEnumerable<ISetter> setters)
+        public async Task<IModelElement> UpdateAsync(IEnumerable<ISetter> setters)
         {
+            var elementPermissions = GetCrud();
+            if(!elementPermissions.IsUpdatable)
+            {
+                throw new ExecutionError($"You are not allowed to perform this action on this object ({MegaObject.MegaField})");
+            }
+
             if (setters == null)
             {
-                return;
+                return this;
             }
 
             foreach (ISetter setter in setters)
             {
                 try
                 {
-                    //if (setter.PropertyDescription?.Name.ToLower() == "name" /*&& setter.PropertyDescription?.IsUnique*/)
-                    //{
-                    //    var name = setter.Value.ToString();
-                    //    var existingObjects = _iRoot.GetCollection(setter.PropertyDescription.Owner.Id).CallFunction("~nLn(jj)SCf30[LinkableQuery]", name, "ExactName=Yes, ListAll=Yes");
-                    //    if (existingObjects != null && existingObjects.Count > 0)
-                    //    {
-                    //        _errors.Add(new Exception($@"Property name cannot be updated, an object named ""{name}"" already exists."));
-                    //        continue;
-                    //    }
-                    //}
                     await setter.UpdateElementAsync(DomainModel, this);
                 }
                 catch(Exception ex)
@@ -447,6 +450,7 @@ namespace Hopex.Model.DataModel
                     _errors.Add(ex);
                 }                             
             }
+            return this;
         }                       
       
         public void Dispose()
@@ -462,24 +466,12 @@ namespace Hopex.Model.DataModel
 
         public CrudResult GetPropertyCrud(IPropertyDescription property)
         {
-            //if (PropertyCache.TryGetValue<CrudResult>(out var cachedResult, IMegaObject.Id, property.Id, cacheType: "CRUD"))
-            //{
-            //    return cachedResult;
-            //}
-
-            var result = CrudComputer.GetPropertyCrud(IMegaObject, property);
-
-            //if (!PropertyCache.TryAdd(result, IMegaObject.Id, property.Id, cacheType: "CRUD"))
-            //{
-            //    Debug.Print($"PropertyCache.TryAdd failed for property: {IMegaObject.MegaField}.{property.Id}");
-            //}
-
-            return result;
+            return CrudComputer.GetPropertyCrud(IMegaObject, property);
         }
 
         private void CheckRelationship(IPropertyDescription property)
         {
-            if(property.Scope == PropertyScope.Relationship && ( !(MegaObject.Relationship?.Exists ?? false)))
+            if(property.Scope == PropertyScope.Relationship && ( !(IMegaObject.Relationship?.Exists ?? false)))
             {
                 throw new ExecutionError($"Reading property {property.Name} from an inexisting relationship is forbidden.");
             }
@@ -493,8 +485,164 @@ namespace Hopex.Model.DataModel
             }
         }
 
+        private IModelElement GetTargetForProperty(IPropertyDescription property)
+        {
+            if(property is CustomPropertyDescription)
+            {
+                return this;
+            }
+
+            if((ClassDescription?.IsGeneric ?? true) || ClassDescription.GetPropertyDescription(property.Name, false) != null)
+            {
+                return this;
+            }
+
+            if(Context?.LinkAttributes?.Any(att => att.Name.Equals(property.Name, StringComparison.OrdinalIgnoreCase)) ?? false)
+            {
+                return Context.TargetLinkAttributes;
+            }
+
+            throw new ExecutionError($"Cannot get target element for inexisting property {property.Name} in metaclass {ClassDescription.Name} from context {Context?.TargetLinkAttributes?.ClassDescription.Name ?? "root"}.");
+        }
+
         public bool IsConfidential => IMegaObject.IsConfidential;
 
         public bool IsAvailable => IMegaObject.IsAvailable;
+
+        public IModelElement BuildChildElement(IMegaObject megaObject, IRelationshipDescription relationship, int pathIdx)
+        {
+            var path = relationship.Path[pathIdx];
+            var element = new HopexModelElement(DomainModel, path.TargetClass, megaObject, null, this);
+            return ConnectChildElement(element, relationship, pathIdx);
+        }
+
+        private IModelElement ConnectChildElement(HopexModelElement child, IRelationshipDescription relationship, int pathIdx)
+        {
+            child._parent = this;
+            if(pathIdx == 0)
+            {
+                var path = relationship.Path[pathIdx];
+                var contextProperties = path.Properties?.Concat(path.TargetClass.Properties ?? new List<IPropertyDescription>()).ToList() ?? new List<IPropertyDescription>();
+                child.CreateContext(child, contextProperties);
+            }
+            else
+            {
+                child.SpreadContextFromParent();
+            }
+            return child;
+        }
+
+        public async Task<IModelElement> GetElementByIdAsync(IRelationshipDescription relationship, string id, IdTypeEnum idType)
+        {
+            var schema = relationship.TargetClass;
+            return await GetElementByIdAsync(schema, relationship.Name, id, idType, DomainModel);
+        }
+
+        private async Task<IModelElement> LinkOrCreateElementAsync(IRelationshipDescription relationship, bool useInstanceCreator, object elementData, IEnumerable<ISetter> setters)
+        {
+            if(relationship is null)
+            {
+                throw new ArgumentNullException(nameof(relationship));
+            }
+
+            IModelElement source = this;
+            var createdElements = new List<IModelElement>();
+            try
+            {
+                for(int idx = 0; idx < relationship.Path.Count(); ++idx)
+                {
+                    var isLast = idx == relationship.Path.Count() - 1;
+                    var path = relationship.Path[idx];
+                    if(!(relationship is CustomRelationshipDescription))
+                    {
+                        var permissions = CrudComputer.GetPathCrud(source.IMegaObject, path);
+                        if(!permissions.IsCreatable)
+                        {
+                            throw new ExecutionError("You are not allowed to perform this action");
+                        }
+                    }
+                    
+                    var collection = source.IMegaObject.GetCollection(path.RoleId);
+
+                    IModelElement element;
+                    if(isLast)
+                    {
+                        if(elementData is Tuple<string, IdTypeEnum> pair) //C'est une création
+                        {
+                            var id = pair.Item1;
+                            var idType = pair.Item2;
+                            element = await CreateSingleElementAsync(path.TargetClass, useInstanceCreator, id, idType, collection,
+                                mo => source.BuildChildElement(mo, relationship, idx), TemporaryMegaObjects, isLast);
+                            createdElements.Add(element);
+                        }
+                        else if(elementData is IModelElement elementToLink) //C'est une connexion
+                        {
+                            if(elementToLink is HopexModelElement hopexElementToLink && source is HopexModelElement hopexSource)
+                            {
+                                hopexSource.ConnectChildElement(hopexElementToLink, relationship, idx);
+                            }
+                            element = elementToLink;
+                            collection.Add(Utils.NormalizeHopexId(element.Id));
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"elementData invalid: {elementData}");
+                        }
+                    }
+                    else
+                    {
+                        element = await CreateSingleElementAsync(path.TargetClass, useInstanceCreator, null, IdTypeEnum.INTERNAL, collection,
+                        mo => source.BuildChildElement(mo, relationship, idx), TemporaryMegaObjects, isLast);
+                        createdElements.Add(element);
+                    }
+                    CreateCondition(element.IMegaObject, path.Condition);
+                    source = element;
+                }
+            }
+            catch(Exception)
+            {
+                foreach(var created in createdElements)
+                {
+                    created.IMegaObject.Delete();
+                }
+                throw;
+            }
+            return await source.UpdateAsync(setters);
+        }
+
+        public async Task<IModelElement> LinkElementAsync(IRelationshipDescription relationship, bool useInstanceCreator, IModelElement elementToLink, IEnumerable<ISetter> setters)
+        {
+            return await LinkOrCreateElementAsync(relationship, useInstanceCreator, elementToLink, setters);
+        }
+
+        public async Task<IModelElement> CreateElementAsync(IRelationshipDescription relationship, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters)
+        {
+            if(relationship is null)
+            {
+                throw new ArgumentNullException(nameof(relationship));
+            }
+
+            if(!string.IsNullOrEmpty(id))
+            {
+                var existing = await DomainModel.GetElementByIdAsync(relationship.TargetClass, id, idType);
+                if(existing != null)
+                {
+                    throw new ExecutionError($"Cannot create {relationship.TargetClass.Name} with identifier: {id}, this value is already used on element: {existing.IMegaObject.MegaField}");
+                }
+            }
+
+            var elementData = new Tuple<string, IdTypeEnum>(id, idType);
+            return await LinkOrCreateElementAsync(relationship, useInstanceCreator, elementData, setters);
+        }
+
+        private static void CreateCondition(IMegaObject current, IPathConditionDescription hopCondition)
+        {
+            if(hopCondition == null || string.IsNullOrEmpty(hopCondition.RoleId) || string.IsNullOrEmpty(hopCondition.ObjectFilterId))
+            {
+                return;
+            }
+            var conditionObject = current.Root.GetObjectFromId(Utils.NormalizeHopexId(hopCondition.ObjectFilterId));
+            current.GetCollection(Utils.NormalizeHopexId(hopCondition.RoleId)).Add(conditionObject.Id);
+        }
     }
 }

@@ -9,6 +9,8 @@ namespace Hopex.WebService.Tests.Mocks
     public class MockMegaCollection : MockMegaItem, IMegaCollection
     {
         public MegaId Id { get; private set; }
+        public MockMegaObject Source { get; set; } //megaobject d'origine de la collection, son parent
+
         private readonly List<MockMegaObject> _children = new List<MockMegaObject>();
         private static int _idGenerator = 1;
 
@@ -25,18 +27,21 @@ namespace Hopex.WebService.Tests.Mocks
 
         public IMegaObject Item(int index)
         {
-            return _children[index - 1];
+            return _children[index - 1].FromCollection(this);
         }
 
         public IMegaObject Item(MegaId objectId)
         {
             var comparer = new MegaIdComparer();
-            return _children.Find(o => comparer.Equals(o.Id, objectId));
+            return _children.Find(o => comparer.Equals(o.Id, objectId)).FromCollection(this);
         }
 
         public IEnumerator<IMegaObject> GetEnumerator()
         {
-            return _children.GetEnumerator();
+            foreach(var child in _children)
+            {
+                yield return child.FromCollection(this);
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -60,26 +65,27 @@ namespace Hopex.WebService.Tests.Mocks
             {
                 objectId = GenerateId();
             }
-            var child = new MockMegaObject(objectId, Id);            
+            var child = new MockMegaObject(objectId, Id);
             _children.Add(child);
             child.Root = Root;
             var mockRoot = (MockMegaRoot)Root;
             mockRoot.AddMetaLegs(child);
             mockRoot.AddNewObject(child);
-            return child;
+            return child.FromCollection(this);
         }
 
         public IMegaObject Add(MegaId objectId, MegaId propertyId = null)
         {
             MegaIdUtils.EnsureValidPropertyId(objectId, "MegaCollection.Add"); // Do not necessarily throw an error in real life but do strange things
-            var child = Root.GetObjectFromId(objectId);
-            _children.Add((MockMegaObject)child);
-            return child;
+            var child = (MockMegaObject)Root.GetObjectFromId(objectId);
+            _children.Add(child);
+            return child.FromCollection(this);
         }
 
         public void RemoveChild(MegaId id)
         {
             var comparer = new MegaIdComparer();
+            _children.ForEach(mo => mo.Collection = null);
             _children.RemoveAll(o => comparer.Equals(o.Id, id));
         }
 

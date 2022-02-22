@@ -1,3 +1,4 @@
+using GraphQL.Execution;
 using GraphQL.Types;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
@@ -5,7 +6,6 @@ using Hopex.Modules.GraphQL.Schema.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Execution;
 using static Hopex.Model.MetaModel.Constants;
 
 namespace Hopex.Modules.GraphQL.Schema
@@ -36,12 +36,12 @@ namespace Hopex.Modules.GraphQL.Schema
             return _schemaManager.HopexSchemas
                 .Select(schema => new { schema, classDescription = schema.FindClassDescriptionById(elem.Id) })
                 .Where(pair => pair.classDescription != null && pair.classDescription.IsEntryPoint)                
-                .Select(pair => new SchemaType(pair.schema, pair.classDescription.Name));
+                .Select(pair => new SchemaType(pair.schema, pair.classDescription.Name)).ToList();
         }
 
         internal void CreateField(IRelationshipDescription link, ObjectGraphType<IModelElement> tc)
         {
-            if (link.RoleId == MAEID_METACLASS_METAATRBIBUTE)
+            if(link.RoleId == MAEID_METACLASS_METAATRBIBUTE)
             {
                 tc.Field<ListGraphType<SchemaGraphType>>(
                     "schemas",
@@ -53,7 +53,8 @@ namespace Hopex.Modules.GraphQL.Schema
 
         private IEnumerable<SchemaType> ResolveMetaAttribute(IModelElement elem)
         {
-            var metaclassId = elem.Parent.MegaUnnamedField.Substring(0, 13);
+            //Si on veut créer ce champ, il faudrait plutôt récupérer la liste des classes associées via les collections et non avec un Parent qui est faux
+            var metaclassId = elem.Parent.Id;
             return _schemaManager.HopexSchemas
                 .Select(schema => new { schema, propertyDescription = schema.FindClassDescriptionById(metaclassId)?.FindPropertyDescriptionById(elem.Id) })
                 .Where(pair => pair.propertyDescription != null)

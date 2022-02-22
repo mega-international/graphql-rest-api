@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -287,6 +288,8 @@ namespace Mega.WebService.GraphQL.Controllers
             var hopexSession = HopexServiceHelper.EncryptHopexSessionInfo(hopexService.MwasUrl, hopexService.HopexSessionToken);
             response.Headers.Add("x-hopex-sessiontoken", hopexSession);
             response.Headers.Add("x-hopex-task", asyncMacroResult.ActionId);
+            response.Content = new StringContent(string.Empty);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return ResponseMessage(response);
         }
 

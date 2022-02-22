@@ -14,5 +14,6 @@ namespace Hopex.Model.Abstractions.MetaModel
         IClassDescription FindClassDescriptionById(MegaId metaClassId);
         IClassDescription GetClassDescription(string schemaName, bool throwExceptionIfNotExists = true);
         IClassDescription GetInterfaceDescription(string schemaName, bool throwExceptionIfNotExists = true);
+        IClassDescription GetGenericClass();
     }
 }

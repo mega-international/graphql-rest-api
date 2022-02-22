@@ -36,15 +36,55 @@ namespace Mega.WebService.GraphQL.Controllers
             }
 
             var idUploadSession = Guid.NewGuid().ToString();
+            var isSessionCreated = false;
+
+            //if hopex.core >= 900_006
+            try
+            {
+                var createSessionResponse = CallMacro(UploadMacro, "{\"cmd\":\"CreateSession\"}");
+                var createSessionResponseJson = createSessionResponse.Content;
+                var createSessionResult = JsonConvert.DeserializeObject<UploadCreateSessionResult>(createSessionResponseJson);
+                if (createSessionResult != null)
+                {
+                    if (createSessionResult.Success && !string.IsNullOrWhiteSpace(createSessionResult.IdUploadSession))
+                    {
+                        idUploadSession = createSessionResult.IdUploadSession;
+                        isSessionCreated = true;
+                    }
+                    else
+                    {
+                        if (createSessionResult.MaxUploadsReached)
+                        {
+                            Logger.Error("UploadFile: MaxUploadsReached");
+                            return BadRequest("UploadFile: MaxUploadsReached");
+                        }
+                        Logger.Info("UploadFile: UnknownError (CreateSession API might not be available in this HOPEX version)");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                Logger.Info("UploadFile: UnknownError (CreateSession API might not be available in this HOPEX version)");
+            }
 
             var content = GetRequestBufferlessStream();
 
             var sendResult = await SendFileToHopexAsync(idUploadSession, fileName, content);
 
-            return ProcessMacroResult(sendResult, () =>
+            var createBusinessDocumentResult = ProcessMacroResult(sendResult, () => CreateBusinessDocument(documentId, updateMode, idUploadSession));
+
+            if (isSessionCreated)
             {
-                return CreateBusinessDocument(documentId, updateMode, idUploadSession);
-            });
+                var uploadDeleteSessionResponse = CallMacro(UploadMacro, $"{{\"cmd\":\"DeleteSession\",\"idUploadSession\":\"{idUploadSession}\"}}");
+                var uploadDeleteSessionResult = JsonConvert.DeserializeObject<UploadDeleteSessionResult>(uploadDeleteSessionResponse.Content);
+                if (uploadDeleteSessionResult != null && uploadDeleteSessionResult.Success != true)
+                {
+                    Logger.Warn($"Session: {idUploadSession} hasn't been discarded");
+                }
+                Logger.Info($"Session: {idUploadSession} has been discarded");
+            }
+
+            return createBusinessDocumentResult;
         }
 
         private string ParseMandatoryHeaderString(string headerName)

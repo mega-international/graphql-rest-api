@@ -1,11 +1,11 @@
+using GraphQL;
+using GraphQL.Types;
+using Hopex.Modules.GraphQL.Schema.Types.CustomScalarGraphTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using GraphQL;
-using GraphQL.Types;
-using Hopex.Modules.GraphQL.Schema.Types.CustomScalarGraphTypes;
 
 namespace Hopex.Modules.GraphQL.Schema
 {

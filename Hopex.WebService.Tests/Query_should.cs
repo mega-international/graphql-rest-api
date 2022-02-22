@@ -122,7 +122,7 @@ namespace Hopex.WebService.Tests
                WithRelation(new MockMegaCollection(MetaAssociationEndLibrary.AssignmentObject_PersonAssignment).WithChildren(responsibilityAssignment));
 
             var spyRoot = new Mock<MockMegaRoot> { CallBase = true };
-            spyRoot.Setup(x => x.GetSelection("SELECT ~T20000000s10[PersonSystem] WHERE ~Sy64inney0Y5[Email] Like \"#webeval#\"  AND ~H20000008a80[Assignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[AbsoluteIdentifier] = \"~WzF2lb0yGb2U\" AND ~hCr81RIpEvMH[AssignedObject]:~MrUiM9B5iyM0[Application].~310000000D00[AbsoluteIdentifier] = \"IubjeRlyFfT1\" )", 1, null, 1, null, 1, null)).
+            spyRoot.Setup(x => x.GetSelection("SELECT ~T20000000s10[PersonSystem] WHERE ~Sy64inney0Y5[Email] Like \"#webeval#\" AND ~H20000008a80[Assignment]:~030000000240[ResponsibilityAssignment].(~M2000000Ce80[BusinessRole]:~230000000A40[BusinessRole].~310000000D00[Absolute Identifier] = \"~WzF2lb0yGb2U\" AND ~hCr81RIpEvMH[AssignedObject]:~MrUiM9B5iyM0[Application].(~310000000D00[Absolute Identifier] = \"IubjeRlyFfT1\"))", 1, null, 1, null, 1, null)).
                 Returns(responsibilityAssignment.GetCollection("~L2000000Ca80"));
 
             var root = new MockMegaRoot.Builder(spyRoot)

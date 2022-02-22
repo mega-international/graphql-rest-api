@@ -207,6 +207,8 @@ namespace Hopex.Model
             }
         }
 
+        public IMegaObject Relationship => new RealMegaObject(RealObject.Relationship);
+
         public MegaId Id => RealObject.Id;
         
         public MegaId GetClassId()

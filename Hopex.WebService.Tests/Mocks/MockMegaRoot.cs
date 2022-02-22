@@ -47,7 +47,7 @@ namespace Hopex.WebService.Tests.Mocks
             public Builder WithObject(MockMegaObject o)
             {
                 o.Root = _root;
-                _root._objects.Add(o.Id, o);
+                _root.AddNewObject(o);
                 return this;
             }
 
@@ -138,7 +138,9 @@ namespace Hopex.WebService.Tests.Mocks
         public virtual IMegaObject GetObjectFromId(MegaId objectId)
         {
             if (_objects.TryGetValue(objectId, out var iObject))
-                return iObject;
+            {
+                return iObject.FromRoot();
+            }
             return new InexistingMockMegaObject();
         }
 
@@ -151,7 +153,7 @@ namespace Hopex.WebService.Tests.Mocks
                 var comparer = new MegaIdComparer();
                 if (comparer.Equals(objectId, value))
                 {
-                    return item;
+                    return item.FromRoot();
                 }
             }
             return new InexistingMockMegaObject();
@@ -200,7 +202,7 @@ namespace Hopex.WebService.Tests.Mocks
         {
             idMetaclass = null;
             idObject = null;
-            var pattern = @"SELECT (~[\w\d\(\)]{12}(\[.*\])?) WHERE ~310000000D00\[Absolute Identifier\] = \""(~?[\w\d\(\)]{12}(\[.*\])?)\""";
+            var pattern = @"^SELECT (~[\w\d\(\)]{12}(\[.*\])?) WHERE \(?~310000000D00\[Absolute Identifier\] = \""(~?[\w\d\(\)]{12}(\[.*\])?)\)?\""$";
             var match = Regex.Match(query, pattern);
             if (match.Success)
             {
@@ -216,7 +218,7 @@ namespace Hopex.WebService.Tests.Mocks
             idMetaclass = null;
             idProperty = null;
             idObject = null;
-            var pattern = @"SELECT (~[\w\d\(\)]{12}(\[.*\])?) WHERE (~[\w\d\(\)]{12})\[.*\]? = \""(~?[\w\d\(\)]{12}(\[.*\])?)\""";
+            var pattern = @"^SELECT (~[\w\d\(\)]{12}(\[.*\])?) WHERE (~[\w\d\(\)]{12})\[.*\]? = \""(~?[\w\d\(\)]{12}(\[.*\])?)\""$";
             var match = Regex.Match(query, pattern);
             if (match.Success)
             {

@@ -204,7 +204,6 @@ namespace HAS.Modules.WebService.API.IntegrationTests.GraphQL
         }
 
         [Test]
-        [Ignore("Waiting for an error to be corrected")]
         public async Task Update_application_with_null_values()
         {
             await EnsureSuccessAndExpected(
@@ -259,10 +258,10 @@ namespace HAS.Modules.WebService.API.IntegrationTests.GraphQL
                  @"{
                     ""name"": ""Name of the application 3"",
                     ""operatingApplicationDate"": null,
-                    ""applicationCode"": "",
+                    ""applicationCode"": """",
                     ""cost"": null,
                     ""applicationStereotype"": null,
-                    ""externalId"": "",
+                    ""externalId"": """",
                     ""freezePastTimePeriod"": false
                  }", response => response.Data.application);
         }

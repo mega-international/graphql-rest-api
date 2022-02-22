@@ -3,7 +3,7 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
     struct HopexOperator
     {
         public string Name;
-        public string Pattern;
+        public string Pattern { get; }
         public bool IsNegation;
 
         public HopexOperator(string name, string pattern, bool isNegation=false) : this()

@@ -5,12 +5,10 @@ using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.MetaModel;
 using Mega.Macro.API;
-using Mega.Macro.API.Enums;
 using Mega.Macro.API.Library;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -27,7 +25,7 @@ namespace Hopex.Model.DataModel
             }
 
             Id = id;
-            ClassDescription = schema;
+            TargetClass = schema;
             Name = schema.Name;
             RoleId = schema.Id;
             Path = new [] { new PathDescription(Name, RoleId) };
@@ -45,71 +43,51 @@ namespace Hopex.Model.DataModel
 
         public IEnumerable<ISetter> CreateSetters(object value)
         {
-            if (value is IDictionary<string, object> dict)
+            if(value is Tuple<object, Func<IClassDescription, IDictionary<string, object>, IEnumerable<ISetter>>> pair)
             {
-                var action = (CollectionAction)Enum.Parse(typeof(CollectionAction), dict["action"].ToString(), true);
-                var list = (IEnumerable<object>)dict["list"];
-                yield return CollectionSetter.Create(this, action, list);
+                if(pair.Item1 is IDictionary<string, object> dict)
+                {
+                    var resolver = pair.Item2;
+                    var action = (CollectionAction)Enum.Parse(typeof(CollectionAction), dict ["action"].ToString(), true);
+                    var list = (IEnumerable<object>)dict ["list"];
+                    yield return CollectionSetter.Create(this, action, list, resolver);
+                }
             }
         }
     }
 
-    public class HopexDataModel : IHopexDataModel, IDisposable
+    public class HopexDataModel : HasCollection, IHopexDataModel, IDisposable
     {
         private readonly MegaRoot _root;
-        private readonly IMegaRoot _iRoot;
-        private ILogger _logger;
+        
+        private readonly ILogger _logger;
 
-        public IHopexMetaModel MetaModel { get; }
+        private IHopexMetaModel _metaModel;
 
         public Dictionary<string, IModelElement> TemporaryMegaObjects { get; }
 
-        public HopexDataModel(IHopexMetaModel schema, MegaRoot root, IMegaRoot iRoot, ILogger logger)
+        public HopexDataModel(IHopexMetaModel schema, MegaRoot root, IMegaRoot iRoot, ILogger logger) : base(iRoot)
         {
-            MetaModel = schema;
+            _metaModel = schema;
             _root = root;
-            _iRoot = iRoot;
             _logger = logger;
             TemporaryMegaObjects = new Dictionary<string, IModelElement>();
         }
 
-        public Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType)
+        public async Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType)
         {
-            IMegaObject obj = null;
-            switch (idType)
-            {
-                case IdTypeEnum.INTERNAL:
-                    if (schema?.Id != null)
-                        obj = _iRoot.GetSelection($"SELECT {schema.Id}[{schema.Name}] WHERE {MetaAttributeLibrary.AbsoluteIdentifier} = \"{id}\"").FirstOrDefault();
-                    else
-                        obj = _iRoot.GetObjectFromId(id);
-                    break;
-                case IdTypeEnum.EXTERNAL:
-                    obj = _iRoot.GetSelection($"SELECT {schema.Id}[{schema.Name}] WHERE ~CFmhlMxNT1iE[ExternalIdentifier] = \"{id}\"").FirstOrDefault();
-                    break;
-            }
-            if (obj == null || !obj.Exists)
-            {
-                return Task.FromResult<IModelElement>(null);
-            }
-            var modelElement = new HopexModelElement(this, schema, obj, obj.MegaUnnamedField);
-            return Task.FromResult<IModelElement>(modelElement);
+            return await GetElementByIdAsync(schema, null, id, idType, this);
         }
 
-        public Task<IModelCollection> GetCollectionAsync(string name, string relationshipName, GetCollectionArguments getCollectionArguments)
+        public override Task<IModelCollection> GetCollectionAsync(string name, string relationshipName, GetCollectionArguments getCollectionArguments)
         {
-            var schema = MetaModel.GetClassDescription(name);
+            var schema = _metaModel.GetClassDescription(name);
             string id = null;
-            if (relationshipName != null)
-            {
-                var rel = schema.Relationships.First(r => r.Name == relationshipName);
-                id = rel.Id;
-            }
             var collection = HopexModelCollection.Create(this, new ClassCollectionDescription(id, schema), _iRoot, null, getCollectionArguments);
             return Task.FromResult(collection);
         }
 
-        public Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx)
+        public Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx, IClassDescription genericClass)
         {
             if (ctx.Arguments.TryGetValue("filter", out var filterObject) && filterObject.Value is Dictionary<string, object> filter && filter.ContainsKey("text") && filter["text"] is string value && !string.IsNullOrWhiteSpace(value))
             {
@@ -201,7 +179,7 @@ namespace Hopex.Model.DataModel
                 foreach (var occ in searchAllResultRoot.Results.OccResults.OccList)
                 {
                     var megaObject = _iRoot.GetObjectFromId(occ.ObjectId);
-                    var element = new HopexModelElement(this, null, megaObject);
+                    var element = BuildElement(megaObject, genericClass);
                     if(element.GetCrud().IsReadable)
                     {
                         collection.Add(element);
@@ -212,150 +190,55 @@ namespace Hopex.Model.DataModel
             throw new ExecutionError("In order to use the searchAll query, you must define a filter with a text attribute value");
         }
 
+        public IModelElement BuildElement(IMegaObject megaObject, IClassDescription entity, IModelElement parent = null)
+        {
+            return new HopexModelElement(this, entity, megaObject, null, parent);
+        }
+
         public async Task<IModelElement> CreateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters)
+        {
+            if(schema is null)
+            {
+                throw new ArgumentNullException(nameof(schema));
+            }
+
+            if(string.IsNullOrEmpty(id) && (idType == IdTypeEnum.EXTERNAL || idType == IdTypeEnum.TEMPORARY))
+            {
+                throw new ExecutionError("Parameter id must be set");
+            }
+
+            var permissions = CrudComputer.GetCollectionMetaPermission(_iRoot, schema.Id);
+            var settersList = setters.ToList();
+            if(!permissions.IsCreatable || settersList.Any() && !permissions.IsUpdatable)
+            {
+                throw new ExecutionError("You are not allowed to perform this action");
+            }
+
+            var collection = _iRoot.GetCollection(schema.Id);
+            var element = await CreateSingleElementAsync(schema, useInstanceCreator, id, idType, collection,
+                mo => BuildElement(mo, schema), TemporaryMegaObjects, true);
+
+            return await element.UpdateAsync(setters);
+        }
+
+        public async Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters)
         {
             if (schema is null)
             {
                 throw new ArgumentNullException(nameof(schema));
             }
 
-            var permissions = CrudComputer.GetCollectionMetaPermission(_iRoot, schema.Id);
-            var settersList = setters.ToList();
-            if (!permissions.IsCreatable || settersList.Any() && !permissions.IsUpdatable)
+            if(string.IsNullOrEmpty(id) && (idType == IdTypeEnum.EXTERNAL || idType == IdTypeEnum.TEMPORARY))
             {
-                throw new ExecutionError("You are not allowed to perform this action");
-            }
-
-            var collection = _iRoot.GetCollection(schema.Id);
-            //var setter = settersList.FirstOrDefault(x => x.PropertyDescription?.Name.ToLower() == "name" /*&& x.PropertyDescription?.IsUnique*/);
-            //if (setter != null)
-            //{
-            //    var name = setter.Value.ToString();
-            //    var existingObjects = collection.CallFunction("~nLn(jj)SCf30[LinkableQuery]", name, "ExactName=Yes, ListAll=Yes");
-            //    if (existingObjects != null && existingObjects.Count > 0)
-            //    {
-            //        throw new ExecutionError($@"An object named ""{name}"" already exists.");
-            //    }
-            //}
-            return await CreateElementFromParentAsync(schema, id, idType, useInstanceCreator, settersList, collection);
-        }
-
-        public async Task<IModelElement> CreateElementFromParentAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters, IMegaCollection iColParent)
-        {
-            HopexModelElement element;
-            if (Equals(schema.Id, "~UkPT)TNyFDK5") || Equals(schema.Id, "~aMRn)bUIGjX3"))
-            {
-                var filePath = Path.GetTempPath() + "empty.txt";
-                File.WriteAllText(filePath, "");
-                var instanceCreator = iColParent.CallFunction<IMegaWizardContext>("~GuX91iYt3z70[InstanceCreator]");
-                instanceCreator.InvokePropertyPut("~vjh4n6oyFTKK[Localisation du fichier]", filePath);
-                var newId = MegaId.Create(instanceCreator.Create());
-                var item = iColParent.Item(newId);
-                CheckObjectCreation(item);
-                element = new HopexModelElement(this, schema, item);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(id) && idType == IdTypeEnum.EXTERNAL)
-                {
-                    var obj = _iRoot.GetSelection($"SELECT {schema.Id}[{schema.Name}] WHERE ~CFmhlMxNT1iE[ExternalIdentifier] = \"{id}\"").FirstOrDefault();
-                    if (obj != null && obj.Exists)
-                    {
-                        throw new ExecutionError($"Cannot create {schema.Name} with external identifier: {id}, this value is already used on element: {obj.MegaField}");
-                    }
-                }
-                if (useInstanceCreator)
-                {
-                    var instanceCreator = iColParent.CallFunction<IMegaWizardContext>("~GuX91iYt3z70[InstanceCreator]");
-                    instanceCreator.Mode = WizardCreateMode.Batch;
-                    var newId = MegaId.Create(instanceCreator.Create());
-                    IMegaObject item = iColParent.Item(newId);
-                    CheckObjectCreation(item);
-                    if (!string.IsNullOrEmpty(id))
-                    {
-                        switch (idType)
-                        {
-                            case IdTypeEnum.INTERNAL:
-                                throw new ExecutionError("You cannot set the id in BUSINESS mode.");
-                            case IdTypeEnum.EXTERNAL:
-                                item.SetPropertyValue(MegaId.Create("~CFmhlMxNT1iE[ExternalIdentifier]"), id);
-                                break;
-                        }
-                    }
-                    element = new HopexModelElement(this, schema, item);
-                }
-                else
-                {
-                    IMegaObject item = null;
-                    if (!string.IsNullOrEmpty(id))
-                    {
-                        switch (idType)
-                        {
-                            case IdTypeEnum.INTERNAL:
-                                var megaId = MegaId.Create($"~{id}");
-                                item = iColParent.Create(megaId);
-                                CheckObjectCreation(item);
-                                break;
-                            case IdTypeEnum.EXTERNAL:
-                                item = iColParent.Create();
-                                CheckObjectCreation(item);
-                                var externalIdentifierPermissions = new CrudResult(item.CallFunctionString("~R2mHVReGFP46[WFQuery]", "~CFmhlMxNT1iE[ExternalIdentifier]"));
-                                if (!externalIdentifierPermissions.IsUpdatable)
-                                {
-                                    item.Delete();
-                                    throw new ExecutionError($"You are not allowed to create {schema.Name} with id type EXTERNAL");
-                                }
-                                item.SetPropertyValue(MegaId.Create("~CFmhlMxNT1iE[ExternalIdentifier]"), id);
-                                break;
-                            case IdTypeEnum.TEMPORARY:
-                                if (TemporaryMegaObjects.ContainsKey(id))
-                                {
-                                    item = TemporaryMegaObjects[id].IMegaObject;
-                                }
-                                else
-                                {
-                                    item = iColParent.Create();
-                                    CheckObjectCreation(item);
-                                    TemporaryMegaObjects.Add(id, new HopexModelElement(this, schema, item));    
-                                }
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        item = iColParent.Create();
-                        CheckObjectCreation(item);
-                    }
-                    element = new HopexModelElement(this, schema, item);
-                }
-            }
-            await element.UpdateElement(setters);
-            return element;
-        }
-
-        public async Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters)
-        {
-            if(schema is null)
-            {
-                throw new ArgumentNullException(nameof(schema));
+                throw new ExecutionError("Parameter id must be set");
             }
             var element = await GetElementByIdAsync(schema, id, idType);
             if(element == null)
             {
                 throw new ExecutionError($"Element {schema.Name} not found with id {id}");
             }
-            return await UpdateElementAsync(element, setters);
-        }
 
-        public async Task<IModelElement> UpdateElementAsync(IModelElement element, IEnumerable<ISetter> setters)
-        {
-            var elementPermissions = element.GetCrud();
-            if (! elementPermissions.IsUpdatable)
-            {
-                throw new ExecutionError($"You are not allowed to perform this action on this object ({element.MegaObject.MegaField})");
-            }
-            await (element as HopexModelElement).UpdateElement(setters);
-            return element;
+            return await element.UpdateAsync(setters);
         }
 
         public async Task<IModelElement> CreateUpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters, bool useInstanceCreator)
@@ -363,12 +246,6 @@ namespace Hopex.Model.DataModel
             if (schema is null)
             {
                 throw new ArgumentNullException(nameof(schema));
-            }
-            var permissions = CrudComputer.GetCollectionMetaPermission(_iRoot, schema.Id);
-            var settersList = setters.ToList();
-            if (!permissions.IsCreatable || settersList.Any() && !permissions.IsUpdatable)
-            {
-                throw new ExecutionError("You are not allowed to perform this action");
             }
 
             if(string.IsNullOrEmpty(id) && (idType == IdTypeEnum.EXTERNAL || idType == IdTypeEnum.TEMPORARY))
@@ -378,31 +255,16 @@ namespace Hopex.Model.DataModel
 
             if(!string.IsNullOrEmpty(id))
             {
-                IMegaObject obj = null;
-                switch (idType)
+                var element = await GetElementByIdAsync(schema, id, idType);
+                if(element != null)
                 {
-                    case IdTypeEnum.INTERNAL:
-                        obj = _iRoot.GetSelection($"SELECT {schema.Id}[{schema.Name}] WHERE {MetaAttributeLibrary.AbsoluteIdentifier} = \"{id}\"").FirstOrDefault();
-                        break;
-                    case IdTypeEnum.EXTERNAL:
-                        obj = _iRoot.GetSelection($"SELECT {schema.Id}[{schema.Name}] WHERE ~CFmhlMxNT1iE[ExternalIdentifier] = \"{id}\"").FirstOrDefault();
-                        break;
-                    case IdTypeEnum.TEMPORARY:
-                        if (TemporaryMegaObjects.ContainsKey(id))
-                        {
-                            obj = TemporaryMegaObjects[id].IMegaObject;
-                        }
-                        break;
-                }
-                if(obj != null && obj.Exists)
-                {
-                    return await UpdateElementAsync(schema, obj.MegaUnnamedField, IdTypeEnum.INTERNAL, setters);
+                    return await element.UpdateAsync(setters);
                 }
             }
             return await CreateElementAsync(schema, id, idType, useInstanceCreator, setters);
         }
 
-        public Task<DeleteResultType> RemoveElementAsync(List<IMegaObject> objectsToDelete, bool isCascade = false)
+        public Task<DeleteResultType> RemoveElementAsync(IEnumerable<IMegaObject> objectsToDelete, bool isCascade = false)
         {
             var removedElementCount = 0;
             foreach (var megaObject in objectsToDelete)
@@ -425,19 +287,10 @@ namespace Hopex.Model.DataModel
             return Task.FromResult(new DeleteResultType {DeletedCount = removedElementCount});
         }
 
-        private async Task<IModelElement> ProcessMutation(string mutationName, string megaField, Func<Task<IModelElement>> mutation)
+        public async Task<DeleteResultType> RemoveElementAsync(IEnumerable<IModelElement> elementsToDelete, bool isCascade = false)
         {
-            return await mutation();
-        }
-
-        private void PublishSession()
-        {
-            var result = _iRoot.CallFunctionString("~lcE6jbH9G5cK", "{\"instruction\":\"PUBLISHINSESSION\"}");
-            if (result == null || !result.Contains("SESSION_PUBLISH"))
-            {
-                throw new Exception("Session wasn't published");
-            }
-            _logger.LogInformation("Session published");
+            var objectsToDelete = elementsToDelete.Select(e => e.IMegaObject).ToList();
+            return await RemoveElementAsync(objectsToDelete, isCascade);
         }
 
         public void Dispose()

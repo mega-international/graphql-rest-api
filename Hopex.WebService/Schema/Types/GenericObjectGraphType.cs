@@ -1,6 +1,7 @@
 using GraphQL;
 using GraphQL.Types;
 using Hopex.Model.Abstractions.DataModel;
+using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
 using Mega.Macro.API;
 using System.Collections.Generic;
@@ -10,14 +11,16 @@ namespace Hopex.Modules.GraphQL.Schema.Types
 {
     internal class GenericObjectInterface : InterfaceGraphType<IModelElement>
     {
+        private readonly IClassDescription _genericMetaclass;
         private readonly IGraphType _languagesType;
         private readonly Dictionary<MegaId, ObjectGraphType<IModelElement>> _concreteGraphTypes = new Dictionary<MegaId, ObjectGraphType<IModelElement>>();
 
         public GenericObjectGraphType WildcardType { get; set; }
 
-        internal GenericObjectInterface(global::GraphQL.Types.Schema schema, IGraphType languagesType)
+        internal GenericObjectInterface(global::GraphQL.Types.Schema schema, IGraphType languagesType, IClassDescription genericMetaclass)
         {
             _languagesType = languagesType;
+            _genericMetaclass = genericMetaclass;
             WildcardType = new GenericObjectGraphType();
 
             schema.RegisterType(this);
@@ -44,12 +47,9 @@ namespace Hopex.Modules.GraphQL.Schema.Types
             return WildcardType;
         }
 
-        internal void ImplementInConcreteType(string metaclassId, ObjectGraphType<IModelElement> typeToEnrich, bool baseClass)
+        internal void ImplementInConcreteType(string metaclassId, ObjectGraphType<IModelElement> typeToEnrich)
         {
-            if (baseClass)
-            {
-                _concreteGraphTypes.Add(metaclassId, typeToEnrich);
-            }
+            _concreteGraphTypes.Add(metaclassId, typeToEnrich);
             ImplementInType(typeToEnrich);
         }
 

@@ -7,8 +7,15 @@ namespace Hopex.Model.Abstractions.DataModel
 {
     public class PropertySetter : ISetter
     {
-        private PropertySetter()
+        private readonly Exception _createError = null;
+        private readonly IPropertyDescription _propertyDescription;
+        private readonly object _value;
+        public string SetterFormat { get; private set; }
+
+        private PropertySetter(IPropertyDescription propertyDescription, object value)
         {
+            _propertyDescription = propertyDescription;
+            _value = value;
         }
 
         private PropertySetter(Exception createError)
@@ -26,18 +33,11 @@ namespace Hopex.Model.Abstractions.DataModel
                     return new PropertySetter(error);
                 }
             }
-            return new PropertySetter
+            return new PropertySetter(property, value)
             {
-                PropertyDescription = property,
-                Value = value,
                 SetterFormat = setterFormat
             };
         }
-
-        public IPropertyDescription PropertyDescription { get; private set; }
-        public object Value { get; private set; }
-        public string SetterFormat { get; private set; }
-        private readonly Exception _createError = null;
 
         public Task UpdateElementAsync(IHopexDataModel _, IModelElement element)
         {
@@ -45,7 +45,7 @@ namespace Hopex.Model.Abstractions.DataModel
             {
                 throw _createError;
             }
-            element.SetValue(PropertyDescription, Value, SetterFormat);
+            element.SetValue(_propertyDescription, _value, SetterFormat);
             return Task.CompletedTask;
         }
     }

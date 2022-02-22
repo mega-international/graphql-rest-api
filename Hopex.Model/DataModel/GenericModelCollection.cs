@@ -1,4 +1,3 @@
-using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using System;
@@ -9,14 +8,14 @@ namespace Hopex.Model.DataModel
 {
     class GenericModelCollection : IModelCollection
     {
-        private readonly IMegaObject _iMegaObject;
+        private readonly IModelElement _source;
         private readonly IHopexDataModel _domainModel;
-        private string _collectionMegaId;
+        private readonly string _collectionMegaId;
 
-        public GenericModelCollection(string collectionMegaId, IMegaObject iMegaObject, IHopexDataModel domainModel)
+        public GenericModelCollection(string collectionMegaId, IModelElement source, IHopexDataModel domainModel)
         {
             _collectionMegaId = Utils.NormalizeHopexId(collectionMegaId); ;
-            _iMegaObject = iMegaObject;
+            _source = source;
             _domainModel = domainModel;
         }
 
@@ -24,10 +23,10 @@ namespace Hopex.Model.DataModel
 
         public IEnumerator<IModelElement> GetEnumerator()
         {
-            var collection = _iMegaObject.GetCollection(_collectionMegaId);
+            var collection = _source.IMegaObject.GetCollection(_collectionMegaId);
             foreach (var item in collection)
             {
-                yield return new HopexModelElement(_domainModel, null, item);
+                yield return _domainModel.BuildElement(item, null, _source);
             }
         }
 

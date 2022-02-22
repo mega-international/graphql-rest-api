@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Modules.GraphQL.Schema.Filters;
-
+using Hopex.Modules.GraphQL.Schema.GraphQLSchema;
 using static Hopex.Model.MetaModel.Constants;
 
 namespace Hopex.Modules.GraphQL.Schema
@@ -17,13 +17,14 @@ namespace Hopex.Modules.GraphQL.Schema
             _filterArgumentBuilder = builder;
         }
 
-        internal QueryArguments BuildRelationshipArguments(IRelationshipDescription link, HopexEnumerationGraphType languagesType)
+        internal QueryArguments BuildRelationshipArguments(GraphQLRelationshipDescription graphQLLink, HopexEnumerationGraphType languagesType)
         {
+            var link = graphQLLink.MetaAssociation;
             var arguments = new QueryArguments();
 
             var addErqlFilterArguments = !(link.RoleId == MAEID_DESCRIBEDELEMENT_ABSTRACTDIAGRAM || link.RoleId == MAEID_METACLASS_SUBMETACLASS || link.RoleId == MAEID_METACLASS_SUPERMETACLASS);
             if (addErqlFilterArguments)
-                _filterArgumentBuilder.AddFilterArguments(arguments, link.TargetClass, languagesType);
+                _filterArgumentBuilder.AddFilterArguments(arguments, graphQLLink.TargetClass);
 
             var addSchemaFilterArgument = link.RoleId == MAEID_METACLASS_SUBMETACLASS || link.RoleId == MAEID_METACLASS_SUPERMETACLASS;
             if (addSchemaFilterArgument)

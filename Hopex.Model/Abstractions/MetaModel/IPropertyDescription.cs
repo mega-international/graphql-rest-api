@@ -13,7 +13,6 @@ namespace Hopex.Model.Abstractions.MetaModel
 
     public interface IPropertyDescription : IFieldDescription
     {
-        IClassDescription Owner { get; }
         string Name { get; }
         string Id { get; }
         string Description { get; }
@@ -29,7 +28,6 @@ namespace Hopex.Model.Abstractions.MetaModel
         Type NativeType { get; }
         string SetterFormat { get; }
         string GetterFormat { get; }
-        string DisplayName { get; }
         PropertyScope Scope { get; }
     }
 }

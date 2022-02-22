@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Hopex.Model.Abstractions.MetaModel;
+using System.Collections.Generic;
 
 namespace Hopex.Model.MetaModel
 {

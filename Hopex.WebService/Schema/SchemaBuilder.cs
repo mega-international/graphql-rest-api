@@ -1,4 +1,6 @@
 using GraphQL;
+using GraphQL.Execution;
+using GraphQL.Instrumentation;
 using GraphQL.Language.AST;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -10,6 +12,7 @@ using Hopex.Model.DataModel;
 using Hopex.Model.MetaModel;
 using Hopex.Modules.GraphQL.Schema.Filters;
 using Hopex.Modules.GraphQL.Schema.Formats;
+using Hopex.Modules.GraphQL.Schema.GraphQLSchema;
 using Hopex.Modules.GraphQL.Schema.Types;
 using Hopex.Modules.GraphQL.Schema.Types.CustomScalarGraphTypes;
 using Mega.Macro.API;
@@ -22,8 +25,6 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GraphQL.Execution;
-using GraphQL.Instrumentation;
 
 namespace Hopex.Modules.GraphQL.Schema
 {
@@ -33,7 +34,8 @@ namespace Hopex.Modules.GraphQL.Schema
         {
             public ObjectWithParentGraphType<IModelElement> GraphType { get; set; }
             public AggregationQueryType AggregationQueryType { get; set; }
-            public IClassDescription Description { get; set; }
+            public GraphQLClassDescription GraphQlDescription { get; set; }
+            public IClassDescription Description => GraphQlDescription.MetaClass;
         }
 
         private readonly Dictionary<MegaId, TypeInfo> _types = new Dictionary<MegaId, TypeInfo>();
@@ -47,8 +49,10 @@ namespace Hopex.Modules.GraphQL.Schema
 
         private readonly GraphQLSchemaManager _schemaManager;
         private readonly SchemaMappingResolver _schemaMappingResolver;
+        private readonly FilterArgumentBuilder _filterArgumentBuilder;
+        private readonly IClassDescription _genericClass;
 
-        private QueryArguments _filterArguments;
+        private readonly Dictionary<string, GraphQLClassDescription> _graphQlClasses = new Dictionary<string, GraphQLClassDescription>();
 
         private ILogger Logger { get; }
 
@@ -58,6 +62,8 @@ namespace Hopex.Modules.GraphQL.Schema
             Logger = logger;
             _schemaManager = schemaManager;
             _schemaMappingResolver = new SchemaMappingResolver(_schemaManager);
+            _filterArgumentBuilder = new FilterArgumentBuilder(this);
+            _genericClass = hopexSchema.GetGenericClass();
             LanguagesType = new LanguagesEnumerationGraphType(languages, ToValidName);
             CurrenciesType = new CurrenciesEnumerationGraphType(currencies, ToValidName);
             Schema = new global::GraphQL.Types.Schema();
@@ -92,13 +98,9 @@ namespace Hopex.Modules.GraphQL.Schema
 
         public global::GraphQL.Types.Schema Create(IMegaRoot megaRoot)
         {
-            //Logger.LogInformation("  SchemaBuilder.CreateQuerySchema start");
+            InitializeGraphQlClasses();
             Schema.Query = CreateQuerySchema(Schema, HopexSchema, megaRoot);
-            //Logger.LogInformation("  SchemaBuilder.CreateQuerySchema terminated");
-
-            //Logger.LogInformation("  SchemaBuilder.CreateMutationSchema start");
-            Schema.Mutation = CreateMutationSchema(Schema, HopexSchema);
-            //Logger.LogInformation("  SchemaBuilder.CreateMutationSchema terminated");
+            Schema.Mutation = CreateMutationSchema(HopexSchema);
 
             Schema.Directives.Register(new DirectiveGraphType("capitalize", new List<DirectiveLocation> { DirectiveLocation.Field }));
             Schema.Directives.Register(new DirectiveGraphType("deburr", new List<DirectiveLocation> { DirectiveLocation.Field }));
@@ -148,8 +150,25 @@ namespace Hopex.Modules.GraphQL.Schema
                 });
             //Schema.Directives.Register(new DirectiveGraphType("isReadOnly", new List<DirectiveLocation> {DirectiveLocation.Field}));
             //Schema.Directives.Register(new DirectiveGraphType("isReadWrite", new List<DirectiveLocation> {DirectiveLocation.Field}));
-
             return Schema;
+        }
+
+        private void InitializeGraphQlClasses()
+        {
+            foreach(var metaclass in HopexSchema.Classes.Except(new List<IClassDescription>{_genericClass}))
+            {
+                _graphQlClasses.Add(metaclass.Name, new GraphQLClassDescription(metaclass));
+            }
+
+            foreach(var graphQlClasse in _graphQlClasses)
+            {
+                graphQlClasse.Value.GenerateBasicFields(_graphQlClasses);
+            }
+
+            foreach(var graphQlClasse in _graphQlClasses)
+            {
+                graphQlClasse.Value.GenerateContextedFields();
+            }
         }
 
         internal IGraphType GetOrCreateEnumType(IPropertyDescription prop)
@@ -174,7 +193,7 @@ namespace Hopex.Modules.GraphQL.Schema
 
         private IObjectGraphType CreateQuerySchema(global::GraphQL.Types.Schema schema, IHopexMetaModel hopexSchema, IMegaRoot megaRoot)
         {
-            var genericObjectInterface = new GenericObjectInterface(schema, LanguagesType);
+            var genericObjectInterface = new GenericObjectInterface(schema, LanguagesType, _genericClass);
 
             var query = new ObjectGraphType<IHopexDataModel>
             {
@@ -184,7 +203,6 @@ namespace Hopex.Modules.GraphQL.Schema
             query.Field<CurrentContextType>("_currentContext", resolve: context => new CurrentContextType());
             query.Field<DiagnosticType>("_APIdiagnostic", resolve: context => new DiagnosticType());
 
-            //Logger.LogInformation("    SchemaBuilder.IsFullTextSearchActivated start");
             var isFullTextSearchActivated = false;
             try
             {
@@ -196,61 +214,83 @@ namespace Hopex.Modules.GraphQL.Schema
             }
             if (isFullTextSearchActivated)
             {
-                AddSearchAllField(query, hopexSchema, genericObjectInterface);
+                AddSearchAllField(query, genericObjectInterface);
             }
-            //Logger.LogInformation("    SchemaBuilder.IsFullTextSearchActivated terminated");
 
-            var filterArgumentBuilder = new FilterArgumentBuilder(this);
-            var argumentsFactory = new GraphQLArgumentsFactory(filterArgumentBuilder, _schemaMappingResolver);
+            var argumentsFactory = new GraphQLArgumentsFactory(_filterArgumentBuilder, _schemaMappingResolver);
 
-            EnrichInterface(hopexSchema, genericObjectInterface);
+            EnrichInterface(genericObjectInterface);
 
-            //Logger.LogInformation("    SchemaBuilder.GenerateClasses start");
-            // First generate base classes
-            foreach (var entity in hopexSchema.Classes)
+            // First generate base classes with basic properties
+            foreach (var graphQlClass in _graphQlClasses)
             {
-                GenerateClass(entity, entity.Id, query, filterArgumentBuilder, genericObjectInterface);
+                GenerateClass(graphQlClass.Value, query, genericObjectInterface);
             }
-            //Logger.LogInformation("    SchemaBuilder.GenerateClasses terminated");
 
             // Then generate relationships
-            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 1st pass start");
-            GenerateRelationships(argumentsFactory, true);
-            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 1st pass terminated");
-            // Si target est <> (voir schemapivotconvertor line 167)
-            // alors générer un nouveau type qui hérite du précédent
-            // Du coup on le fait dans une dernière phase pour étre certain de récupérer les relations éventuelles
-            // qui vont être crées dans l'étape précédente
-            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 2nd pass start");
-            var extendedTypes = GenerateRelationships(argumentsFactory, false);
-            //Logger.LogInformation("    SchemaBuilder.GenerateRelationships 2nd pass terminated");
+            GenerateRelationships(argumentsFactory);
 
-            // Then extend and add extra fields on target classes from relationships
-            foreach (var extendedType in extendedTypes)
-            {
-                ExtendClass(extendedType);
-            }
+            //Then implement accessible classes from graphQL
+            ImplementClasses(genericObjectInterface);
 
             return query;
         }
 
-        private void GenerateClass(IClassDescription entity, string entityKey, ComplexGraphType<IHopexDataModel> query, FilterArgumentBuilder filterArgumentBuilder, GenericObjectInterface genericObjectInterface)
+        private void ImplementClasses(GenericObjectInterface genericInterface)
         {
+            //On ne prend pas toutes les classes pour éviter les classes "dans le vide" qui ne sont pas traitées par graphQL et non traitable pour le polymorphisme du resolvedType
+            var classesToImplement = new HashSet<GraphQLClassDescription>();
+
+            //D'abord on prend les classes racines
+            foreach(var graphQlClassPair in _graphQlClasses)
+            {
+                var graphQlClass = graphQlClassPair.Value;
+                if(graphQlClass.MetaClass.IsEntryPoint)
+                {
+                    classesToImplement.Add(graphQlClass);
+                }
+            }
+
+            //Puis les relationships et on parcourt jusqu'à ce qu'on ait fait le tour des classes accessible depuis le schema graphQL
+            var next = new Queue<GraphQLClassDescription>(classesToImplement);
+            while(next.Count > 0)
+            {
+                var current = next.Dequeue();
+                foreach(var relationship in current.Relationships)
+                {
+                    if(classesToImplement.Add(relationship.TargetClass)) //Pour s'assurer de ne pas traiter à l'infini
+                    {
+                        next.Enqueue(relationship.TargetClass);
+                    }
+                }
+            }
+            
+            foreach(var graphQlClass in classesToImplement)
+            {
+                var classId = graphQlClass.MetaClass.Id;
+                var type = _types[classId];
+                genericInterface.ImplementInConcreteType(classId, type.GraphType);
+            }
+        }
+
+        private void GenerateClass(GraphQLClassDescription graphQlClass, ComplexGraphType<IHopexDataModel> query, GenericObjectInterface genericObjectInterface)
+        {
+            var entity = graphQlClass.MetaClass;
             var type = new GenericObjectGraphType()
             {
                 Description = entity.Description,
                 Name = entity.Name
             };
-            var typeInfo = new TypeInfo { GraphType = type, Description = entity };
+            var typeInfo = new TypeInfo { GraphType = type, GraphQlDescription = graphQlClass, AggregationQueryType = CreateAggregationQuery(graphQlClass) };
 
             CreateSpecificFields(entity, type);
-            CreateProperties(entity, type);
-            genericObjectInterface.ImplementInConcreteType(entityKey, type, entity.Extends == null);
+            CreateProperties(graphQlClass, type);
+            //genericObjectInterface.ImplementInConcreteType(entity.Id, type);
 
             if (entity.IsEntryPoint)
             {
-                _filterArguments = filterArgumentBuilder.BuildFilterArguments(entity, LanguagesType);
-                var arguments = new QueryArguments(_filterArguments)
+                var filterArguments = _filterArgumentBuilder.BuildFilterArguments(graphQlClass);
+                var arguments = new QueryArguments(filterArguments)
                     {
                         new QueryArgument<IntGraphType> {Name = "first"},
                         new QueryArgument<StringGraphType> {Name = "after"},
@@ -263,34 +303,23 @@ namespace Hopex.Modules.GraphQL.Schema
                         entity.Name,
                         entity.Description,
                         arguments,
-                        (ctx) => GetElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.Arguments, ctx.Source, ctx.Errors, entity, true)
+                        (ctx) => GetElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.Arguments, ctx.Source, ctx.Errors, graphQlClass)
                     )
                     .ResolvedType = new ListGraphType(type);
 
-                var aggregationQuery = CreateAggregationQuery(entity.Name, entity.Description, entity.Properties);
-                typeInfo.AggregationQueryType = aggregationQuery;
-
+                var aggregationQuery = typeInfo.AggregationQueryType;
                 query.Field<ListGraphType<ObjectGraphType<AggregationQueryType>>>(
                         aggregationQuery.Name,
                         aggregationQuery.Description,
                         arguments,
-                        (ctx) => GetAggregatedElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.SubFields, ctx.Arguments, ctx.Source, ctx.Errors, entity, true)
+                        (ctx) => GetAggregatedElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.SubFields, ctx.Arguments, ctx.Source, ctx.Errors, graphQlClass)
                     )
                     .ResolvedType = new ListGraphType(aggregationQuery);
             }
-            _types.Add(entityKey, typeInfo);
+            _types.Add(entity.Id, typeInfo);
         }
 
-        private void ExtendClass(TypeInfo typeExtended)
-        {
-            var classDescription = typeExtended.Description;
-            var graphType = typeExtended.GraphType;
-
-            graphType.Extend();
-            CreateProperties(classDescription, graphType, false);
-        }
-
-        private void AddSearchAllField(ObjectGraphType<IHopexDataModel> query, IHopexMetaModel hopexSchema, GenericObjectInterface genericObjectInterface)
+        private void AddSearchAllField(ObjectGraphType<IHopexDataModel> query, GenericObjectInterface genericObjectInterface)
         {
             var searchAllFilter = new InputObjectGraphType<object> { Name = "searchAllFilter" };
             searchAllFilter.AddField(new FieldType { Name = "text", Type = typeof(StringGraphType) });
@@ -313,14 +342,15 @@ namespace Hopex.Modules.GraphQL.Schema
                     "SearchAll",
                     "Search any text in name and comment",
                     searchAllArguments,
-                    (ctx) => ctx.Source.SearchAllAsync(ctx))
+                    (ctx) => ctx.Source.SearchAllAsync(ctx, _genericClass))
                 .ResolvedType = new ListGraphType(genericObjectInterface);
         }
 
-        private void CreateProperties(IClassDescription entity, ObjectGraphType<IModelElement> type, bool withParentProperties = true)
+
+
+        private void CreateProperties(GraphQLClassDescription graphQlClass, ObjectGraphType<IModelElement> type)
         {
-            var properties = withParentProperties ? entity.Properties : entity.PropertiesNotExtended;
-            CreateProperties<IModelElement>(properties, type, (ctx, prop) =>
+            CreateProperties<IModelElement>(graphQlClass.Properties, type, (ctx, prop) =>
             {
                 string format = null;
                 if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
@@ -338,14 +368,13 @@ namespace Hopex.Modules.GraphQL.Schema
                         switch (directive.Name)
                         {
                             case "isReadOnly":
-                                var crud = ctx.Source.GetPropertyCrud(prop);
-                                if (!(crud.IsReadable && !crud.IsUpdatable && !crud.IsCreatable && !crud.IsDeletable))
+                                if(!ctx.Source.IsReadOnly(prop))
                                 {
                                     shouldBeSkipped = true;
                                 }
                                 break;
                             case "isReadWrite":
-                                if (!ctx.Source.GetPropertyCrud(prop).IsUpdatable)
+                                if (!ctx.Source.IsReadWrite(prop))
                                 {
                                     shouldBeSkipped = true;
                                 }
@@ -358,15 +387,7 @@ namespace Hopex.Modules.GraphQL.Schema
                     return null;
                 }
 
-                IModelElement targetElement;
-                if (entity.IsPathProperty(prop))
-                {
-                    targetElement = ctx.Source.PathElement ?? ctx.Source;
-                }
-                else
-                {
-                    targetElement = ctx.Source;
-                }
+                IModelElement targetElement = ctx.Source;
                 result = targetElement.GetValue<object>(prop, ctx.Arguments, format);
                 //Logger.LogInformation($"  SchemaBuilder.GetValue of {ctx.Source.MegaObject?.MegaField}.{prop.Name} (including get CRUD) ended in: {stopwatch.ElapsedMilliseconds} ms");
                 if (result == null)
@@ -579,77 +600,60 @@ namespace Hopex.Modules.GraphQL.Schema
 
         static private readonly Dictionary<string, ArgumentValue> NO_ARGUMENTS = new Dictionary<string, ArgumentValue>();
 
-        private List<TypeInfo> GenerateRelationships(GraphQLArgumentsFactory argumentsFactory, bool firstPass)
+        private void GenerateRelationships(GraphQLArgumentsFactory argumentsFactory)
         {
-            var extendedTypes = new List<TypeInfo>();
             foreach (var typeInfo in _types)
             {
-                var entity = typeInfo.Value.Description;
+                var graphQlClass = typeInfo.Value.GraphQlDescription;
                 var type = typeInfo.Value.GraphType;
-                foreach (var link in entity.Relationships)
+                foreach (var graphQlRelationship in graphQlClass.Relationships)
                 {
-                    var linkBaseClassType = _types[link.Path.Last().TargetSchemaId];
-                    var linkBaseClassGraphType = linkBaseClassType.GraphType;
-                    var aggregationQueryType = linkBaseClassType.AggregationQueryType ?? CreateAggregationQuery(link.TargetClass.Name, link.TargetClass.Description, link.TargetClass.Properties);
-                    if (firstPass && linkBaseClassType.Description == link.TargetClass)
-                    {
-                        CreateRelationship(argumentsFactory, link, type, linkBaseClassType.Description, linkBaseClassGraphType, aggregationQueryType);
-                        continue;
-                    }
+                    var relationship = graphQlRelationship.MetaAssociation;
+                    var targetType = _types[relationship.TargetClass.Id];
+                    var targetGraphType = targetType.GraphType;
+                    var aggregationQueryType = targetType.AggregationQueryType;
 
-                    if (!firstPass && link.TargetClass != null && linkBaseClassType.Description != link.TargetClass)
-                    {
-                        var linkClass = link.TargetClass;
-                        var linkClassGraphType = new ObjectWithParentGraphType<IModelElement>(linkBaseClassGraphType)
-                        {
-                            Description = linkClass.Description,
-                            Name = linkClass.Name
-                        };
-                        extendedTypes.Add(new TypeInfo
-                        {
-                            GraphType = linkClassGraphType,
-                            Description = linkClass,
-                            AggregationQueryType = aggregationQueryType
-                        });
-                        CreateRelationship(argumentsFactory, link, type, link.TargetClass, linkClassGraphType, aggregationQueryType);
-                        _schemaMappingResolver.CreateField(link, linkClassGraphType);
-                    }
+                    //On créé la relationship
+                    CreateRelationship(argumentsFactory, graphQlRelationship, type, targetGraphType, aggregationQueryType);
+                    _schemaMappingResolver.CreateField(relationship, targetGraphType);
                 }
             }
-            return extendedTypes;
         }
 
-        private void CreateRelationship(GraphQLArgumentsFactory argumentsFactory, IRelationshipDescription link, ObjectGraphType<IModelElement> type, IClassDescription entity, IGraphType targetClassType, AggregationQueryType aggregationQuery)
+        private void CreateRelationship(GraphQLArgumentsFactory argumentsFactory, GraphQLRelationshipDescription graphQlRelationship, ObjectGraphType<IModelElement> type, IGraphType targetClassType, AggregationQueryType aggregationQuery)
         {
-            var arguments = argumentsFactory.BuildRelationshipArguments(link, LanguagesType);
+            var relationship = graphQlRelationship.MetaAssociation;
+            var arguments = argumentsFactory.BuildRelationshipArguments(graphQlRelationship, LanguagesType);
 
             type.FieldAsync<ListGraphType<ObjectGraphType<IModelElement>>>(
-                    link.Name,
-                    link.Description,
+                    relationship.Name,
+                    relationship.Description,
                     arguments,
-                    async ctx => await GetElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, entity, false, link.Name)
+                    async ctx => await GetElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, graphQlRelationship.TargetClass, relationship.Name)
                 )
                 .ResolvedType = new ListGraphType(targetClassType);
 
             type.FieldAsync<ListGraphType<ObjectGraphType<AggregationQueryType>>>(
-                    link.Name + "AggregatedValues",
-                    link.Description,
+                    relationship.Name + "AggregatedValues",
+                    relationship.Description,
                     arguments,
-                    async ctx => await GetAggregatedElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.SubFields, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, entity, false, link.Name)
+                    async ctx => await GetAggregatedElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx.SubFields, ctx.Arguments ?? NO_ARGUMENTS, ctx.Source, ctx.Errors, graphQlRelationship.TargetClass, relationship.Name)
                 )
                 .ResolvedType = new ListGraphType(aggregationQuery);
         }
 
-        private static AggregationQueryType CreateAggregationQuery(string name, string description, IEnumerable<IPropertyDescription> properties)
+        private static AggregationQueryType CreateAggregationQuery(GraphQLClassDescription graphQlClass)
         {
+            var entity = graphQlClass.MetaClass;
             var aggregationQuery = new AggregationQueryType
             {
-                Name = ToValidName(name) + "AggregatedValues",
-                Description = description
+                Name = ToValidName(entity.Name) + "AggregatedValues",
+                Description = entity.Description
             };
 
-            foreach (var property in properties)
+            foreach (var graphQlProperty in graphQlClass.Properties)
             {
+                var property = graphQlProperty.MetaAttribute;
                 var propertyType = typeof(CustomFloatGraphType);
                 QueryArguments arguments;
                 if (property.PropertyType == PropertyType.Int || property.PropertyType == PropertyType.Long || property.PropertyType == PropertyType.Double || property.PropertyType == PropertyType.Currency)
@@ -663,7 +667,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 var field = new FieldType
                 {
                     Type = propertyType,
-                    Name = ToValidName(property.Name),
+                    Name = graphQlProperty.Name,
                     Description = property.Description,
                     Arguments = arguments,
                     Resolver = new FuncFieldResolver<double>(ctx =>
@@ -679,14 +683,14 @@ namespace Hopex.Modules.GraphQL.Schema
             return aggregationQuery;
         }
 
-        private IObjectGraphType CreateMutationSchema(global::GraphQL.Types.Schema graphQLSchema, IHopexMetaModel hopexSchema)
+        private IObjectGraphType CreateMutationSchema(IHopexMetaModel hopexSchema)
         {
             var mutation = new ObjectGraphType<IHopexDataModel>
             {
                 Name = "Mutation"
             };
 
-            var mutationListFactory = new MutationListTypeFactory(this, graphQLSchema, hopexSchema);
+            var mutationListFactory = new MutationListTypeFactory(this);
 
             mutation.Field<CurrentContextForMutationType>(
                 "_updateCurrentContext",
@@ -715,10 +719,12 @@ namespace Hopex.Modules.GraphQL.Schema
                     };
                 });
 
+            
             // Two phases
             // First generate input
-            foreach (var entity in hopexSchema.Classes)
+            foreach (var graphQlClass in _graphQlClasses)
             {
+                var entity = graphQlClass.Value.MetaClass;
                 var typeInput = new InputObjectGraphType<object>
                 {
                     Description = $"Input type for {entity.Name}",
@@ -735,7 +741,9 @@ namespace Hopex.Modules.GraphQL.Schema
                 // Add arguments
                 foreach (var type in types)
                 {
-                    CreateProperties<IModelElement>(entity.Properties.Where(p => !p.IsReadOnly && (type != typeInput || !p.IsUnique)), type, (ctx, prop) =>
+                    var graphQlProperties = graphQlClass.Value.Properties;
+                    var filteredProperties = graphQlProperties.Where(p => !p.MetaAttribute.IsReadOnly && (type != typeInput || !p.MetaAttribute.IsUnique));
+                    CreateProperties<IModelElement>(filteredProperties, type, (ctx, prop) =>
                     {
                         string format = null;
                         if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
@@ -749,14 +757,14 @@ namespace Hopex.Modules.GraphQL.Schema
                     }, true);
 
                     // Then generate relationships
-                    foreach (var link in entity.Relationships.Where(r => !r.IsReadOnly))
+                    foreach (var graphQlRelationship in graphQlClass.Value.Relationships.Where(r => !r.MetaAssociation.IsReadOnly))
                     {
-                        var listType = mutationListFactory.CreateMutationList(link.TargetClass);
+                        var listType = mutationListFactory.CreateMutationList(graphQlRelationship);
                         var field = new FieldType
                         {
                             ResolvedType = listType,
-                            Name = link.Name,
-                            Description = link.Description,
+                            Name = graphQlRelationship.MetaAssociation.Name,
+                            Description = graphQlRelationship.MetaAssociation.Description,
                         };
                         type.AddField(field);
                     }
@@ -765,137 +773,142 @@ namespace Hopex.Modules.GraphQL.Schema
                     InputCustomRelationshipType.AddCustomRelations(type);
                 }
 
-                var enumCreationMode = new HopexEnumerationGraphType { Name = "creationMode" };
-                enumCreationMode.AddValue("RAW", "Do not use InstanceCreator, but classic \"create mode\"", false);
-                enumCreationMode.AddValue("BUSINESS", "Use InstanceCreator", true);
-                var queryArgumentsCreate = new QueryArguments(
-                    new QueryArgument(typeof(StringGraphType)) { Name = "id" },
-                    new QueryArgument(typeof(IdType)) { Name = "idType" },
-                    new QueryArgument(new NonNullGraphType(typeUniqueInput)) { Name = entity.Name.ToCamelCase() });
-                if (!Equals(entity.Id, "~UkPT)TNyFDK5"))
+                if(entity.IsEntryPoint)
                 {
-                    queryArgumentsCreate.Add(new QueryArgument(enumCreationMode) { Name = "creationMode" });
+                    var enumCreationMode = new HopexEnumerationGraphType { Name = "creationMode" };
+                    enumCreationMode.AddValue("RAW", "Do not use InstanceCreator, but classic \"create mode\"", false);
+                    enumCreationMode.AddValue("BUSINESS", "Use InstanceCreator", true);
+                    var queryArgumentsCreate = new QueryArguments(
+                        new QueryArgument(typeof(StringGraphType)) { Name = "id" },
+                        new QueryArgument(typeof(IdType)) { Name = "idType" },
+                        new QueryArgument(new NonNullGraphType(typeUniqueInput)) { Name = entity.Name.ToCamelCase() });
+                    if(!Equals(entity.Id, "~UkPT)TNyFDK5"))
+                    {
+                        queryArgumentsCreate.Add(new QueryArgument(enumCreationMode) { Name = "creationMode" });
+                    }
+
+                    mutation.FieldAsync<ObjectGraphType<object>>(
+                        "Create" + entity.Name,
+                        $"Create a {entity.Name}",
+                        queryArgumentsCreate,
+                        async (ctx) =>
+                        {
+                            var useInstanceCreator = false;
+                            if(ctx.HasArgument("creationMode"))
+                            {
+                                useInstanceCreator = ctx.GetArgument<bool>("creationMode");
+                            }
+                            string id = null;
+                            if(ctx.HasArgument("id"))
+                            {
+                                id = ctx.GetArgument<string>("id");
+                            }
+                            var idType = IdTypeEnum.INTERNAL;
+                            if(ctx.HasArgument("idType"))
+                            {
+                                idType = ctx.GetArgument<IdTypeEnum>("idType");
+                            }
+                            var result = await ctx.Source.CreateElementAsync(
+                                entity,
+                                id,
+                                idType,
+                                useInstanceCreator,
+                                CreateSetters(graphQlClass.Value, ctx));
+                            AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, result.Errors);
+                            return result;
+                        }).ResolvedType = new NonNullGraphType(_types [entity.Id].GraphType);
+                    
+                    mutation.FieldAsync<ObjectGraphType<object>>(
+                        "CreateUpdate" + entity.Name,
+                        $"Create or update a {entity.Name}",
+                        queryArgumentsCreate,
+                        async (ctx) =>
+                        {
+                            var useInstanceCreator = false;
+                            if(ctx.Arguments.ContainsKey("creationMode") && ctx.Arguments ["creationMode"].Value != null)
+                            {
+                                useInstanceCreator = (bool)ctx.Arguments ["creationMode"].Value;
+                            }
+                            string id = null;
+                            if(ctx.Arguments != null && ctx.Arguments.ContainsKey("id") && ctx.Arguments ["id"].Value != null)
+                            {
+                                id = ctx.Arguments ["id"].Value.ToString();
+                            }
+                            var idType = IdTypeEnum.INTERNAL;
+                            if(ctx.Arguments.ContainsKey("idType") && ctx.Arguments ["idType"].Value != null)
+                            {
+                                Enum.TryParse(ctx.Arguments ["idType"].Value.ToString(), out idType);
+                            }
+                            var result = await ctx.Source.CreateUpdateElementAsync(
+                                entity,
+                                id,
+                                idType,
+                                CreateSetters(graphQlClass.Value, ctx),
+                                useInstanceCreator);
+                            AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, result.Errors);
+                            return result;
+                        })
+                    .ResolvedType = new NonNullGraphType(_types [entity.Id].GraphType);
+                    
+                    var updateArguments = new QueryArguments
+                    {
+                        new QueryArgument<NonNullGraphType<StringGraphType>> {Name = "id"},
+                        new QueryArgument(typeof(IdType)) {Name = "idType"},
+                        new QueryArgument(new NonNullGraphType(typeUniqueInput)) { Name = entity.Name.ToCamelCase() }
+                    };
+                    mutation.FieldAsync<ObjectGraphType<object>>(
+                            "Update" + entity.Name,
+                            $"Update a {entity.Name}",
+                            updateArguments,
+                            async ctx => await UpdateElement(ctx, graphQlClass.Value))
+                        .ResolvedType = new NonNullGraphType(_types [entity.Id].GraphType);
+
+
+                    var updateManyArguments = _filterArgumentBuilder.BuildFilterArguments(graphQlClass.Value);
+                    updateManyArguments.Add(
+                        new QueryArgument(new NonNullGraphType(typeInput)) { Name = entity.Name.ToCamelCase() }
+                    );
+
+                    mutation.FieldAsync<ObjectGraphType<object>>(
+                            "UpdateMany" + entity.Name,
+                            $"Update multiple {entity.Name}",
+                            updateManyArguments,
+                            async ctx => await UpdateManyElements(((UserContext)ctx.UserContext ["usercontext"]).IRoot, ctx, graphQlClass.Value))
+                        .ResolvedType = new ListGraphType(_types [entity.Id].GraphType);
+
+                    var deleteArguments = new QueryArguments
+                    {
+                        new QueryArgument<NonNullGraphType<StringGraphType>> {Name = "id"},
+                        new QueryArgument(typeof(IdType)) {Name = "idType"},
+                        new QueryArgument<BooleanGraphType> {Name = "cascade"}
+                    };
+                    mutation.FieldAsync<DeleteType>(
+                        "Delete" + entity.Name,
+                        $"Delete a {entity.Name}",
+                        deleteArguments,
+                        async ctx => await DeleteElement(((UserContext)ctx.UserContext ["usercontext"]).IRoot, ctx, entity));
+
+                    var deleteManyArguments = _filterArgumentBuilder.BuildFilterArguments(graphQlClass.Value);
+                    deleteManyArguments.Add(
+                        new QueryArgument<BooleanGraphType> { Name = "cascade" }
+                    );
+                    mutation.FieldAsync<DeleteType>(
+                            "DeleteMany" + entity.Name,
+                            $"Delete multiple {entity.Name}",
+                            deleteManyArguments,
+                            async ctx => await DeleteManyElements(((UserContext)ctx.UserContext ["usercontext"]).IRoot, ctx, graphQlClass.Value));
                 }
-
-                mutation.FieldAsync<ObjectGraphType<object>>(
-                    "Create" + entity.Name,
-                    $"Create a {entity.Name}",
-                    queryArgumentsCreate,
-                    async (ctx) =>
-                    {
-                        var useInstanceCreator = false;
-                        if (ctx.HasArgument("creationMode"))
-                        {
-                            useInstanceCreator = ctx.GetArgument<bool>("creationMode");
-                        }
-                        string id = null;
-                        if (ctx.HasArgument("id"))
-                        {
-                            id = ctx.GetArgument<string>("id");
-                        }
-                        var idType = IdTypeEnum.INTERNAL;
-                        if (ctx.HasArgument("idType"))
-                        {
-                            idType = ctx.GetArgument<IdTypeEnum>("idType");
-                        }
-                        var result = await ctx.Source.CreateElementAsync(
-                            entity,
-                            id,
-                            idType,
-                            useInstanceCreator,
-                            CreateSetters(entity, ctx));
-                        AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, result.Errors);
-                        return result;
-                    })
-                .ResolvedType = new NonNullGraphType(_types[entity.Id].GraphType);
-
-                mutation.FieldAsync<ObjectGraphType<object>>(
-                    "CreateUpdate" + entity.Name,
-                    $"Create or update a {entity.Name}",
-                    queryArgumentsCreate,
-                    async (ctx) =>
-                    {
-                        var useInstanceCreator = false;
-                        if (ctx.Arguments.ContainsKey("creationMode") && ctx.Arguments["creationMode"].Value != null)
-                        {
-                            useInstanceCreator = (bool)ctx.Arguments["creationMode"].Value;
-                        }
-                        string id = null;
-                        if (ctx.Arguments != null && ctx.Arguments.ContainsKey("id") && ctx.Arguments["id"].Value != null)
-                        {
-                            id = ctx.Arguments["id"].Value.ToString();
-                        }
-                        var idType = IdTypeEnum.INTERNAL;
-                        if (ctx.Arguments.ContainsKey("idType") && ctx.Arguments["idType"].Value != null)
-                        {
-                            Enum.TryParse(ctx.Arguments["idType"].Value.ToString(), out idType);
-                        }
-                        var result = await ctx.Source.CreateUpdateElementAsync(
-                            entity,
-                            id,
-                            idType,
-                            CreateSetters(entity, ctx),
-                            useInstanceCreator);
-                        AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, result.Errors);
-                        return result;
-                    })
-                .ResolvedType = new NonNullGraphType(_types[entity.Id].GraphType);
-
-                var updateArguments = new QueryArguments
-                {
-                    new QueryArgument<NonNullGraphType<StringGraphType>> {Name = "id"},
-                    new QueryArgument(typeof(IdType)) {Name = "idType"},
-                    new QueryArgument(new NonNullGraphType(typeUniqueInput)) { Name = entity.Name.ToCamelCase() }
-                };
-                mutation.FieldAsync<ObjectGraphType<object>>(
-                        "Update" + entity.Name,
-                        $"Update a {entity.Name}",
-                        updateArguments,
-                        async ctx => await UpdateElement(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity))
-                    .ResolvedType = new NonNullGraphType(_types[entity.Id].GraphType);
-
-                var updateManyArguments = new QueryArguments(_filterArguments)
-                {
-                    new QueryArgument(new NonNullGraphType(typeInput)) { Name = entity.Name.ToCamelCase() }
-                };
-                mutation.FieldAsync<ObjectGraphType<object>>(
-                        "UpdateMany" + entity.Name,
-                        $"Update multiple {entity.Name}",
-                        updateManyArguments,
-                        async ctx => await UpdateManyElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity))
-                    .ResolvedType = new ListGraphType(_types[entity.Id].GraphType);
-
-                var deleteArguments = new QueryArguments
-                {
-                    new QueryArgument<NonNullGraphType<StringGraphType>> {Name = "id"},
-                    new QueryArgument(typeof(IdType)) {Name = "idType"},
-                    new QueryArgument<BooleanGraphType> {Name = "cascade"}
-                };
-                mutation.FieldAsync<DeleteType>(
-                    "Delete" + entity.Name,
-                    $"Delete a {entity.Name}",
-                    deleteArguments,
-                    async ctx => await DeleteElement(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity));
-
-                var deleteManyArguments = new QueryArguments(_filterArguments)
-                {
-                    new QueryArgument<BooleanGraphType> {Name = "cascade"}
-                };
-                mutation.FieldAsync<DeleteType>(
-                        "DeleteMany" + entity.Name,
-                        $"Delete multiple {entity.Name}",
-                        deleteManyArguments,
-                        async ctx => await DeleteManyElements(((UserContext)ctx.UserContext["usercontext"]).IRoot, ctx, entity));
             }
 
             return mutation;
         }
 
-        internal void CreateProperties<T>(IEnumerable<IPropertyDescription> properties, IComplexGraphType type, Func<IResolveFieldContext<T>, IPropertyDescription, object> resolver, bool isMutation = false)
+        internal void CreateProperties<T>(IEnumerable<GraphQLPropertyDescription> graphQlProperties, IComplexGraphType type, Func<IResolveFieldContext<T>, IPropertyDescription, object> resolver, bool isMutation = false)
         {
-            foreach (var prop in properties)
+            foreach (var graphQlProperty in graphQlProperties)
             {
-                var propertyName = ToValidName(prop.DisplayName);
+                var prop = graphQlProperty.MetaAttribute;
+                var propertyName = graphQlProperty.Name;
                 var propertyType = TypeExtensions.GetGraphTypeFromType(prop.NativeType);
                 IGraphType resolvedType = null;
 
@@ -916,7 +929,7 @@ namespace Hopex.Modules.GraphQL.Schema
                         Resolver = new FuncFieldResolver<IModelElement, object>(ctx =>
                         {
                             var id = ctx.Source.GetValue<string>(prop);
-                            return id == null ? null : ctx.Source.DomainModel.GetElementByIdAsync(null, id, IdTypeEnum.INTERNAL).Result;
+                            return id == null ? null : ctx.Source.DomainModel.GetElementByIdAsync(_genericClass, id, IdTypeEnum.INTERNAL).Result;
                         })
                     };
                     type.AddField(field);
@@ -991,23 +1004,17 @@ namespace Hopex.Modules.GraphQL.Schema
             }
         }
 
-        private IEnumerable<ISetter> CreateSetters(IClassDescription entity, IResolveFieldContext<IHopexDataModel> ctx = null)
+        private IEnumerable<ISetter> CreateSetters(GraphQLClassDescription graphQlClass, IResolveFieldContext<IHopexDataModel> ctx = null)
         {
-            var arguments = (IDictionary<string, object>)ctx.Arguments[entity.Name.ToCamelCase()].Value;
-            return entity.CreateSetter(arguments);
+            var arguments = (IDictionary<string, object>)ctx.Arguments[graphQlClass.MetaClass.Name.ToCamelCase()].Value;
+            return graphQlClass.CreateSetter(arguments, _graphQlClasses);
         }
 
-        private async Task<IEnumerable<IModelElement>> EnumerateRootElements(IMegaRoot root, IDictionary<string, ArgumentValue> arguments, IHasCollection source, IClassDescription entity, string relationshipName, bool isRoot)
+        private async Task<IEnumerable<IModelElement>> EnumerateRootElements(IMegaRoot root, IDictionary<string, ArgumentValue> arguments, IHasCollection source, GraphQLClassDescription graphQlClass, string relationshipName)
         {
             string erql = null;
             var list = new List<IModelElement>();
             var sourceElement = source as IModelElement;
-            IRelationshipDescription relationship = null;
-
-            if (sourceElement != null)
-            {
-                relationship = sourceElement.ClassDescription.GetRelationshipDescription(relationshipName);
-            }
 
             IMegaObject language = null;
             if (arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject value)
@@ -1015,10 +1022,18 @@ namespace Hopex.Modules.GraphQL.Schema
                 language = value;
             }
 
+            var entity = graphQlClass.MetaClass;
             if (arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
             {
-                var compiler = new FilterCompiler(root, entity, relationship, isRoot ? null : sourceElement);
-                erql = $"SELECT {entity.Id}[{entity.GetBaseName()}]";
+                GraphQLRelationshipDescription graphQlRelationship = null;
+                if(sourceElement != null)
+                {
+                    var type = _types.First(t => t.Value.Description == sourceElement.ClassDescription).Value;
+                    var sourceGraphQlClass = type.GraphQlDescription;
+                    graphQlRelationship = sourceGraphQlClass.Relationships.FirstOrDefault(r => r.Name.Equals(relationshipName, StringComparison.OrdinalIgnoreCase));
+                }
+                var compiler = new FilterCompiler(root, graphQlClass, graphQlRelationship, sourceElement);
+                erql = $"SELECT {entity.Id}[{entity.Name}]";
                 erql += " WHERE " + compiler.CreateHopexQuery(filter, language);
                 Logger.LogInformation($"{erql}");
                 if (root is ISupportsDiagnostics diags)
@@ -1199,19 +1214,18 @@ namespace Hopex.Modules.GraphQL.Schema
             }
         }
 
-        private async Task<IEnumerable<IModelElement>> GetElements(IMegaRoot iRoot, IDictionary<string, ArgumentValue> arguments, IHasCollection source, ExecutionErrors errors, IClassDescription entity, bool isRoot, string linkName = null)
+        private async Task<IEnumerable<IModelElement>> GetElements(IMegaRoot iRoot, IDictionary<string, ArgumentValue> arguments, IHasCollection source, ExecutionErrors errors, GraphQLClassDescription graphQlClass, string linkName = null)
         {
-            //Logger.LogInformation("  SchemaBuilder.GetCollectionMetaPermission start");
+            var entity = graphQlClass.MetaClass;
             var permissions = CrudComputer.GetCollectionMetaPermission(iRoot, entity.Id);
             if (!permissions.IsReadable)
                 return Enumerable.Empty<IModelElement>();
-            //Logger.LogInformation("  SchemaBuilder.GetCollectionMetaPermission terminated");
 
             if (arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
             {
                 foreach (var filteredProperty in filter)
                 {
-                    var property = entity.Properties.FirstOrDefault(x => string.Equals(x.Name, filteredProperty.Key, StringComparison.OrdinalIgnoreCase));
+                    var property = graphQlClass.Properties.FirstOrDefault(x => string.Equals(x.Name, filteredProperty.Key, StringComparison.OrdinalIgnoreCase))?.MetaAttribute;
                     if (property != null && filteredProperty.Value is string valueString && valueString.Length > property.MaxLength)
                     {
                         errors.Add(new ExecutionError($"Value {filteredProperty.Value} for {property.Name} exceeds maximum length of {property.MaxLength}\n"));
@@ -1222,24 +1236,20 @@ namespace Hopex.Modules.GraphQL.Schema
                     return new List<IModelElement>();
                 }
             }
-
-            //Logger.LogInformation("  SchemaBuilder.EnumerateRootElements start");
-            var megaCollection = await EnumerateRootElements(iRoot, arguments, source, entity, linkName, isRoot);
-            //Logger.LogInformation("  SchemaBuilder.EnumerateRootElements terminated");
-
-            return megaCollection;
+            var elements = await EnumerateRootElements(iRoot, arguments, source, graphQlClass, linkName);
+            return elements;
         }
 
-        private async Task<IEnumerable<AggregationQueryType>> GetAggregatedElements(IMegaRoot iRoot, IDictionary<string, Field> subFields, IDictionary<string, ArgumentValue> arguments, IHasCollection source, ExecutionErrors errors, IClassDescription entity, bool isRoot, string linkName = null)
+        private async Task<IEnumerable<AggregationQueryType>> GetAggregatedElements(IMegaRoot iRoot, IDictionary<string, Field> subFields, IDictionary<string, ArgumentValue> arguments, IHasCollection source, ExecutionErrors errors, GraphQLClassDescription graphQlClass, string linkName = null)
         {
-            var megaCollection = await GetElements(iRoot, arguments, source, errors, entity, isRoot, linkName);
+            var megaCollection = await GetElements(iRoot, arguments, source, errors, graphQlClass, linkName);
             var modelElements = megaCollection.ToList();
 
             var aggregatedElement = new AggregationQueryType { AggregationQueryResultType = new AggregationQueryResultType { Count = modelElements.Count() } };
             foreach (var field in subFields.Values)
             {
                 var fieldName = !string.IsNullOrEmpty(field.Alias) ? $"{field.Alias}:{field.Name}" : field.Name;
-                var property = entity.Properties.FirstOrDefault(x => string.Equals(x.Name, field.Name, StringComparison.CurrentCultureIgnoreCase));
+                var property = graphQlClass.Properties.FirstOrDefault(x => string.Equals(x.Name, field.Name, StringComparison.CurrentCultureIgnoreCase))?.MetaAttribute;
                 if (property == null)
                 {
                     throw new ExecutionError($"Field {fieldName} is not queryable.");
@@ -1310,7 +1320,7 @@ namespace Hopex.Modules.GraphQL.Schema
             return new List<AggregationQueryType> { aggregatedElement };
         }
 
-        private async Task<IModelElement> UpdateElement(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
+        private async Task<IModelElement> UpdateElement(IResolveFieldContext<IHopexDataModel> ctx, GraphQLClassDescription graphQlClass)
         {
             string id = null;
             if (ctx.Arguments != null && ctx.Arguments.ContainsKey("id") && ctx.Arguments["id"].Value != null)
@@ -1324,26 +1334,24 @@ namespace Hopex.Modules.GraphQL.Schema
                 Enum.TryParse(ctx.Arguments["idType"].Value.ToString(), out idType);
             }
 
-            var updatedElement = await ctx.Source.UpdateElementAsync(entity, id, idType, CreateSetters(entity, ctx));
+            var updatedElement = await ctx.Source.UpdateElementAsync(graphQlClass.MetaClass, id, idType, CreateSetters(graphQlClass, ctx));
             AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, updatedElement.Errors);
             return updatedElement;
         }
 
-        private async Task<IEnumerable<IModelElement>> UpdateManyElements(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
+        private async Task<IEnumerable<IModelElement>> UpdateManyElements(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, GraphQLClassDescription graphQlClass)
         {
             var updatedElements = new List<IModelElement>();
-
-            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
+            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object>)
             {
-                var objectsToUpdate = GetElements(filter, root, ctx, entity, true, null);
-                foreach (var megaObject in objectsToUpdate)
+                var elementsToUpdate = await GetElements(root, ctx.Arguments, ctx.Source, ctx.Errors, graphQlClass);
+                foreach (var element in elementsToUpdate)
                 {
-                    var updatedElement = await ctx.Source.UpdateElementAsync(entity, megaObject.MegaUnnamedField, IdTypeEnum.INTERNAL, CreateSetters(entity, ctx));
-                    AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, updatedElement.Errors);
-                    updatedElements.Add(updatedElement);
+                    await element.UpdateAsync(CreateSetters(graphQlClass, ctx));
+                    AddRangeExecutionErrors(ctx.FieldAst, ctx.Errors, element.Errors);
+                    updatedElements.Add(element);
                 }
             }
-
             return updatedElements;
         }
 
@@ -1393,13 +1401,13 @@ namespace Hopex.Modules.GraphQL.Schema
             return await ctx.Source.RemoveElementAsync(objectsToDelete, isCascade);
         }
 
-        private async Task<DeleteResultType> DeleteManyElements(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity)
+        private async Task<DeleteResultType> DeleteManyElements(IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, GraphQLClassDescription graphQLClass)
         {
-            var objectsToDelete = new List<IMegaObject>();
+            var objectsToDelete = new List<IModelElement>();
 
-            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object> filter)
+            if (ctx.Arguments.TryGetValue("filter", out var obj) && obj.Value is Dictionary<string, object>)
             {
-                objectsToDelete.AddRange(GetElements(filter, root, ctx, entity, true, null));
+                objectsToDelete.AddRange(await GetElements(root, ctx.Arguments, ctx.Source, ctx.Errors, graphQLClass));
             }
 
             var isCascade = false;
@@ -1411,42 +1419,12 @@ namespace Hopex.Modules.GraphQL.Schema
             return await ctx.Source.RemoveElementAsync(objectsToDelete, isCascade);
         }
 
-        private List<IMegaObject> GetElements(Dictionary<string, object> filter, IMegaRoot root, IResolveFieldContext<IHopexDataModel> ctx, IClassDescription entity, bool isRoot, string linkName)
-        {
-            var sourceElement = ctx.Source as IModelElement;
-            IRelationshipDescription relationship = null;
-            if (sourceElement != null)
-            {
-                relationship = sourceElement.ClassDescription.GetRelationshipDescription(linkName);
-            }
-            IMegaObject language = null;
-            if (ctx.Arguments.TryGetValue("language", out var languageValue) && languageValue.Value is IMegaObject value)
-            {
-                language = value;
-            }
-            var compiler = new FilterCompiler(root, entity, relationship, isRoot ? null : sourceElement);
-            var erql = $"SELECT {entity.Id}[{entity.GetBaseName()}]";
-            erql += " WHERE " + compiler.CreateHopexQuery(filter, language);
-            Logger.LogInformation($"{erql}");
-            if (root is ISupportsDiagnostics diags)
-            {
-                diags.AddGeneratedERQL(erql);
-            }
-            return root.GetSelection(erql).ToList();
-        }
+        
 
-        private void EnrichInterface(IHopexMetaModel hopexSchema, GenericObjectInterface genericObjectInterface)
+        private void EnrichInterface(GenericObjectInterface genericObjectInterface)
         {
-            var genericObjectProperties = hopexSchema.Interfaces
-                .Where(x => x.Id == MetaClassLibrary.GenericObject.Substring(0, 13))
-                .SelectMany(x => x.Properties);
-            var genericObjectSystemProperties = hopexSchema.Interfaces
-                .Where(x => x.Id == MetaClassLibrary.GenericObjectSystem.Substring(0, 13))
-                .SelectMany(x => x.Properties).ToList();
-            var genericObjectInterfaceProperties =
-                genericObjectProperties.Intersect(genericObjectSystemProperties, new PropertyDescriptionComparer());
-
-            CreateProperties<IModelElement>(genericObjectInterfaceProperties, genericObjectInterface, (ctx, prop) =>
+            var graphQlProperties = _genericClass.Properties.Select(p => new GraphQLPropertyDescription(p));
+            CreateProperties<IModelElement>(graphQlProperties, genericObjectInterface, (ctx, prop) =>
             {
                 string format = null;
                 if (ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
@@ -1462,7 +1440,7 @@ namespace Hopex.Modules.GraphQL.Schema
 
                 return result;
             });
-            CreateProperties<IModelElement>(genericObjectInterfaceProperties, genericObjectInterface.WildcardType,
+            CreateProperties<IModelElement>(graphQlProperties, genericObjectInterface.WildcardType,
                 (ctx, prop) =>
                 {
                     string format = null;
@@ -1481,7 +1459,7 @@ namespace Hopex.Modules.GraphQL.Schema
                 });
         }
 
-        private static string ToValidName(string val)
+        public static string ToValidName(string val)
         {
             val = RemoveDiacritics(val);
             var pattern = @"[^a-zA-Z0-9_]";

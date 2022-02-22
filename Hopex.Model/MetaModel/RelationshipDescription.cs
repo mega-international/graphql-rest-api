@@ -11,7 +11,6 @@ namespace Hopex.Model.MetaModel
     internal class RelationshipDescription : IRelationshipDescription
     {
         private readonly Dictionary<string, IPropertyDescription> _properties;
-
         public RelationshipDescription(string id, string reverseId, IClassDescription classDescription, string name, string roleId, string description, bool? isReadOnly)
         {
             Id = id;
@@ -32,17 +31,21 @@ namespace Hopex.Model.MetaModel
         public bool IsReadOnly { get; internal set; }
         public IClassDescription ClassDescription { get; }
         public IEnumerable<IPropertyDescription> Properties => _properties.Values;
-
-        public IClassDescription TargetClass { get; internal set; }
+        public IClassDescription TargetClass => Path.Last().TargetClass;
 
         public virtual IEnumerable<ISetter> CreateSetters(object value)
         {
-            if (value is IDictionary<string, object> dict)
+            if(value is Tuple<object, Func<IClassDescription, IDictionary<string, object>, IEnumerable<ISetter>>> pair)
             {
-                var action = (CollectionAction)Enum.Parse(typeof(CollectionAction), dict["action"].ToString(), true);
-                var list = (IEnumerable<object>)dict["list"];
-                yield return CollectionSetter.Create(this, action, list);
+                if(pair.Item1 is IDictionary<string, object> dict)
+                {
+                    var resolver = pair.Item2;
+                    var action = (CollectionAction)Enum.Parse(typeof(CollectionAction), dict ["action"].ToString(), true);
+                    var list = (IEnumerable<object>)dict ["list"];
+                    yield return CollectionSetter.Create(this, action, list, resolver);
+                }
             }
+            
         }
 
         internal void SetPath(IEnumerable<IPathDescription> pathDescriptions)

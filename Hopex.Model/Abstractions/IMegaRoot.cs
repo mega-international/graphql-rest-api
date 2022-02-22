@@ -47,6 +47,7 @@ namespace Hopex.Model.Abstractions
         string MegaUnnamedField { get; }
         bool IsConfidential { get; }
         bool IsAvailable { get; }
+        IMegaObject Relationship { get; }
 
         MegaId GetClassId();
         IMegaObject GetPhysicalType();

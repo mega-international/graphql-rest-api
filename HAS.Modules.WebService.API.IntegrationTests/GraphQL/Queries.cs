@@ -18,17 +18,20 @@ namespace HAS.Modules.WebService.API.IntegrationTests.GraphQL
                     application2:createApplication(application:{name:""Name of the application 2""}){ name }
                     softwareTechnology1:createSoftwareTechnology(softwareTechnology:{name:""Name of the software technology 1""}){ id name }
                     softwareTechnology2:createSoftwareTechnology(softwareTechnology:{name:""Name of the software technology 2""}){ id name }
+                    softwareTechnology3:createSoftwareTechnology(softwareTechnology:{name:""Name of the software technology 3""}){ id name }
                 }",
                 new List<Expectation>
                 {
                     new Expectation(@"""Name of the application 1""", res => res.Data.application1.name),
                     new Expectation(@"""Name of the application 2""", res => res.Data.application2.name),
                     new Expectation(@"""Name of the software technology 1""", res => res.Data.softwareTechnology1.name),
-                    new Expectation(@"""Name of the software technology 2""", res => res.Data.softwareTechnology2.name)
+                    new Expectation(@"""Name of the software technology 2""", res => res.Data.softwareTechnology2.name),
+                    new Expectation(@"""Name of the software technology 3""", res => res.Data.softwareTechnology3.name)
                 });
             var applicationId1 = response.Data.application1.id;
             var softwareTechnologyId1 = response.Data.softwareTechnology1.id;
             var softwareTechnologyId2 = response.Data.softwareTechnology2.id;
+            var softwareTechnologyId3 = response.Data.softwareTechnology3.id;
 
             response = await SendQuery($@"mutation updateApplication
                         {{
@@ -38,7 +41,7 @@ namespace HAS.Modules.WebService.API.IntegrationTests.GraphQL
                                 {{
                                     softwareTechnology_UsedTechnology:
                                     {{
-                                        action:ADD list:[{{id:""{softwareTechnologyId1}""}}, {{id:""{softwareTechnologyId2}""}}]
+                                        action:ADD list:[{{id:""{softwareTechnologyId1}""}}, {{id:""{softwareTechnologyId2}""}}, {{id:""{softwareTechnologyId3}""}}]
                                     }}
                                 }})
                             {{id name}}
@@ -57,10 +60,10 @@ namespace HAS.Modules.WebService.API.IntegrationTests.GraphQL
             var response = await SendQuery(query);
             EnsureNoError(response);
             int count = response.Data.deleteApplication?.deletedCount;
-            count.Should().BeGreaterOrEqualTo(0);
+            count.Should().BeOneOf(0, 2);
 
             count = response.Data.deleteSoftwareTechnology?.deletedCount;
-            count.Should().BeGreaterOrEqualTo(0);
+            count.Should().BeOneOf(0, 3);
         }
 
         [Test]
@@ -87,8 +90,28 @@ namespace HAS.Modules.WebService.API.IntegrationTests.GraphQL
                         }
                     }
                 }",
-                "2",
+                "3",
                 response => response.Data.application[0].softwareTechnology_UsedTechnologyAggregatedValues[0].id);
+        }
+
+        [Test]
+        public async Task Query_link_attributes()
+        {
+            await EnsureSuccessAndExpected(@"query application_softwareTechnology
+                {
+                    application(filter:{name:""Name of the Application 1""})
+                    {
+                        softwareTechnology_UsedTechnology
+                        {
+                            order, linkComment
+                        }
+                    }
+                }",
+                new List<Expectation>
+                {
+                    new Expectation(@"9999", res => res.Data.application[0].softwareTechnology_UsedTechnology[0].order),
+                    new Expectation(@"""""", res => res.Data.application[0].softwareTechnology_UsedTechnology[0].linkComment)
+                });
         }
     }
 }

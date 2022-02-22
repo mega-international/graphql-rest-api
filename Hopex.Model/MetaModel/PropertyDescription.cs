@@ -14,9 +14,8 @@ namespace Hopex.Model.MetaModel
         private List<IEnumDescription> _enumValues;
         private string _propertyTypeName;
 
-        public PropertyDescription(IClassDescription classDescription, string name, string id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isUnique, bool? isTranslatable = false, bool? isFormattedText = false, int? maxLength = null, string displayName = null, PropertyScope scope=PropertyScope.Class)
+        public PropertyDescription(string name, string id, string description, string propertyType, bool? isRequired, bool? isReadOnly, bool? isUnique, bool? isTranslatable = false, bool? isFormattedText = false, int? maxLength = null, PropertyScope scope=PropertyScope.Class)
         {
-            Owner = classDescription;
             Name = name;
             Scope = scope;
             Id = Utils.NormalizeHopexId(id);
@@ -28,7 +27,6 @@ namespace Hopex.Model.MetaModel
             IsTranslatable = isTranslatable == true;
             IsFormattedText = isFormattedText == true;
             MaxLength = maxLength;
-            DisplayName = displayName ?? Name;
             Constraints = new List<IConstraintDescription>();
         }
 
@@ -59,10 +57,8 @@ namespace Hopex.Model.MetaModel
         public bool IsTranslatable { get; internal set; }
         public bool IsFormattedText { get; internal set; }
         public int? MaxLength { get; internal set; }
-        public IClassDescription Owner { get; }
         public string SetterFormat { get; internal set; }
         public string GetterFormat { get; internal set; }
-        public string DisplayName { get; internal set; }
 
         internal string PropertyTypeName
         {

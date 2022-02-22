@@ -8,7 +8,7 @@ namespace Hopex.Modules.GraphQL
     public static class Utils
     {
         public static bool IsRunningInHAS => Environment.GetEnvironmentVariable("HOPEX_INSTANCE_DIRECTORY") != null;
-        public static string HASCustomSchemasFolder => Path.Combine(Environment.GetEnvironmentVariable("HOPEX_CUSTOM_RESOURCE_DIRECTORY"), "Schemas");
+        public static string HASCustomSchemasFolder => Path.Combine(Environment.GetEnvironmentVariable("HOPEX_CUSTOM_RESOURCE_DIRECTORY"), "hopex.graphql\\CONFIG");
 
         public static string GetEnvironmentId(IHopexContext hopexContext)
         {

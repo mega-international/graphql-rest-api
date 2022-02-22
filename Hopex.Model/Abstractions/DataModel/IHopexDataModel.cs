@@ -17,20 +17,18 @@ namespace Hopex.Model.Abstractions.DataModel
     public interface IHasCollection
     {
         Task<IModelCollection> GetCollectionAsync(string name, string relationshipName, GetCollectionArguments getCollectionArguments);
-        IHopexMetaModel MetaModel { get; }
     }
 
     public interface IHopexDataModel : IHasCollection
     {
         Dictionary<string, IModelElement> TemporaryMegaObjects { get; }
-
+        Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx, IClassDescription genericClass);
         Task<IModelElement> GetElementByIdAsync(IClassDescription schema, string id, IdTypeEnum idType);
-        Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx);
         Task<IModelElement> CreateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters);
-        Task<IModelElement> CreateElementFromParentAsync(IClassDescription target, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters, IMegaCollection iColParent);
         Task<IModelElement> UpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters);
-        Task<IModelElement> UpdateElementAsync(IModelElement element, IEnumerable<ISetter> setters);
         Task<IModelElement> CreateUpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters, bool useInstanceCreator);
-        Task<DeleteResultType> RemoveElementAsync(List<IMegaObject> objectsToDelete, bool isCascade = false);
+        Task<DeleteResultType> RemoveElementAsync(IEnumerable<IMegaObject> objectsToDelete, bool isCascade = false);
+        Task<DeleteResultType> RemoveElementAsync(IEnumerable<IModelElement> elementsToDelete, bool isCascade = false);
+        IModelElement BuildElement(IMegaObject megaObject, IClassDescription entity, IModelElement parent = null);
     }
 }

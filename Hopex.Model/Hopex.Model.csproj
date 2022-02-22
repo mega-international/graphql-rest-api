@@ -4,6 +4,7 @@
         <OutputType>Library</OutputType>
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>Hopex.Model</RootNamespace>
+					<LangVersion>9</LangVersion>
         <AssemblyName>Hopex.Model</AssemblyName>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
@@ -17,7 +18,6 @@
         <Copyright>Copyright $(Company), All rights reserved.</Copyright>
         <InformationalVersion>$(FileVersion)</InformationalVersion>
         <Version>$(FileVersion)</Version>
-        <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <!-- Fin MEGA -->
@@ -25,7 +25,7 @@
     <ItemGroup>
         <PackageReference Include="GraphQL" Version="4.6.1" />
         <PackageReference Include="GraphQL-Parser" Version="7.2.0" />
-        <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="15.0.0.160" />
+        <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="15.2.0.8" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.12" />

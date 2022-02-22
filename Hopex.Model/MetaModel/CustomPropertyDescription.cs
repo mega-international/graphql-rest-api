@@ -1,17 +1,14 @@
 using Hopex.Model.Abstractions.DataModel;
-using Hopex.Model.Abstractions.MetaModel;
 using System.Collections.Generic;
 
 namespace Hopex.Model.MetaModel
 {
-    internal class CustomPropertyDescription : IFieldDescription
+    internal class CustomPropertyDescription : PropertyDescription
     {
-        private readonly IClassDescription _classDescription = null;
-        public CustomPropertyDescription(IClassDescription classDescription)
-        {
-            _classDescription = classDescription;
-        }
-        public IEnumerable<ISetter> CreateSetters(object value)
+        public CustomPropertyDescription(string propId) : base(propId, Utils.NormalizeHopexId(propId), "", "string", null, null, null)
+        {}
+
+        public override IEnumerable<ISetter> CreateSetters(object value)
         {
             foreach (var customPropertySetter in CustomFieldSetter.CreateSetters(value))
             {

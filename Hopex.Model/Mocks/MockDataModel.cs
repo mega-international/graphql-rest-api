@@ -1,3 +1,4 @@
+using GraphQL;
 using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
@@ -8,8 +9,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Types;
-using GraphQL;
 
 namespace Hopex.Model.Mocks
 {
@@ -62,8 +61,7 @@ namespace Hopex.Model.Mocks
             var coll = await GetCollectionAsync(schema.Name) as MockModelCollection;
             var elem = CreateElement(schema, cx++);
             coll.Add(elem);
-            await UpdateAsync(elem, setters);
-            return elem;
+            return await elem.UpdateAsync(setters);
         }
 
         public async Task<IModelElement> CreateElementFromParentAsync(IClassDescription schema, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters, IMegaCollection iColParent)
@@ -71,66 +69,12 @@ namespace Hopex.Model.Mocks
             return await CreateElementAsync(schema, id, idType, useInstanceCreator, setters);
         }
 
-        private async Task UpdateAsync(IModelElement elem, IEnumerable<ISetter> setters)
-        {
-            if (setters == null)
-            {
-                return;
-            }
-
-            foreach (ISetter setter in setters)
-            {
-                if (setter is PropertySetter ps)
-                {
-                    await setter.UpdateElementAsync(this, elem);
-                }
-                else if (setter is CollectionSetter cs)
-                {
-                    IRelationshipDescription link = cs.RelationshipDescription;
-                    var collection = await ((MockDataElement)elem).GetCollectionAsync(link.Name, null) as MockModelCollection;
-                    var targeSchema = MetaModel.GetClassDescription(link.Path.Last().TargetSchemaName);
-
-                    var elements = cs.ListElement.Cast<Dictionary<string, object>>();
-
-                    switch (cs.Action)
-                    {
-                        case CollectionAction.ReplaceAll:
-                            collection.Clear();
-                            goto case CollectionAction.Add;
-
-                        case CollectionAction.Add:
-                            foreach (var element in elements)
-                            {
-                                var e = await GetElementByIdAsync(targeSchema, element["id"].ToString(), IdTypeEnum.INTERNAL);
-                                if (e == null)
-                                {
-                                    throw new Exception($"Invalid {element["id"]} when adding a new relationship");
-                                }
-                                collection.Add(e);
-                            }
-                            break;
-                        case CollectionAction.Remove:
-                            foreach (var element in elements)
-                            {
-                                var e = await GetElementByIdAsync(targeSchema, element["id"].ToString(), IdTypeEnum.INTERNAL);
-                                collection.Remove(e.Id, true);
-                            }
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-
         public async Task<IModelElement> CreateUpdateElementAsync(IClassDescription schema, string id, IdTypeEnum idType, IEnumerable<ISetter> setters, bool useInstanceCreator)
         {
             var coll = await GetCollectionAsync(schema.Name) as MockModelCollection;
             var elem = CreateElement(schema, cx++);
             coll.Add(elem);
-            await UpdateAsync(elem, setters);
-            return elem;
+            return await elem.UpdateAsync(setters);
         }
 
         public Task<IModelCollection> GetCollectionAsync(string name, string relationshipName, GetCollectionArguments getCollectionArguments)
@@ -144,7 +88,7 @@ namespace Hopex.Model.Mocks
             return Task.FromResult<IModelCollection>(_collections.GetOrAdd(schema.Name, _ => new MockModelCollection(this, schema)));
         }
 
-        public Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx)
+        public Task<List<IModelElement>> SearchAllAsync(IResolveFieldContext<IHopexDataModel> ctx, IClassDescription genericClass)
         {
             var collection = _elements.Select(modelElement => modelElement.Value).ToList();
             return Task.FromResult(collection);
@@ -184,18 +128,42 @@ namespace Hopex.Model.Mocks
         {
             var elem = await GetElementByIdAsync(schema, id, IdTypeEnum.INTERNAL);
             if (elem == null) throw new Exception("Not found");
-            return await UpdateElementAsync(elem, setters);
-        }
-
-        public async Task<IModelElement> UpdateElementAsync(IModelElement element, IEnumerable<ISetter> setters)
-        {
-            await UpdateAsync(element, setters);
-            return element;
+            return await elem.UpdateAsync(setters);
         }
 
         public void Dispose()
         {
             // do nothing for making asserts
+        }
+
+        public Task<DeleteResultType> RemoveElementAsync(IEnumerable<IMegaObject> objectsToDelete, bool isCascade = false)
+        {
+            var removedElementCount = 0;
+            foreach(var item in objectsToDelete)
+            {
+                if(_collections.TryGetValue("", out var collections))
+                {
+                    if(collections.Remove(item.Id, isCascade))
+                    {
+                        removedElementCount++;
+                    }
+                }
+            }
+            return Task.FromResult(new DeleteResultType { DeletedCount = removedElementCount });
+        }
+
+        public Task<DeleteResultType> RemoveElementAsync(IEnumerable<IModelElement> elementsToDelete, bool isCascade = false)
+        {
+            return RemoveElementAsync(elementsToDelete.Select(e => e.IMegaObject).ToList(), isCascade);
+        }
+
+        public IModelElement BuildElement(IMegaObject megaObject, IClassDescription entity, IModelElement parent = null)
+        {
+            if(entity == null)
+            {
+                throw new NullReferenceException("entity is null");
+            }
+            return new MockDataElement(this, entity);
         }
     }
 }

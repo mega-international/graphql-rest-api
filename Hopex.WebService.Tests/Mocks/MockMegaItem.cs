@@ -11,6 +11,18 @@ namespace Hopex.WebService.Tests.Mocks
 
         public virtual IMegaRoot Root { get; set; }
 
+        protected MockMegaItem()
+        {
+
+        }
+
+        protected MockMegaItem(MockMegaItem toClone)
+        {
+            _objectCrud = toClone._objectCrud;
+            _typeObject = toClone._typeObject;
+            Root = toClone.Root;
+        }
+
         internal MockMegaItem WithObjectCrud(string crud)
         {
             _objectCrud = crud;

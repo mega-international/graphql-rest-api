@@ -1,7 +1,6 @@
-using GraphQL;
 using GraphQL.Types;
-
 using Hopex.Model.Abstractions.MetaModel;
+using Hopex.Modules.GraphQL.Schema.GraphQLSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,14 +25,15 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
         internal Dictionary<string, FilterItem> Filters { get; } = new Dictionary<string, FilterItem>();
 
-        public QueryArguments BuildFilterArguments(IClassDescription clazz, HopexEnumerationGraphType languagesType, IEnumerable<IPropertyDescription> linkProperties = null)
+        public QueryArguments BuildFilterArguments(GraphQLClassDescription graphQlClass)
         {
             var arguments = new QueryArguments();
-            return AddFilterArguments(arguments, clazz, languagesType, linkProperties);
+            return AddFilterArguments(arguments, graphQlClass);
         }
 
-        public QueryArguments AddFilterArguments(QueryArguments arguments, IClassDescription clazz, HopexEnumerationGraphType languagesType, IEnumerable<IPropertyDescription> linkProperties = null)
+        public QueryArguments AddFilterArguments(QueryArguments arguments, GraphQLClassDescription graphQlClass)
         {
+            var clazz = graphQlClass.MetaClass;
             var filterItem = GetOrCreateFilterObject(clazz.Name);
             arguments.Add(new QueryArgument(filterItem.Filter) { Name = "filter" });
             arguments.Add(new QueryArgument(new ListGraphType(filterItem.OrderBy)) { Name = "orderBy" });
@@ -59,14 +59,10 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
                 ResolvedType = new ListGraphType(new NonNullGraphType(filter))
             });
 
-            var properties = clazz.Properties;
-            if (linkProperties != null)
+            foreach (var graphQlProperty in graphQlClass.Properties)
             {
-                properties = properties.Concat(linkProperties);
-            }
-            foreach (var prop in properties)
-            {
-                var propName = prop.DisplayName.ToCamelCase();
+                var prop = graphQlProperty.MetaAttribute;
+                var propName = graphQlProperty.Name;
                 var graphType = TypeExtensions.GetGraphTypeFromType(prop.NativeType);
                 var typeList = typeof(ListGraphType<>).MakeGenericType(typeof(NonNullGraphType<>).MakeGenericType(graphType));
 
@@ -84,12 +80,13 @@ namespace Hopex.Modules.GraphQL.Schema.Filters
 
                 AddFieldsToFilter(filter, prop.Id, propName, prop.PropertyType, graphType, typeList, resolvedType, resolvedListType);
 
-                enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(prop.Name).Id, 1));
-                enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string, int>(prop.Owner.GetPropertyDescription(prop.Name).Id, -1));
+                enumOrderBy.AddValue($"{propName}_ASC", $"Order by {prop.Name} ascending", new Tuple<string, int>(prop.Id, 1));
+                enumOrderBy.AddValue($"{propName}_DESC", $"Order by {prop.Name} descending", new Tuple<string, int>(prop.Id, -1));
             }
 
-            foreach (var rel in clazz.Relationships)
+            foreach (var graphQlRelationship in graphQlClass.Relationships)
             {
+                var rel = graphQlRelationship.MetaAssociation;
                 var targetId = rel.Path.Last().TargetSchemaId;
                 var targetName = _schemaBuilder.HopexSchema.Classes.Where(x => x.Id == targetId).Select(x =>x.Name).FirstOrDefault();
                 var defaultTargetFilter = new InputObjectGraphType<object> { Name = $"{targetName}Filter" };

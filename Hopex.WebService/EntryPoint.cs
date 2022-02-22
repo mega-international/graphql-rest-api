@@ -141,7 +141,27 @@ namespace Hopex.Modules.GraphQL
                     }
                     if ((result?.Operation?.OperationType ?? OperationType.Query) == OperationType.Mutation)
                     {
-                        PublishSession();
+                        var rollbackMode = false;
+                        if(HopexContext.Request.Headers.TryGetValue("x-hopex-force-rollback-session", out var rollbackHeader))
+                        {
+                            if(rollbackHeader.Length > 0)
+                            {
+                                if(!bool.TryParse(rollbackHeader[0], out rollbackMode))
+                                {
+                                    //si ça foire, on force à false même si c'est déjà sa valeur initiale,
+                                    //on sait jamais si rollbackMode est modifié dans le try
+                                    rollbackMode = false; 
+                                }
+                            }
+                        }
+                        if(rollbackMode)
+                        {
+                            RollbackSession();
+                        }
+                        else
+                        {
+                            PublishSession();
+                        }
                     }
                     (root as IDisposable)?.Dispose();
                 }
@@ -177,6 +197,11 @@ namespace Hopex.Modules.GraphQL
             {
                 //PropertyCache.ResetCache();
             }
+        }
+
+        protected void RollbackSession()
+        {
+            GetMegaRoot().CallFunctionString("~lcE6jbH9G5cK", "{\"instruction\":\"ROLLBACK\"}");
         }
 
         protected virtual void PublishSession()

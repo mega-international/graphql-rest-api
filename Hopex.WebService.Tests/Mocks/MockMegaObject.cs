@@ -48,7 +48,15 @@ namespace Hopex.WebService.Tests.Mocks
     [DebuggerDisplay("MockMegaObject {MegaField}")]
     public class MockMegaObject : MockMegaItem, IMegaObject
     {
+        public IMegaDrawing _drawing;
+        private readonly MegaId _classId;
+        private readonly Dictionary<MegaId, object> _properties = new Dictionary<MegaId, object>(new MegaIdComparer());
+        private readonly Dictionary<MegaId, MockMegaAttribute> _translatedProperties = new Dictionary<MegaId, MockMegaAttribute>(new MegaIdComparer());
+        private readonly Dictionary<MegaId, MockMegaCollection> _links = new Dictionary<MegaId, MockMegaCollection>(new MegaIdComparer());
+        private bool _isConfidential;
+
         public MegaId Id { get; internal set; }
+        public MockMegaCollection Collection { get; set; } //Collection contextuelle dont provient l'objet si ce n'est pas la racine
 
         public virtual string MegaField => Id == null ? "~000000000000[<Unknown Mock Object>]" : MegaIdConverter.ToField(Id);
 
@@ -60,26 +68,32 @@ namespace Hopex.WebService.Tests.Mocks
 
         public virtual bool Exists => true;
 
-        public IMegaDrawing _drawing;
-
-        private MegaId _classId;
-
-        private Dictionary<MegaId, object> _properties = new Dictionary<MegaId, object>(new MegaIdComparer());
-        private Dictionary<MegaId, MockMegaAttribute> _translatedProperties = new Dictionary<MegaId, MockMegaAttribute>(new MegaIdComparer());
-        private Dictionary<MegaId, MockMegaCollection> _links = new Dictionary<MegaId, MockMegaCollection>(new MegaIdComparer());
-        private bool _isConfidential;
+        public IMegaObject Relationship => Collection?.Source;
 
         public MockMegaObject(MegaId id, MegaId classId = null)
         {
             Id = id;
             _classId = classId ?? MegaId.Create("000000000000");
             var id64 = id == null ? null : MegaIdConverter.To64(id);
-            _properties["~310000000D00[Absolute Identifier]"] = new MegaPropertyWithFormat(id64);
+            _properties ["~310000000D00[Absolute Identifier]"] = new MegaPropertyWithFormat(id64);
         }
 
         public MockMegaObject(string id)
-            :this(MegaId.Create(id), null)
+            :this(MegaId.Create(id))
         {
+        }
+
+        public MockMegaObject(MockMegaObject toClone) : base(toClone)
+        {
+            Id = toClone.Id;
+            Collection = toClone.Collection;
+
+            _drawing = toClone._drawing;
+            _classId = toClone._classId;
+            _properties = toClone._properties;
+            _translatedProperties = toClone._translatedProperties;
+            _links = toClone._links;
+            _isConfidential = toClone._isConfidential;
         }
 
         public MockMegaObject()
@@ -127,8 +141,14 @@ namespace Hopex.WebService.Tests.Mocks
 
         internal MockMegaObject WithRelation(MockMegaCollection col)
         {
-            _links.Add(col.Id, col);
+            AddLink(col);
             return this;
+        }
+
+        private void AddLink(MockMegaCollection col)
+        {
+            col.Source = this;
+            _links.Add(col.Id, col);
         }
 
         internal MockMegaObject WithConfidentiality()
@@ -143,7 +163,7 @@ namespace Hopex.WebService.Tests.Mocks
             if(!_links.TryGetValue(linkId, out var collection))
             {
                 collection = new MockMegaCollection(linkId) { Root = this.Root };
-                _links.Add(linkId, collection);
+                AddLink(collection);
             }
             return collection;
         }
@@ -216,6 +236,18 @@ namespace Hopex.WebService.Tests.Mocks
 
         public IMegaObject GetPhysicalType()
         {
+            return this;
+        }
+
+        public MockMegaObject FromCollection(MockMegaCollection collection)
+        {
+            Collection = collection;
+            return this;
+        }
+
+        public MockMegaObject FromRoot()
+        {
+            Collection = null;
             return this;
         }
     }

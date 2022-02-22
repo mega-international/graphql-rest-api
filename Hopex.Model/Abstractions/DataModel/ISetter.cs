@@ -1,12 +1,10 @@
-using System.Threading.Tasks;
 using Hopex.Model.Abstractions.MetaModel;
+using System.Threading.Tasks;
 
 namespace Hopex.Model.Abstractions.DataModel
 {
     public interface ISetter
     {
-        IPropertyDescription PropertyDescription { get; }
-        object Value { get; }
         Task UpdateElementAsync(IHopexDataModel model, IModelElement element);
     }
 }

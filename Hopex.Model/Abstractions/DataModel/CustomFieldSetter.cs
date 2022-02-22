@@ -1,21 +1,18 @@
 using Hopex.Model.MetaModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hopex.Model.Abstractions.MetaModel;
 
 namespace Hopex.Model.Abstractions.DataModel
 {
-    public class CustomFieldSetter : ISetter
+    internal class CustomFieldSetter : ISetter
     {
-        public string PropertyId { get; internal set; }
-        public IPropertyDescription PropertyDescription { get; }
-        public object Value { get; }
+        private readonly CustomPropertyDescription _property;
+        private readonly object _value;
 
-        public CustomFieldSetter(string propertyId, string value, IPropertyDescription propertyDescription = null)
+        private CustomFieldSetter(CustomPropertyDescription property, string value)
         {
-            PropertyId = propertyId;
-            PropertyDescription = propertyDescription;
-            Value = value;
+            _property = property;
+            _value = value;
         }
 
         public static IEnumerable<ISetter> CreateSetters(object values)
@@ -26,17 +23,17 @@ namespace Hopex.Model.Abstractions.DataModel
                 var dict = (Dictionary<string, object>)prop;
                 var propertyId = dict["id"].ToString();
                 var value = dict["value"].ToString();
-                yield return new CustomFieldSetter(propertyId, value);
+                var property = new CustomPropertyDescription(propertyId)
+                {
+                    SetterFormat = "ASCII"
+                };
+                yield return new CustomFieldSetter(property, value);
             }
         }
 
         public Task UpdateElementAsync(IHopexDataModel _, IModelElement element)
         {
-            var propertyDescription = new PropertyDescription(element.ClassDescription, PropertyId, PropertyId, "", "string", null, null, null)
-            {
-                SetterFormat = "ASCII"
-            };
-            element.SetValue(propertyDescription, Value);
+            element.SetValue(_property, _value);
             return Task.CompletedTask;
         }
     }

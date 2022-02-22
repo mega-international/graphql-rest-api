@@ -2,7 +2,7 @@ using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.MetaModel;
 using Hopex.Model.PivotSchema.Models;
-
+using Mega.Macro.API.Library;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,7 @@ namespace Hopex.Model.PivotSchema.Convertors
     {
         private readonly ValidationContext _validationContext;
         private Dictionary<string, PivotEntityHasProperties> _interfaces;
+        private const string _interfaceLinkAttributesName = "relationship";
 
         public PivotConvertor(ValidationContext validationContext)
         {
@@ -29,10 +30,10 @@ namespace Hopex.Model.PivotSchema.Convertors
         public async Task<IHopexMetaModel> ConvertAsync(IHopexMetaModelManager schemaManager, Models.PivotSchema pivot, SchemaReference origin)
         {
             IHopexMetaModel parent = null;
-            if (pivot.OverrideSchema != null)
+            if(pivot.OverrideSchema != null)
             {
                 parent = await schemaManager.GetMetaModelAsync(new SchemaReference { SchemaName = pivot.OverrideSchema, Version = origin.Version, IgnoreCustom = true }, _validationContext);
-                if (parent == null)
+                if(parent == null)
                 {
                     _validationContext.AddValidationError($"{pivot.OverrideSchema} is not a valid schema to override");
                 }
@@ -42,26 +43,28 @@ namespace Hopex.Model.PivotSchema.Convertors
                 parent,
                 pivot.Name ?? parent?.Name);
 
-            if (parent != null)
+            if(parent != null)
             {
                 // Include parent classes
-                foreach (ClassDescription cls in parent.Classes)
+                foreach(ClassDescription cls in parent.Classes)
                 {
                     schema.AddClass(cls.Clone(schema));
                 }
-                foreach (ClassDescription cls in parent.Interfaces)
+                foreach(ClassDescription cls in parent.Interfaces)
                 {
                     schema.AddInterface(cls.Clone(schema));
                 }
             }
             _interfaces = new Dictionary<string, PivotEntityHasProperties>(StringComparer.InvariantCultureIgnoreCase);
-            if (pivot.Interfaces != null) // = abstractClass
+
+            //Chargement des interfaces
+            if(pivot.Interfaces != null) // = abstractClass
             {
-                foreach (var clazz in pivot.Interfaces)
+                foreach(var clazz in pivot.Interfaces)
                 {
                     _validationContext.ValidateClass(clazz);
 
-                    if (!(schema.GetInterfaceDescription(clazz.Name, false) is ClassDescription existing))
+                    if(!(schema.GetInterfaceDescription(clazz.Name, false) is ClassDescription existing))
                     {
                         existing = new ClassDescription(schema, clazz.Name, clazz.Id, clazz.Description, clazz.Constraints?.IsEntryPoint == true);
                         schema.AddInterface(existing);
@@ -71,21 +74,25 @@ namespace Hopex.Model.PivotSchema.Convertors
                     {
                         existing.Description = clazz.Description ?? existing.Description;
                     }
-                    if (clazz.Properties != null)
+                    if(clazz.Properties != null)
                     {
                         ReadProperties(clazz.Properties, existing);
                     }
 
-                    ReadRelationships(clazz, existing, pivot.Classes);
+                    ReadRelationships(clazz.Relationships, existing, schema);
                 }
             }
 
-            // Then merge attributes
-            foreach (var clazz in pivot.Classes)
+            // Chargement de la classe générique
+            CreateGenericClass(schema);
+
+            // Chargement des classes
+            foreach(var clazz in pivot.Classes)
             {
                 _validationContext.ValidateClass(clazz);
 
-                if (!(schema.GetClassDescription(clazz.Name, false) is ClassDescription existing))
+                //Création de la classe, si elle existe on écrase quelques attributs
+                if(!(schema.GetClassDescription(clazz.Name, false) is ClassDescription existing))
                 {
                     existing = new ClassDescription(schema, clazz.Name, clazz.Id, clazz.Description, clazz.Constraints?.IsEntryPoint == true);
                     schema.AddClass(existing);
@@ -94,54 +101,71 @@ namespace Hopex.Model.PivotSchema.Convertors
                 {
                     existing.Description = clazz.Description ?? existing.Description;
                 }
-                if (clazz.Properties != null)
-                {
-                    ReadProperties(clazz.Properties, existing);
-                }
 
-                if (clazz.Implements != null)
+                //Chargement des properties basiques
+                ReadProperties(clazz.Properties, existing);
+
+                //On ajoute les propriétés de l'interface mère pour faire l'héritage
+                if(clazz.Implements != null)
                 {
-                    if (_interfaces.TryGetValue(clazz.Implements, out var intf) && intf.Properties != null)
+                    if(_interfaces.TryGetValue(clazz.Implements, out var intf) && intf.Properties != null)
                     {
                         // TODO pour éviter les doublons avec les interfaces
                         // Normalement ce ne devrait pas être le cas soit la propriété est décrite
                         // dans l'interface, soit dans la classe
                         var properties = intf.Properties.Where(p =>
-                                    existing.GetPropertyDescription(p.Name, false) == null);
+                                    existing.GetPropertyDescription(p.Name, false) == null).ToList();
                         ReadProperties(properties, existing);
                     }
                 }
             }
-            foreach (var clazz in pivot.Classes)
+
+            //Chargement des relationships
+            foreach(var clazz in pivot.Classes)
             {
                 var existing = schema.GetClassDescription(clazz.Name) as ClassDescription;
-                ReadRelationships(clazz, existing, pivot.Classes);
+                ReadRelationships(clazz.Relationships, existing, schema);
             }
 
-            if (_validationContext.HasError)
+            if(_validationContext.HasError)
             {
                 throw new ValidationException(_validationContext);
             }
             return schema;
         }
 
-        private void ReadRelationships(PivotClassDescription clazz, ClassDescription cd, PivotClassDescription[] clazzes)
+        private void CreateGenericClass(HopexMetaModel schema)
         {
-            if (clazz.Relationships == null)
+            var genericClass = new GenericClassDescription(schema);
+            schema.AddClass(genericClass);
+
+            var genericObjectProperties = schema.Interfaces
+                .Where(x => x.Id == MetaClassLibrary.GenericObject.Substring(0, 13))
+                .SelectMany(x => x.Properties);
+            var genericObjectSystemProperties = schema.Interfaces
+                .Where(x => x.Id == MetaClassLibrary.GenericObjectSystem.Substring(0, 13))
+                .SelectMany(x => x.Properties).ToList();
+            var properties = genericObjectProperties.Intersect(genericObjectSystemProperties, new PropertyDescriptionComparer());
+
+            foreach(var property in properties)
+            {
+                genericClass.AddProperty(property);
+            }
+        }
+
+        private void ReadRelationships(PivotRelationshipDescription[] relationships, ClassDescription cd, IHopexMetaModel metaModel)
+        {
+            if (relationships == null)
             {
                 return;
             }
-
-            // All classes targeting by a relationship inherits the default
-            // relationship properties
-            var saw = new HashSet<string>(); // Ensure to add default properties only once
-
-            foreach (PivotRelationshipDescription rel in clazz.Relationships)
+            var interfaceLinkAttributes = _interfaces[_interfaceLinkAttributesName];
+            foreach (PivotRelationshipDescription rel in relationships)
             {
-                string roleId = rel.Path[0].RoleId;
                 //Si la relation n'a pas été traitée, on la créé et l'ajoute
                 if(!(cd.GetRelationshipDescription(rel.Name, false) is RelationshipDescription existing))
                 {
+                    string roleId = rel.Path [0].RoleId;
                     existing = new RelationshipDescription(rel.Id, rel.ReverseId, cd, rel.Name, roleId, rel.Description, rel.Constraints?.IsReadOnly);
                     cd.AddRelationship(existing);
                 }
@@ -151,66 +175,25 @@ namespace Hopex.Model.PivotSchema.Convertors
                     existing.Description = rel.Description ?? existing.Description;
                     existing.IsReadOnly = rel.Constraints?.IsReadOnly ?? existing.IsReadOnly;
                 }
-                var targetClass = cd.MetaModel.FindClassDescriptionById(rel.Path.Last().MetaClassId);
-                // TODO BUG dans json Implements est tjs null
-                rel.Implements = "relationship"; // A virer qd le json est bon
-                // END bug
-                //On ajoute les attributs de lien (linkXXX) au premier lien uniquement (première target classe du path)
-                if(rel.Implements != null)
-                {
-                    if (_interfaces.TryGetValue(rel.Implements, out var intf)
-                        && intf.Properties != null
-                        && saw.Add(rel.Path.Last().MetaClassId))
-                    {
-                        ReadProperties(intf.Properties, targetClass, PropertyScope.Relationship);
-                    }
-                }
-                existing.TargetClass = targetClass;
+
                 if (rel.Path.Length > 2)
                 {
                     throw new Exception($"Relation {rel.Name} path should be less or equal to 2: current is {rel.Path.Length}");
                 }
 
-                var pathProperties = new List<PivotPropertyDescription>();
-                var pathClasses = new List<PivotClassDescription>();
                 existing.SetPath(rel.Path.Select((p, idx) =>
                 {
-                    var newPath = new PathDescription(p.Id, p.RoleName, p.RoleId, p.MetaClassId, p.MetaClassName, p.Multiplicity, p.Condition);
-                    if (idx == 0) // On ne regarde que le premier path
-                    {
-                        if (p.Properties != null)
-                        {
-                            pathProperties.AddRange(p.Properties);
-                        }
-                        if (rel.Path.Length > 1)
-                        {
-                            var currentTarget = clazzes.FirstOrDefault(currentClazz => currentClazz.Id == rel.Path[idx].MetaClassId);
-                            pathClasses.Add(currentTarget);
-                        }
-                    }
+                    var targetClass = metaModel.GetClassDescription(p.MetaClassName);
+                    var newPath = new PathDescription(p.Id, p.RoleName, p.RoleId, targetClass, p.Multiplicity, p.Condition);
+                    //On ajoute les attributs de lien
+                    ReadProperties(p.Properties, newPath, PropertyScope.Relationship);
+                    ReadProperties(interfaceLinkAttributes.Properties, newPath, PropertyScope.Relationship);
                     return newPath;
-                }));
-
-                if (pathClasses.Count() > 0 || pathProperties.Count() > 0)
-                {
-                    var extendedClassName = rel.TargetClassName;
-                    var extendedClass = new ClassDescription(targetClass.MetaModel,
-                                                    extendedClassName,
-                                                    targetClass.Id,
-                                                    targetClass.Description,
-                                                    false,
-                                                    targetClass);
-                    existing.TargetClass = extendedClass;
-                    ReadProperties(pathProperties, extendedClass, PropertyScope.TargetClass);
-                    for (var index = 0; index < pathClasses.Count; ++index)
-                    {
-                        ReadProperties(pathClasses[index].Properties, extendedClass, PropertyScope.TargetClass, $"link{index + 1}");
-                    }
-                }
+                }).ToList());
             }
         }
 
-        private static void ReadProperties(IEnumerable<PivotPropertyDescription> properties, IClassDescription cd, PropertyScope scope = PropertyScope.Class, string prefix = "")
+        private static void ReadProperties(IEnumerable<PivotPropertyDescription> properties, IElementWithProperties elmWithProps, PropertyScope scope = PropertyScope.Class)
         {
             if (properties == null)
             {
@@ -218,27 +201,25 @@ namespace Hopex.Model.PivotSchema.Convertors
             }
             foreach (PivotPropertyDescription property in properties)
             {
-                if (!(cd.GetPropertyDescription(property.Name, false) is PropertyDescription existing))
+                if (!(elmWithProps.GetPropertyDescription(property.Name, false) is PropertyDescription existing))
                 {
-                    existing = new PropertyDescription(cd,
-                        property.Name,
-                        property.Id,
-                        property.Description,
-                        property.Constraints?.PropertyType,
-                        property.Constraints?.IsRequired,
-                        property.Constraints?.IsReadOnly,
-                        property.Constraints?.IsUnique,
-                        property.Constraints?.IsTranslatable,
-                        property.Constraints?.IsFormattedText,
-                        property.Constraints?.MaxLength,
-                        prefix + property.Name,
-                        scope)
+                    existing = new PropertyDescription(property.Name,
+                                                       property.Id,
+                                                       property.Description,
+                                                       property.Constraints?.PropertyType,
+                                                       property.Constraints?.IsRequired,
+                                                       property.Constraints?.IsReadOnly,
+                                                       property.Constraints?.IsUnique,
+                                                       property.Constraints?.IsTranslatable,
+                                                       property.Constraints?.IsFormattedText,
+                                                       property.Constraints?.MaxLength,
+                                                       scope)
                     {
                         SetterFormat = property.SetterFormat ?? PropertyDescription.DefaultSetterFormat,
                         GetterFormat = property.GetterFormat ?? PropertyDescription.DefaultGetterFormat
                     };
 
-                    cd.AddProperty(existing);
+                    elmWithProps.AddProperty(existing);
                 }
                 else
                 {

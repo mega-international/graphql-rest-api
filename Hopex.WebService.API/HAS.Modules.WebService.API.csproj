@@ -1,38 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <PlatformTarget>AnyCPU</PlatformTarget>
+        <LangVersion>9</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <LangVersion>latest</LangVersion>
         <AssemblyName>HAS.Modules.WebService.API</AssemblyName>
         <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
-      <None Include="wwwroot\favicon.ico">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Include="wwwroot\favicon.ico">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Hopex.ApplicationServer.SiteModule" Version="15.0.0.160" />
-      <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.19" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.19" />
+        <PackageReference Include="Hopex.ApplicationServer.SiteModule" Version="15.2.0" />
+        <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.19" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.19" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj" />
+        <ProjectReference Include="..\Hopex.Common\Hopex.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="icon.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="LICENSE">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="LICENSE">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

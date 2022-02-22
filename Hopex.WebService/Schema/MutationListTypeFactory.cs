@@ -1,8 +1,8 @@
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Hopex.Model.Abstractions.DataModel;
-using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
+using Hopex.Modules.GraphQL.Schema.GraphQLSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,21 +19,18 @@ namespace Hopex.Modules.GraphQL.Schema
 
     internal class MutationListTypeFactory
     {
+        private static readonly string [] _reimplementedFieldNames = new string [] { "order", "linkComment", "id", "idType", "creationMode" };
         private readonly SchemaBuilder _schemaBuilder;
-        private readonly global::GraphQL.Types.Schema _graphQLSchema;
-        private readonly IHopexMetaModel _hopexSchema;
         private readonly IGraphType _defaultType;
         private static int _seq = 1;
 
-        public MutationListTypeFactory(SchemaBuilder schemaBuilder, global::GraphQL.Types.Schema graphQLSchema, IHopexMetaModel hopexSchema)
+        public MutationListTypeFactory(SchemaBuilder schemaBuilder)
         {
             _schemaBuilder = schemaBuilder;
-            _graphQLSchema = graphQLSchema;
-            _hopexSchema = hopexSchema;
             _defaultType = GenerateMutationType();
         }
 
-        private IGraphType GenerateMutationType(IEnumerable<IPropertyDescription> linkProperties=null, int seq=0)
+        private IGraphType GenerateMutationType(IEnumerable<GraphQLPropertyDescription> properties = null, int seq=0)
         { 
             var type = new InputObjectGraphType<Dictionary<string, object>>
             {
@@ -79,22 +76,9 @@ namespace Hopex.Modules.GraphQL.Schema
                 Name = "creationMode",
                 Resolver = new FuncFieldResolver<Dictionary<string, object>, bool>(ctx => (bool)ctx.Source["creationMode"])
             });
-            if (linkProperties!=null)
+            if(properties != null)
             {
-                _schemaBuilder.CreateProperties<Dictionary<string,object>>(linkProperties, listType, (ctx, prop) =>
-                {
-                    string format = null;
-                    if(ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments["format"].Value != null)
-                    {
-                         format = ctx.Arguments["format"].Value.ToString();
-                    }
-                    var result = ctx.Source[prop.Name];
-                    if (result is DateTime date && !string.IsNullOrEmpty(format))
-                    {
-                        return date.ToString(format);
-                    }
-                    return result;
-                }, true);
+                CreateProperties(properties, listType);
             }
             type.AddField(new FieldType
             {
@@ -105,18 +89,40 @@ namespace Hopex.Modules.GraphQL.Schema
             return type;
         }
 
-        internal IGraphType CreateMutationList(IClassDescription targetClass)
+        internal IGraphType CreateMutationList(GraphQLRelationshipDescription relationship)
         {
+            var targetClass = relationship.TargetClass;
             if (targetClass == null)
             {
                 return _defaultType;
             }
-            var linkProperties = targetClass.Properties.Where(p => (p.Scope == PropertyScope.TargetClass || p.Scope == PropertyScope.Class) && !p.IsReadOnly);
-            if (linkProperties.Any())
+
+            var properties = relationship.TargetClass.Properties
+                .Where(p => !_reimplementedFieldNames.Any(n => p.Name.Equals(n, StringComparison.OrdinalIgnoreCase))).ToList();
+
+            if (properties.Any())
             {
-                return GenerateMutationType(linkProperties, _seq++);
+                return GenerateMutationType(properties, _seq++);
             }
             return _defaultType;
+        }
+
+        private void CreateProperties(IEnumerable<GraphQLPropertyDescription> properties, IComplexGraphType type)
+        {
+            _schemaBuilder.CreateProperties<Dictionary<string, object>>(properties, type, (ctx, prop) =>
+            {
+                string format = null;
+                if(ctx.Arguments != null && ctx.Arguments.ContainsKey("format") && ctx.Arguments ["format"].Value != null)
+                {
+                    format = ctx.Arguments ["format"].Value.ToString();
+                }
+                var result = ctx.Source [prop.Name];
+                if(result is DateTime date && !string.IsNullOrEmpty(format))
+                {
+                    return date.ToString(format);
+                }
+                return result;
+            }, true);
         }
     }
 }

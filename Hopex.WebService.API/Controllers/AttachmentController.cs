@@ -54,6 +54,36 @@ namespace HAS.Modules.WebService.API.Controllers
                 }
 
                 var idUploadSession = Guid.NewGuid().ToString();
+                var isSessionCreated = false;
+
+                //if hopex.core >= 900_006
+                try
+                {
+                    var createSessionResponse = await _hopex.CallMacro(UploadMacro, "{\"cmd\":\"CreateSession\"}");
+                    var createSessionResponseJson = await createSessionResponse.Content.ReadAsStringAsync();
+                    var createSessionResult = JsonConvert.DeserializeObject<UploadCreateSessionResult>(createSessionResponseJson);
+                    if (createSessionResult != null)
+                    {
+                        if (createSessionResult.Success && !string.IsNullOrWhiteSpace(createSessionResult.IdUploadSession))
+                        {
+                            idUploadSession = createSessionResult.IdUploadSession;
+                            isSessionCreated = true;
+                        }
+                        else
+                        {
+                            if (createSessionResult.MaxUploadsReached)
+                            {
+                                _logger.LogError("UploadFile: MaxUploadsReached");
+                                return BadRequest("UploadFile: MaxUploadsReached");
+                            }
+                            _logger.LogInformation("UploadFile: UnknownError (CreateSession API might not be available in this HOPEX version)");
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    _logger.LogInformation("UploadFile: UnknownError (CreateSession API might not be available in this HOPEX version)");
+                }
 
                 var fileStream = Request.Body;
                 fileStream.Position = 0;
@@ -96,7 +126,20 @@ namespace HAS.Modules.WebService.API.Controllers
 
                 _logger.Log(LogLevel.Trace, $"{GetType().Name}.UploadFile(documentId: {documentId}) leave.");
 
-                return await CreateBusinessDocument(documentId, updateMode, idUploadSession);
+                var createBusinessDocumentResult = await CreateBusinessDocument(documentId, updateMode, idUploadSession);
+
+                if (isSessionCreated)
+                {
+                    var uploadDeleteSessionResponse = await _hopex.CallMacro(UploadMacro, $"{{\"cmd\":\"DeleteSession\",\"idUploadSession\":\"{idUploadSession}\"}}");
+                    var uploadDeleteSessionResult = JsonConvert.DeserializeObject<UploadDeleteSessionResult>(uploadDeleteSessionResponse.Content.ReadAsStringAsync().Result);
+                    if (uploadDeleteSessionResult != null && uploadDeleteSessionResult.Success != true)
+                    {
+                        _logger.LogWarning($"Session: {idUploadSession} hasn't been discarded");
+                    }
+                    _logger.LogInformation($"Session: {idUploadSession} has been discarded");
+                }
+
+                return createBusinessDocumentResult;
             }
             catch (Exception e)
             {

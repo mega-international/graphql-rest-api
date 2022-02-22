@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using GraphQL.Execution;
 using Hopex.Model.Abstractions;
 using Hopex.Model.Abstractions.DataModel;
 using Hopex.Model.Abstractions.MetaModel;
 using Hopex.Model.DataModel;
 using Mega.Macro.API;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Hopex.Model.Mocks
 {
@@ -64,18 +65,6 @@ namespace Hopex.Model.Mocks
             _values.AddOrUpdate(propertyDescription.Name, value, (_, v) => value);
         }
 
-        public T GetValue<T>(string propertyName, IDictionary<string, ArgumentValue> arguments = null, string format = null)
-        {
-            var property = ClassDescription.GetPropertyDescription(propertyName);
-            return GetValue<T>(property, arguments, format);
-        }
-
-        public void SetValue<T>(string propertyName, T value, string format = null)
-        {
-            var property = ClassDescription.GetPropertyDescription(propertyName);
-            SetValue<T>(property, value, format);
-        }
-
         public CrudResult GetCrud()
         {
             return new CrudResult("CRUD");
@@ -104,10 +93,106 @@ namespace Hopex.Model.Mocks
             }
         }
 
+        public void CreateContext(IModelElement targetLinkAttributes, IEnumerable<IPropertyDescription> linkAttributes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SpreadContextFromParent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IModelElement BuildChildElement(IMegaObject megaObject, IRelationshipDescription relationship, int pathIdx)
+        {
+            if(relationship == null)
+            {
+                throw new NullReferenceException("relationship is null");
+            }
+            return DataModel.BuildElement(megaObject, relationship.Path[pathIdx].TargetClass);
+        }
+
+        public Task<IModelElement> GetElementByIdAsync(IRelationshipDescription relationship, string id, IdTypeEnum idType)
+        {
+            return DataModel.GetElementByIdAsync(relationship.TargetClass, id, idType);
+        }
+
+        public Task<IModelElement> LinkElementAsync(IRelationshipDescription relationship, bool useInstanceCreator, IModelElement elementToLink, IEnumerable<ISetter> setters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IModelElement> CreateElementAsync(IRelationshipDescription relationship, string id, IdTypeEnum idType, bool useInstanceCreator, IEnumerable<ISetter> setters)
+        {
+            return DataModel.CreateElementAsync(relationship.TargetClass, id, idType, useInstanceCreator, setters);
+        }
+
+        public async Task<IModelElement> UpdateAsync(IEnumerable<ISetter> setters)
+        {
+            if(setters == null)
+            {
+                return this;
+            }
+
+            foreach(ISetter setter in setters)
+            {
+                if(setter is PropertySetter ps)
+                {
+                    await setter.UpdateElementAsync(DataModel, this);
+                }
+                else if(setter is CollectionSetter cs)
+                {
+                    IRelationshipDescription link = cs.RelationshipDescription;
+                    var collection = await GetCollectionAsync(link.Name, null) as MockModelCollection;
+                    var elements = cs.ListElement.Cast<Dictionary<string, object>>();
+
+                    switch(cs.Action)
+                    {
+                        case CollectionAction.ReplaceAll:
+                            collection.Clear();
+                            goto case CollectionAction.Add;
+
+                        case CollectionAction.Add:
+                            foreach(var element in elements)
+                            {
+                                var e = await GetElementByIdAsync(link, element ["id"].ToString(), IdTypeEnum.INTERNAL);
+                                if(e == null)
+                                {
+                                    throw new Exception($"Invalid {element ["id"]} when adding a new relationship");
+                                }
+                                collection.Add(e);
+                            }
+                            break;
+                        case CollectionAction.Remove:
+                            foreach(var element in elements)
+                            {
+                                var e = await GetElementByIdAsync(link, element ["id"].ToString(), IdTypeEnum.INTERNAL);
+                                collection.Remove(e.Id, true);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            return this;
+        }
+
+        public bool IsReadOnly(IPropertyDescription property)
+        {
+            return false;
+        }
+
+        public bool IsReadWrite(IPropertyDescription property)
+        {
+            return true;
+        }
+
         public bool IsConfidential => false;
         public bool IsAvailable => true;
         public IMegaObject Language { get; set; }
-
-        public IModelElement PathElement { get; set; }
+        public IModelContext Context => throw new NotImplementedException();
+        IModelElement IModelElement.Parent => throw new NotImplementedException();
     }
 }

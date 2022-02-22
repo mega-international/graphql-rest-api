@@ -72,5 +72,10 @@ namespace Hopex.Model.MetaModel
         {
             _interfaces.Add(cd.Name, cd);
         }
+
+        public IClassDescription GetGenericClass()
+        {
+            return GetClassDescription(GenericClassDescription.GenericName);
+        }
     }
 }

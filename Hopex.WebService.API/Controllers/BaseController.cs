@@ -23,16 +23,19 @@ namespace HAS.Modules.WebService.API.Controllers
                     {
                         Response.Headers.Add(header.Key, new StringValues(header.Value.ToArray()));
                     }
-                    return StatusCode((int) HttpStatusCode.PartialContent);
+                    Response.Headers.Add("Content-Type", "application/json");
+                    return StatusCode((int) HttpStatusCode.PartialContent, string.Empty);
                 }
                 case HttpStatusCode.OK:
                 {
                     var getJobResult = await response.Content.ReadAsStringAsync();
+                    Response.Headers.Add("Content-Type", "application/json");
                     return Ok(getJobResult);
                 }
                 default:
                 {
-                    return StatusCode((int) HttpStatusCode.PartialContent);
+                    Response.Headers.Add("Content-Type", "application/json");
+                    return StatusCode((int) HttpStatusCode.PartialContent, string.Empty);
                 }
             }
         }
@@ -47,7 +50,8 @@ namespace HAS.Modules.WebService.API.Controllers
                     {
                         Response.Headers.Add(header.Key, new StringValues(header.Value.ToArray()));
                     }
-                    return StatusCode((int) HttpStatusCode.PartialContent);
+                    Response.Headers.Add("Content-Type", "application/json");
+                    return StatusCode((int) HttpStatusCode.PartialContent, string.Empty);
                 }
                 case HttpStatusCode.OK:
                 {
@@ -57,7 +61,8 @@ namespace HAS.Modules.WebService.API.Controllers
                 }
                 default:
                 {
-                    return StatusCode((int) HttpStatusCode.PartialContent);
+                    Response.Headers.Add("Content-Type", "application/json");
+                    return StatusCode((int) HttpStatusCode.PartialContent, string.Empty);
                 }
             }
         }
