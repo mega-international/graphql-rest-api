@@ -1,4 +1,5 @@
 {
+  "aHXaGCfyhuF0": "queryERQL",
   "rt6GC8KE9X70_FN8AHc2gITnL" : "SoftwareTechnology",
   "qEl)R)VD6v60_7ChrtiDo4vb0" : "TimePeriod_PreviousPeriod",
   "H20000008a80_030000000240_hCr81RIpEvMH_QrUiM9B5iCN0" : "OrgUnit",
@@ -206,6 +207,7 @@
   "(b8XSJuCBD90" : "SourceTOGAF",
   "XChrYpDo4ni0_IcfsZhjW9T90" : "BusinessCapability",
   "VzUtP)TDO5J7_0kmMRlr8OjkV_zzUt5wTDOLA7_8xkukQk8OD(1" : "SentApplicationFlow_ContributingApplication",
+  "IAyHEX5(Pf6A_J)P4694ZQvpT_mAVRsO71QvUM_zAVRIQ71QvfM_9L4kNZi4Q1VK" : "ArchiMateGrouping_ParentComposite",
   "GIedE)fyA9y0_4ZdS4XNRP9WL" : "ApplicationParticipant",
   "I20000008e80_030000000240_hCr81RIpEvMH_IcfsZhjW9T90" : "BusinessCapability",
   "wcDwIA488Th1_7ChrtiDo4vb0" : "TimePeriod",
