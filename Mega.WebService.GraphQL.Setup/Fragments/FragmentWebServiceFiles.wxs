@@ -125,8 +125,10 @@
                 </util:XmlConfig>
             </Component>
         </ComponentGroup>
-
         <ComponentGroup Id="WebServiceBinFiles" Directory="BinFolder">
+            <Component Id="Hopex.Common.dll" Guid="{DBCBD391-0F8E-44F8-92C6-C71C94564F32}">
+                <File Id="Hopex.Common.dll" Name="Hopex.Common.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)Hopex.Common.dll" />
+            </Component>
             <Component Id="IdentityModel.dll" Guid="{14413225-5C6A-4AFB-8C74-DFF1A77ECFC8}">
                 <File Id="IdentityModel.dll" Name="IdentityModel.dll" Source="$(var.Mega.WebService.GraphQL.TargetDir)IdentityModel.dll" />
             </Component>
