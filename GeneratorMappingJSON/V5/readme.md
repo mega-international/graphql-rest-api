@@ -37,19 +37,21 @@ This contains, a ready to use, executable jar file to generate your own JSON
 
 # How to use your custom JSON schema
 
-The custom JSON file need to be placed in the deployment of the graphQL component. In this example we assume the new schema is named "mynewschame".
+The custom JSON file needs to be placed in the has.custom module in the graphQL folder. 
+In this example we have following conditions:
+- the new schema is named "mynewschame"
+- V5 instance uses the "5000" port.
+- has.custom version is 15.2.0+17.
 
-- Step 1 :
+### Step 1 :
 
-Take your generated file "mynewschame.json" and put it in the following folder : `C:\Program Files (x86)\MEGA\HOPEX V4\DotNet\hopex.graphql\1.0.0.0\CONFIG\V3\Custom`
-Location may vary based on your HOPEX version.
+Take your generated file "mynewschame.json" and put it in the following folder :\
+**`C:\ProgramData\MEGA\Hopex Application Server\5000\.shadowFiles\has.custom\15.2.0+17\hopex.graphql\CONFIG\V3\Custom`**\
+Location may vary based on your HAS instances locations.
 
-- Step 2 :
-Edit the web.config of graphQL located in `C:\inetpub\wwwroot\HOPEXGraphQL` to add your schema name. location of the folder in IIS may depend on your installation settings.
-
-Edit the key GraphQLSchemas and append with mynewschame. Caution the name in the must be the same as the name of the file (without the extension)
-
-```XML
-    <add key="GraphQLSchemas" value="ITPM, Assessment, Audit, BPA, Data, DataPrivacy, MetaModel, Reporting, Risk, Workflow,mynewschame"/>
-    <!--      GraphQLSchema-->
-```
+### Step 2 (optional):
+If you use the GraphQL IDE module: add the new schema in the options like this:
+- Login into HAS console
+- In **Cluster** tab (default), search for the **GraphQL IDE** module and click on the settings button (with the "gear" icon)
+- Add the new schema in the **GraphQL schemas** list with a previously added comma as separator.
+- If needed, restart HAS instance.
