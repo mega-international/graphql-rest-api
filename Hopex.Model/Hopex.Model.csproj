@@ -27,7 +27,7 @@
         <PackageReference Include="GraphQL-Parser" Version="7.2.0" />
         <PackageReference Include="Hopex.ApplicationServer.Extensions.WebServices" Version="15.2.0.8" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.12" />
         <PackageReference Include="System.Runtime" Version="4.3.1" />
     </ItemGroup>
